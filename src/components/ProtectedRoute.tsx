@@ -11,16 +11,30 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const [timeoutReached, setTimeoutReached] = useState(false)
 
   useEffect(() => {
+    // Reset timeout reached when loading state changes
+    setTimeoutReached(false)
+    
+    // Don't set timeout if user is null (during sign out)
+    if (!loading || !user) {
+      return
+    }
+
     // If loading takes too long, show an error and redirect
     const timeout = setTimeout(() => {
-      if (loading) {
+      if (loading && user) { // Only timeout if still loading AND user exists
         console.error('⚠️ ProtectedRoute: Auth loading timeout reached')
         setTimeoutReached(true)
       }
     }, 15000) // 15 second timeout
 
     return () => clearTimeout(timeout)
-  }, [loading])
+  }, [loading, user]) // Added user as dependency
+
+  // If user is null (signed out), redirect immediately without timeout
+  if (!user && !loading) {
+    console.log('🔄 ProtectedRoute: No user found, redirecting to login')
+    return <Navigate to="/auth/login" replace />
+  }
 
   if (timeoutReached) {
     console.log('🔄 ProtectedRoute: Timeout reached, redirecting to login')
