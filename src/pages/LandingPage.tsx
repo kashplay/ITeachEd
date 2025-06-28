@@ -1,10 +1,39 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { ArrowRight, Play, Users, BookOpen, Trophy, Briefcase } from 'lucide-react'
 import { Button } from '../components/ui/Button'
+import { useAuth } from '../contexts/AuthContext'
 import iteachedLogo from '../assets/images/iteached-logo.svg'
 
 export function LandingPage() {
+  const { user, loading } = useAuth()
+  const navigate = useNavigate()
+
+  // Redirect to dashboard if user is already authenticated
+  useEffect(() => {
+    if (!loading && user) {
+      console.log('🔄 LandingPage: User is authenticated, redirecting to dashboard')
+      navigate('/dashboard', { replace: true })
+    }
+  }, [user, loading, navigate])
+
+  // Show loading state while checking authentication
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-2 border-blue-500 border-t-transparent mx-auto mb-4"></div>
+          <p className="text-gray-400">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Don't render landing page content if user is authenticated
+  if (user) {
+    return null
+  }
+
   return (
     <div className="min-h-screen bg-gray-950">
       {/* Hero Section */}
