@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useLocation } from 'react-router-dom'
+import { Header } from './Header'
 import { Sidebar } from './Sidebar'
 import { AuthDebug } from '../AuthDebug'
 
@@ -13,20 +14,25 @@ export function Layout({ children }: LayoutProps) {
   
   const isAuthPage = location.pathname.startsWith('/auth')
   const isLandingPage = location.pathname === '/'
-  const showSidebar = !isAuthPage && !isLandingPage
+  const isDashboardPage = location.pathname === '/dashboard'
+  const showSidebar = !isAuthPage && !isLandingPage && !isDashboardPage
 
   return (
     <div className="min-h-screen bg-gray-950">
-      {showSidebar && (
-        <Sidebar 
-          collapsed={sidebarCollapsed} 
-          onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} 
-        />
-      )}
+      <Header />
       
-      <main className={`${showSidebar ? 'ml-20' : ''}`}>
-        {children}
-      </main>
+      <div className="flex">
+        {showSidebar && (
+          <Sidebar 
+            collapsed={sidebarCollapsed} 
+            onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} 
+          />
+        )}
+        
+        <main className={`flex-1 ${showSidebar ? 'ml-0' : ''} ${isDashboardPage ? 'ml-20' : ''}`}>
+          {children}
+        </main>
+      </div>
       
       <AuthDebug />
     </div>

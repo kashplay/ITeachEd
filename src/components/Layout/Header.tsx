@@ -14,6 +14,7 @@ export function Header() {
 
   const isLandingPage = location.pathname === '/'
   const isAuthPage = location.pathname.startsWith('/auth')
+  const isDashboardPage = location.pathname === '/dashboard'
 
   // Navigate to landing page when user signs out
   React.useEffect(() => {
@@ -48,9 +49,11 @@ export function Header() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link to="/" className="flex items-center">
-              <div className="w-10 h-10 bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">e</span>
-              </div>
+              <img 
+                src={iteachedLogo} 
+                alt="ITeachEd" 
+                className="h-8"
+              />
             </Link>
 
             <div className="hidden md:flex items-center space-x-6">
@@ -110,7 +113,7 @@ export function Header() {
   }
 
   // Don't show header elements on auth pages or dashboard (dashboard has its own header)
-  if (isAuthPage || location.pathname === '/dashboard') {
+  if (isAuthPage || isDashboardPage) {
     return null
   }
 
@@ -119,9 +122,11 @@ export function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <Link to="/dashboard" className="flex items-center">
-            <div className="w-10 h-10 bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">e</span>
-            </div>
+            <img 
+              src={iteachedLogo} 
+              alt="ITeachEd" 
+              className="h-8"
+            />
           </Link>
 
           <div className="flex-1 max-w-lg mx-8">
