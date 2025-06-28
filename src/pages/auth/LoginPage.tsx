@@ -97,9 +97,9 @@ export function LoginPage() {
     setCurrentSlide(index)
   }
 
-  // Auto-advance slides every 6 seconds
+  // Auto-advance slides every 5 seconds
   React.useEffect(() => {
-    const interval = setInterval(nextSlide, 6000)
+    const interval = setInterval(nextSlide, 5000)
     return () => clearInterval(interval)
   }, [])
 
@@ -116,7 +116,7 @@ export function LoginPage() {
 
       <div className="flex flex-1">
         {/* Left Side - Form */}
-        <div className="w-full lg:w-1/2 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12">
+        <div className="w-full lg:w-3/5 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12">
           <div className="max-w-md w-full space-y-8">
             <div className="text-center">
               <h2 className="text-3xl font-bold text-white">Get Started Now</h2>
@@ -216,47 +216,17 @@ export function LoginPage() {
           </div>
         </div>
 
-        {/* Right Side - Interactive Slideshow */}
-        <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
+        {/* Right Side - Image Slideshow */}
+        <div className="hidden lg:flex lg:w-2/5 relative overflow-hidden">
           <div className="relative w-full h-full">
-            {/* Slide Content */}
-            <div className="absolute inset-0 transition-all duration-700 ease-in-out">
-              <img 
-                src={slides[currentSlide].image}
-                alt={slides[currentSlide].title.replace('\n', ' ')}
-                className="w-full h-full object-cover"
-              />
-              
-              {/* Overlay Content */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-black/30 flex items-center justify-center">
-                <div className="text-center text-white px-8 max-w-lg">
-                  <h2 className="text-4xl font-bold mb-6 leading-tight whitespace-pre-line drop-shadow-lg">
-                    {slides[currentSlide].title}
-                  </h2>
-                  <p className="text-xl text-white/95 leading-relaxed drop-shadow-md">
-                    {slides[currentSlide].description}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Navigation Arrows */}
-            <button
-              onClick={prevSlide}
-              className="absolute left-6 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-all duration-200 hover:scale-110"
-            >
-              <ChevronLeft className="w-6 h-6" />
-            </button>
+            <img 
+              src={slides[currentSlide].image}
+              alt="Feature showcase"
+              className="w-full h-full object-cover transition-all duration-700 ease-in-out"
+            />
             
-            <button
-              onClick={nextSlide}
-              className="absolute right-6 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-all duration-200 hover:scale-110"
-            >
-              <ChevronRight className="w-6 h-6" />
-            </button>
-
             {/* Slide Indicators */}
-            <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-3">
+            <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-3 bg-black/30 backdrop-blur-sm rounded-full px-4 py-2">
               {slides.map((_, index) => (
                 <button
                   key={index}
@@ -268,11 +238,6 @@ export function LoginPage() {
                   }`}
                 />
               ))}
-            </div>
-
-            {/* Slide Counter */}
-            <div className="absolute top-6 right-6 bg-black/30 backdrop-blur-sm rounded-full px-3 py-1 text-white text-sm">
-              {currentSlide + 1} / {slides.length}
             </div>
           </div>
         </div>
