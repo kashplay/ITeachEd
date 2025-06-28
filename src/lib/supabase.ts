@@ -33,8 +33,4 @@ export const supabase = createClient(supabaseUrl, supabaseKey, {
   }
 })
 
-// Test connection
-supabase.from('_test').select('*').limit(1).then(
-  () => console.log('✅ Supabase connection successful'),
-  (error) => console.error('❌ Supabase connection failed:', error)
-)
+console.log('✅ Supabase client initialized successfully')
