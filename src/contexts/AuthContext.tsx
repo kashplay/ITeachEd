@@ -217,8 +217,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.error('❌ AuthContext: Supabase sign out error:', error)
         console.error('❌ Error details:', {
           message: error.message,
-          status: error.status,
-          statusText: error.statusText
+          status: error.status
         })
         // Continue with local cleanup even if Supabase fails
       } else {
@@ -263,11 +262,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return { error: error || null }
     } catch (exception) {
       console.error('❌ AuthContext: Sign out exception:', exception)
-      console.error('❌ Exception details:', {
-        name: exception.name,
-        message: exception.message,
-        stack: exception.stack
-      })
+      if (exception instanceof Error) {
+        console.error('❌ Exception details:', {
+          name: exception.name,
+          message: exception.message,
+          stack: exception.stack
+        })
+      }
       
       // Even if there's an error, clear local state to ensure user can't stay logged in
       setUser(null)
@@ -389,23 +390,74 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       async forceSignOut() {
         console.log('🔧 Force Sign Out - Starting...');
+        
+        // Immediate local cleanup - don't wait for API
+        console.log('🔧 Clearing local state immediately...');
+        setUser(null);
+        setSession(null);
+        setProfile(null);
+        
+        // Clear storage immediately
         try {
-          // Multiple sign out approaches
-          await supabase.auth.signOut({ scope: 'global' });
-          await supabase.auth.signOut({ scope: 'local' });
-          await supabase.auth.signOut();
-          
-          // Clear all local storage
           localStorage.clear();
           sessionStorage.clear();
-          
-          // Force reload
-          window.location.reload();
+          console.log('🔧 Storage cleared');
         } catch (error) {
-          console.error('🔧 Force Sign Out Error:', error);
+          console.error('🔧 Storage clear error:', error);
         }
+        
+        // Try API calls with timeout, but don't block
+        const signOutWithTimeout = async (method: () => Promise<any>, timeout = 3000) => {
+          return Promise.race([
+            method(),
+            new Promise((_, reject) => 
+              setTimeout(() => reject(new Error('Timeout')), timeout)
+            )
+          ]);
+        };
+        
+        try {
+          console.log('🔧 Attempting API sign out (with timeout)...');
+          await signOutWithTimeout(() => supabase.auth.signOut({ scope: 'local' }));
+          console.log('🔧 API sign out successful');
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+          console.warn('🔧 API sign out failed/timeout:', errorMessage);
+        }
+        
+        // Force reload regardless
+        setTimeout(() => {
+          console.log('🔧 Force reloading page...');
+          window.location.reload();
+        }, 100);
       },
       
+      immediateSignOut() {
+        console.log('🔧 Immediate Sign Out - NO API CALLS, LOCAL ONLY');
+        
+        // Clear all local state immediately
+        setUser(null);
+        setSession(null);
+        setProfile(null);
+        setLoading(false);
+        
+        // Clear all storage
+        localStorage.clear();
+        sessionStorage.clear();
+        
+        // Clear cookies
+        document.cookie.split(";").forEach(function(c) { 
+          document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+        });
+        
+        console.log('🔧 Immediate sign out complete - reloading page...');
+        
+        // Force reload after a tiny delay
+        setTimeout(() => window.location.href = '/', 50);
+        
+        return { error: null };
+      },
+
       async alternativeSignOut() {
         console.log('🔧 Alternative Sign Out - Starting...');
         try {
@@ -440,18 +492,45 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.log('🧪 Calling signOut...');
         const result = await signOut();
         console.log('🧪 Sign out result:', result);
-        setTimeout(() => {
-          console.log('🧪 State after 1 second:');
-          this.checkAuthState();
-        }, 1000);
-      }
+                 setTimeout(() => {
+           console.log('🧪 State after 1 second:');
+           this.checkAuthState();
+         }, 1000);
+       },
+       
+       async testNetworkConnectivity() {
+         console.log('🌐 Testing Supabase connectivity...');
+         try {
+           const start = Date.now();
+           const { data, error } = await supabase.auth.getSession();
+           const duration = Date.now() - start;
+           
+           console.log('🌐 Network test result:', {
+             success: !error,
+             duration: `${duration}ms`,
+             hasSession: !!data.session,
+             error: error?.message
+           });
+           
+           if (duration > 10000) {
+             console.warn('🌐 SLOW NETWORK: Request took over 10 seconds');
+           }
+           
+           return { success: !error, duration, error };
+         } catch (error) {
+           console.error('🌐 Network test failed:', error);
+           return { success: false, error };
+         }
+       }
     };
     
     console.log('🔧 Auth debugging utilities available:', {
       'debugAuth.checkAuthState()': 'Check current auth state',
-      'debugAuth.forceSignOut()': 'Force complete sign out',
+      'debugAuth.immediateSignOut()': 'INSTANT sign out (no API calls)',
+      'debugAuth.forceSignOut()': 'Force complete sign out with timeout',
       'debugAuth.alternativeSignOut()': 'Try alternative sign out method',
-      'debugAuth.testSignOut()': 'Test sign out process'
+      'debugAuth.testSignOut()': 'Test sign out process',
+      'debugAuth.testNetworkConnectivity()': 'Test Supabase API connectivity'
     });
   }, [value, user, session, profile, loading, signOut])
 
