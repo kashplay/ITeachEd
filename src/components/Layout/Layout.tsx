@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom'
 import { Header } from './Header'
 import { Sidebar } from './Sidebar'
 import { AuthDebug } from '../AuthDebug'
+import { useAuth } from '../../contexts/AuthContext'
 
 interface LayoutProps {
   children: React.ReactNode
@@ -10,6 +11,7 @@ interface LayoutProps {
 
 export function Layout({ children }: LayoutProps) {
   const location = useLocation()
+  const { loading } = useAuth()
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   
   const isAuthPage = location.pathname.startsWith('/auth')
@@ -24,9 +26,12 @@ export function Layout({ children }: LayoutProps) {
   const hasCustomHeader = isDashboardPage || isLearningPage || isAchievementsPage || isGuildsPage || isJobsPage || isSettingsPage
   const showSidebar = !isAuthPage && !isLandingPage && !hasCustomHeader
 
+  // Don't render header during initial loading on landing page to prevent flash
+  const shouldShowHeader = !hasCustomHeader && !(isLandingPage && loading)
+
   return (
     <div className="min-h-screen bg-gray-950">
-      {!hasCustomHeader && <Header />}
+      {shouldShowHeader && <Header />}
       
       <div className="flex">
         {showSidebar && (

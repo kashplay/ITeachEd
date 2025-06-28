@@ -17,25 +17,64 @@ export function LandingPage() {
     }
   }, [user, loading, navigate])
 
-  // Show loading state while checking authentication
+  // Show minimal loading state while checking authentication
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-950 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-2 border-blue-500 border-t-transparent mx-auto mb-4"></div>
-          <p className="text-gray-400">Loading...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-2 border-blue-500 border-t-transparent mx-auto mb-3"></div>
+          <p className="text-gray-400 text-sm">Loading...</p>
         </div>
       </div>
     )
   }
 
-  // Don't render landing page content if user is authenticated
+  // Don't render landing page content if user is authenticated (prevents flash)
   if (user) {
-    return null
+    return (
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-2 border-blue-500 border-t-transparent mx-auto mb-3"></div>
+          <p className="text-gray-400 text-sm">Redirecting to dashboard...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
     <div className="min-h-screen bg-gray-950">
+      {/* Header - Only show when not loading and user is not authenticated */}
+      <header className="bg-gray-900/80 backdrop-blur-md border-b border-gray-800 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <Link to="/" className="flex items-center">
+              <img 
+                src={iteachedLogo} 
+                alt="ITeachEd" 
+                className="h-8"
+              />
+            </Link>
+
+            <div className="hidden md:flex items-center space-x-6">
+              <Link to="/auth/login">
+                <Button variant="outline" size="sm">
+                  Login
+                </Button>
+              </Link>
+            </div>
+
+            <button
+              className="md:hidden text-gray-300 hover:text-white"
+              onClick={() => {}}
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </header>
+
       {/* Hero Section */}
       <section className="relative overflow-hidden py-20 lg:py-32">
         <div className="absolute inset-0 bg-gradient-to-br from-[#6244FF]/20 via-[#6244FF]/10 to-[#FFAE2D]/10"></div>

@@ -35,26 +35,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     console.log('🔄 AuthContext: Initializing auth state...')
     
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session }, error }) => {
-      console.log('🔄 AuthContext: Got initial session', { session: !!session, error })
-      if (error) {
-        console.error('❌ Error getting session:', error)
+    // Get initial session with faster timeout
+    const initializeAuth = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession()
+        console.log('🔄 AuthContext: Got initial session', { session: !!session, error })
+        
+        if (error) {
+          console.error('❌ Error getting session:', error)
+        }
+        
+        setSession(session)
+        setUser(session?.user ?? null)
+        
+        if (session?.user) {
+          console.log('👤 AuthContext: User found, fetching profile...')
+          // Don't await profile fetch to speed up initial load
+          fetchProfile(session.user.id).catch(console.error)
+        } else {
+          console.log('👤 AuthContext: No user found')
+        }
+      } catch (error) {
+        console.error('❌ Exception getting session:', error)
+      } finally {
+        setLoading(false)
+        console.log('✅ AuthContext: Initial loading complete')
       }
-      setSession(session)
-      setUser(session?.user ?? null)
-      if (session?.user) {
-        console.log('👤 AuthContext: User found, fetching profile...')
-        fetchProfile(session.user.id)
-      } else {
-        console.log('👤 AuthContext: No user found')
-      }
-      setLoading(false)
-      console.log('✅ AuthContext: Initial loading complete')
-    }).catch((error) => {
-      console.error('❌ Exception getting session:', error)
-      setLoading(false)
-    })
+    }
+
+    initializeAuth()
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -75,11 +84,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     )
 
-    // Failsafe: Ensure loading state resolves even if there are issues
+    // Reduced timeout for faster initial load
     const timeoutId = setTimeout(() => {
       console.log('⚠️ AuthContext: Timeout reached, forcing loading to false')
       setLoading(false)
-    }, 10000) // 10 second timeout
+    }, 3000) // Reduced from 10 seconds to 3 seconds
 
     return () => {
       clearTimeout(timeoutId)
