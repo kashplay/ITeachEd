@@ -18,19 +18,27 @@ export function Header() {
   // Navigate to landing page when user signs out
   React.useEffect(() => {
     if (!user && !location.pathname.startsWith('/auth') && location.pathname !== '/') {
-      navigate('/')
+      console.log('🔄 Header: User is null, navigating to landing page from:', location.pathname)
+      navigate('/', { replace: true })
     }
   }, [user, navigate, location.pathname])
 
   const handleSignOut = async () => {
     try {
+      console.log('🔓 Header: Sign out button clicked')
       const { error } = await signOut()
       if (error) {
-        console.error('Sign out failed:', error)
+        console.error('❌ Header: Sign out failed:', error)
+        // Even if signOut fails, try to navigate manually
+        navigate('/', { replace: true })
+      } else {
+        console.log('✅ Header: Sign out successful, waiting for navigation...')
       }
       // Navigation will be handled by useEffect when user becomes null
     } catch (error) {
-      console.error('Sign out error:', error)
+      console.error('❌ Header: Sign out exception:', error)
+      // Fallback navigation on error
+      navigate('/', { replace: true })
     }
   }
 

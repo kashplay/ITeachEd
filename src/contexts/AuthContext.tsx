@@ -33,23 +33,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    console.log('🔄 AuthContext: Initializing auth state...')
+    
     // Get initial session
     supabase.auth.getSession().then(({ data: { session }, error }) => {
+      console.log('🔄 AuthContext: Got initial session', { session: !!session, error })
       if (error) {
-        console.error('Error getting session:', error)
+        console.error('❌ Error getting session:', error)
       }
       setSession(session)
       setUser(session?.user ?? null)
       if (session?.user) {
+        console.log('👤 AuthContext: User found, fetching profile...')
         fetchProfile(session.user.id)
+      } else {
+        console.log('👤 AuthContext: No user found')
       }
+      setLoading(false)
+      console.log('✅ AuthContext: Initial loading complete')
+    }).catch((error) => {
+      console.error('❌ Exception getting session:', error)
       setLoading(false)
     })
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('Auth state changed:', event, session?.user?.email)
+        console.log('🔄 Auth state changed:', event, session?.user?.email)
         setSession(session)
         setUser(session?.user ?? null)
         
@@ -61,14 +71,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
         
         setLoading(false)
+        console.log('✅ AuthContext: Auth state change processed')
       }
     )
 
-    return () => subscription.unsubscribe()
+    // Failsafe: Ensure loading state resolves even if there are issues
+    const timeoutId = setTimeout(() => {
+      console.log('⚠️ AuthContext: Timeout reached, forcing loading to false')
+      setLoading(false)
+    }, 10000) // 10 second timeout
+
+    return () => {
+      clearTimeout(timeoutId)
+      subscription.unsubscribe()
+    }
   }, [])
 
   const fetchProfile = async (userId: string) => {
     try {
+      console.log('🔄 AuthContext: Fetching profile for user:', userId)
       const { data, error } = await supabase
         .from('user_profiles')
         .select('*')
@@ -76,15 +97,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .single()
 
       if (error && error.code !== 'PGRST116') {
-        console.error('Error fetching profile:', error)
-        throw error
+        console.error('❌ Error fetching profile:', error)
+        // Don't throw error, just log it and continue
       }
 
       if (data) {
+        console.log('✅ AuthContext: Profile fetched successfully')
         setProfile(data)
+      } else {
+        console.log('ℹ️ AuthContext: No profile found, user can continue without profile')
+        setProfile(null)
       }
     } catch (error) {
-      console.error('Error fetching profile:', error)
+      console.error('❌ Exception fetching profile:', error)
+      setProfile(null) // Set to null on error so user can still continue
     }
   }
 
@@ -160,34 +186,47 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     try {
-      console.log('Signing out')
+      console.log('🔓 AuthContext: Starting sign out process...')
       setLoading(true)
       
-      // Sign out from Supabase
+      // First, try to sign out from Supabase
+      console.log('🔓 AuthContext: Calling supabase.auth.signOut...')
       const { error } = await supabase.auth.signOut({ scope: 'local' })
       
       if (error) {
-        console.error('Sign out error:', error)
-        setLoading(false)
-        return { error }
+        console.error('❌ AuthContext: Supabase sign out error:', error)
+        // Continue with local cleanup even if Supabase fails
+      } else {
+        console.log('✅ AuthContext: Supabase sign out successful')
       }
       
       // Clear local state immediately to ensure UI updates
+      console.log('🔓 AuthContext: Clearing local auth state...')
       setUser(null)
       setSession(null)
       setProfile(null)
       
-      console.log('Sign out successful')
+      // Clear any Supabase data from localStorage manually as a failsafe
+      try {
+        const keys = Object.keys(localStorage).filter(key => key.includes('supabase'))
+        keys.forEach(key => localStorage.removeItem(key))
+        console.log('🔓 AuthContext: Cleared localStorage keys:', keys)
+      } catch (localStorageError) {
+        console.error('⚠️ AuthContext: Could not clear localStorage:', localStorageError)
+      }
+      
       setLoading(false)
-      return { error: null }
-    } catch (error) {
-      console.error('Sign out exception:', error)
-      // Even if there's an error, clear local state
+      console.log('✅ AuthContext: Sign out process complete')
+      
+      return { error: error || null }
+    } catch (exception) {
+      console.error('❌ AuthContext: Sign out exception:', exception)
+      // Even if there's an error, clear local state to ensure user can't stay logged in
       setUser(null)
       setSession(null)
       setProfile(null)
       setLoading(false)
-      return { error }
+      return { error: exception }
     }
   }
 
@@ -249,6 +288,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     resetPassword,
     updateProfile
   }
+
+  // Expose auth context for debugging in development
+  React.useEffect(() => {
+    if (import.meta.env.DEV) {
+      (window as any).testAuthContext = value
+    }
+  }, [value])
 
   return (
     <AuthContext.Provider value={value}>

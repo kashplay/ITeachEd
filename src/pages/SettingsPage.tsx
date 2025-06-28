@@ -43,19 +43,27 @@ export function SettingsPage() {
   // Navigate to landing page when user signs out
   React.useEffect(() => {
     if (!user) {
-      navigate('/')
+      console.log('🔄 Settings: User is null, navigating to landing page')
+      navigate('/', { replace: true })
     }
   }, [user, navigate])
 
   const handleSignOut = async () => {
     try {
+      console.log('🔓 Settings: Sign out button clicked')
       const { error } = await signOut()
       if (error) {
-        console.error('Sign out failed:', error)
+        console.error('❌ Settings: Sign out failed:', error)
+        // Even if signOut fails, try to navigate manually
+        navigate('/', { replace: true })
+      } else {
+        console.log('✅ Settings: Sign out successful, waiting for navigation...')
       }
       // Navigation will be handled by useEffect when user becomes null
     } catch (error) {
-      console.error('Sign out error:', error)
+      console.error('❌ Settings: Sign out exception:', error)
+      // Fallback navigation on error
+      navigate('/', { replace: true })
     }
   }
 
