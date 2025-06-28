@@ -3,6 +3,7 @@ import { Briefcase, MapPin, DollarSign, Clock, ExternalLink, Bookmark, TrendingU
 import { Card } from '../components/ui/Card'
 import { Button } from '../components/ui/Button'
 import { useAuth } from '../contexts/AuthContext'
+import { useNavigate } from 'react-router-dom'
 import { Sidebar } from '../components/Layout/Sidebar'
 
 const jobMatches = [
@@ -79,8 +80,33 @@ const getMatchColor = (percentage: number) => {
 }
 
 export function JobsPage() {
-  const { user } = useAuth()
+  const { user, signOut } = useAuth()
+  const navigate = useNavigate()
   const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'
+
+  // Navigate to landing page when user signs out
+  React.useEffect(() => {
+    if (!user) {
+      console.log('🔄 Jobs: User is null, navigating to landing page')
+      navigate('/', { replace: true })
+    }
+  }, [user, navigate])
+
+  const handleSignOut = async () => {
+    try {
+      console.log('🔓 Jobs: Sign out button clicked')
+      const { error } = await signOut()
+      if (error) {
+        console.error('❌ Jobs: Sign out failed:', error)
+        navigate('/', { replace: true })
+      } else {
+        console.log('✅ Jobs: Sign out successful, waiting for navigation...')
+      }
+    } catch (error) {
+      console.error('❌ Jobs: Sign out exception:', error)
+      navigate('/', { replace: true })
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#1a1d3a] via-[#2d3561] to-[#1a1d3a] text-white">
@@ -147,7 +173,10 @@ export function JobsPage() {
                       Help & Support
                     </button>
                     <div className="border-t border-gray-600/50 pt-1 mt-2">
-                      <button className="w-full text-left px-3 py-2 text-red-400 hover:bg-gray-700/50 rounded-lg text-sm transition-colors">
+                      <button 
+                        onClick={handleSignOut}
+                        className="w-full text-left px-3 py-2 text-red-400 hover:bg-gray-700/50 rounded-lg text-sm transition-colors"
+                      >
                         Sign Out
                       </button>
                     </div>
