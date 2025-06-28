@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Search, Bell, Menu, X, Moon, Sun } from 'lucide-react'
+import { Search, Bell, Menu, X } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
 import { Button } from '../ui/Button'
 import iteachedLogo from '../../assets/images/iteached-logo.svg'
@@ -10,7 +10,6 @@ export function Header() {
   const location = useLocation()
   const navigate = useNavigate()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [darkMode, setDarkMode] = useState(true)
 
   const isLandingPage = location.pathname === '/'
   const isAuthPage = location.pathname.startsWith('/auth')
@@ -57,14 +56,6 @@ export function Header() {
             </Link>
 
             <div className="hidden md:flex items-center space-x-6">
-              <Button 
-                variant="ghost" 
-                size="sm"
-                icon={darkMode ? Sun : Moon}
-                onClick={() => setDarkMode(!darkMode)}
-              >
-                {darkMode ? 'Light' : 'Dark'}
-              </Button>
               {user ? (
                 <Link to="/dashboard">
                   <Button variant="primary" size="sm">
