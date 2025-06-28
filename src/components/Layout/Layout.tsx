@@ -15,11 +15,18 @@ export function Layout({ children }: LayoutProps) {
   const isAuthPage = location.pathname.startsWith('/auth')
   const isLandingPage = location.pathname === '/'
   const isDashboardPage = location.pathname === '/dashboard'
-  const showSidebar = !isAuthPage && !isLandingPage && !isDashboardPage
+  const isLearningPage = location.pathname === '/learning'
+  const isAchievementsPage = location.pathname === '/achievements'
+  const isGuildsPage = location.pathname === '/guilds'
+  const isJobsPage = location.pathname === '/jobs'
+  const isSettingsPage = location.pathname === '/settings'
+  
+  const hasCustomHeader = isDashboardPage || isLearningPage || isAchievementsPage || isGuildsPage || isJobsPage || isSettingsPage
+  const showSidebar = !isAuthPage && !isLandingPage && !hasCustomHeader
 
   return (
     <div className="min-h-screen bg-gray-950">
-      <Header />
+      {!hasCustomHeader && <Header />}
       
       <div className="flex">
         {showSidebar && (

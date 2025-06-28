@@ -5,12 +5,14 @@ import { useAuth } from '../contexts/AuthContext'
 import { Card } from '../components/ui/Card'
 import { Button } from '../components/ui/Button'
 import { Input } from '../components/ui/Input'
+import { Sidebar } from '../components/Layout/Sidebar'
 
 export function SettingsPage() {
   const { user, profile, updateProfile, signOut } = useAuth()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [activeTab, setActiveTab] = useState('profile')
+  const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'
   const [profileData, setProfileData] = useState({
     full_name: user?.user_metadata?.full_name || '',
     email: user?.email || '',
@@ -201,9 +203,9 @@ export function SettingsPage() {
               </Card>
 
               <Card className="p-4 border-red-500/50">
-                <h4 className="font-medium text-red-400 mb-2">Delete Account</h4>
+                <h4 className="font-medium text-white mb-2">Delete Account</h4>
                 <p className="text-sm text-gray-400 mb-3">Permanently delete your account and all data</p>
-                <Button variant="outline" size="sm" onClick={handleDeleteAccount} icon={Trash2}>
+                <Button variant="ghost" size="sm" onClick={handleDeleteAccount} icon={Trash2}>
                   Delete Account
                 </Button>
               </Card>
@@ -216,34 +218,23 @@ export function SettingsPage() {
           <div className="space-y-6">
             <h3 className="text-lg font-semibold text-white">Appearance</h3>
             
-            <Card className="p-4">
-              <h4 className="font-medium text-white mb-2">Theme</h4>
-              <p className="text-sm text-gray-400 mb-3">Choose your preferred color scheme</p>
-              <div className="grid grid-cols-3 gap-3">
-                {['Dark', 'Light', 'Auto'].map((theme) => (
-                  <button
-                    key={theme}
-                    className={`p-3 rounded-lg border text-center transition-colors ${
-                      theme === 'Dark' 
-                        ? 'border-blue-500 bg-blue-500/10 text-blue-300' 
-                        : 'border-gray-600 bg-gray-700/50 text-gray-300 hover:border-gray-500'
-                    }`}
-                  >
-                    {theme}
+            <div className="space-y-4">
+              <Card className="p-4">
+                <h4 className="font-medium text-white mb-2">Theme</h4>
+                <p className="text-sm text-gray-400 mb-3">Choose your preferred theme</p>
+                <div className="grid grid-cols-3 gap-3">
+                  <button className="p-3 border border-blue-500 rounded-lg bg-gray-900 text-white">
+                    Dark
                   </button>
-                ))}
-              </div>
-            </Card>
-
-            <Card className="p-4">
-              <h4 className="font-medium text-white mb-2">Font Size</h4>
-              <p className="text-sm text-gray-400 mb-3">Adjust the interface font size</p>
-              <select className="bg-gray-700 border border-gray-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500">
-                <option>Small</option>
-                <option>Medium (Default)</option>
-                <option>Large</option>
-              </select>
-            </Card>
+                  <button className="p-3 border border-gray-600 rounded-lg bg-gray-700 text-white">
+                    Light
+                  </button>
+                  <button className="p-3 border border-gray-600 rounded-lg bg-gray-700 text-white">
+                    Auto
+                  </button>
+                </div>
+              </Card>
+            </div>
           </div>
         )
 
@@ -252,38 +243,29 @@ export function SettingsPage() {
           <div className="space-y-6">
             <h3 className="text-lg font-semibold text-white">Language & Region</h3>
             
-            <Card className="p-4">
-              <h4 className="font-medium text-white mb-2">Language</h4>
-              <p className="text-sm text-gray-400 mb-3">Choose your preferred language</p>
-              <select className="bg-gray-700 border border-gray-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 w-full">
-                <option>English (US)</option>
-                <option>Spanish</option>
-                <option>French</option>
-                <option>German</option>
-                <option>Japanese</option>
-              </select>
-            </Card>
+            <div className="space-y-4">
+              <Card className="p-4">
+                <h4 className="font-medium text-white mb-2">Language</h4>
+                <p className="text-sm text-gray-400 mb-3">Select your preferred language</p>
+                <select className="bg-gray-700 border border-gray-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500">
+                  <option>English</option>
+                  <option>Spanish</option>
+                  <option>French</option>
+                  <option>German</option>
+                </select>
+              </Card>
 
-            <Card className="p-4">
-              <h4 className="font-medium text-white mb-2">Time Zone</h4>
-              <p className="text-sm text-gray-400 mb-3">Used for scheduling and notifications</p>
-              <select className="bg-gray-700 border border-gray-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 w-full">
-                <option>UTC-8 (Pacific Time)</option>
-                <option>UTC-5 (Eastern Time)</option>
-                <option>UTC+0 (GMT)</option>
-                <option>UTC+1 (Central European Time)</option>
-              </select>
-            </Card>
-
-            <Card className="p-4">
-              <h4 className="font-medium text-white mb-2">Date Format</h4>
-              <p className="text-sm text-gray-400 mb-3">How dates are displayed</p>
-              <select className="bg-gray-700 border border-gray-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 w-full">
-                <option>MM/DD/YYYY (US)</option>
-                <option>DD/MM/YYYY (EU)</option>
-                <option>YYYY-MM-DD (ISO)</option>
-              </select>
-            </Card>
+              <Card className="p-4">
+                <h4 className="font-medium text-white mb-2">Timezone</h4>
+                <p className="text-sm text-gray-400 mb-3">Set your timezone for accurate scheduling</p>
+                <select className="bg-gray-700 border border-gray-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500">
+                  <option>UTC-8 (Pacific Time)</option>
+                  <option>UTC-5 (Eastern Time)</option>
+                  <option>UTC+0 (Greenwich Mean Time)</option>
+                  <option>UTC+1 (Central European Time)</option>
+                </select>
+              </Card>
+            </div>
           </div>
         )
 
@@ -293,17 +275,81 @@ export function SettingsPage() {
   }
 
   return (
-    <div className="p-6">
-      <div className="max-w-4xl mx-auto">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-white mb-2">Settings</h1>
-          <p className="text-gray-400">Manage your account preferences and settings</p>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-[#1a1d3a] via-[#2d3561] to-[#1a1d3a] text-white">
+      {/* Sidebar */}
+      <Sidebar collapsed={false} onToggle={() => {}} />
+      
+      {/* Main Content */}
+      <div className="ml-[88px]">
+        {/* Header */}
+        <header className="flex items-center justify-between p-6 pb-8">
+          <div className="flex items-center space-x-4">
+            {/* Empty space for alignment */}
+          </div>
+          
+          <div className="flex items-center space-x-4">
+            {/* Notification Bell */}
+            <button className="relative p-3 bg-gray-800/50 border border-gray-600/50 rounded-xl hover:bg-gray-700/50 transition-colors">
+              <Bell className="w-5 h-5 text-gray-300" />
+              <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
+            </button>
+            
+            {/* Profile Icon */}
+            <div className="relative group">
+              <button className="flex items-center justify-center p-3 bg-gray-800/50 border border-gray-600/50 rounded-xl hover:bg-gray-700/50 transition-colors">
+                <div className="w-5 h-5 bg-gradient-to-r from-[#6244FF] to-[#FFAE2D] rounded-full flex items-center justify-center">
+                  <span className="text-white text-xs font-medium">
+                    {userName?.[0]?.toUpperCase() || 'U'}
+                  </span>
+                </div>
+              </button>
+              
+              {/* Profile Dropdown */}
+              <div className="absolute right-0 mt-2 w-48 bg-gray-800/90 backdrop-blur-sm rounded-xl shadow-lg border border-gray-600/50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                <div className="p-3">
+                  <div className="flex items-center space-x-3 pb-3 border-b border-gray-600/50">
+                    <div className="w-8 h-8 bg-gradient-to-r from-[#6244FF] to-[#FFAE2D] rounded-full flex items-center justify-center">
+                      <span className="text-white text-sm font-medium">
+                        {userName?.[0]?.toUpperCase() || 'U'}
+                      </span>
+                    </div>
+                    <div>
+                      <div className="text-white text-sm font-medium">{userName}</div>
+                      <div className="text-gray-400 text-xs">{user?.email}</div>
+                    </div>
+                  </div>
+                  <div className="pt-3 space-y-1">
+                    <button className="w-full text-left px-3 py-2 text-gray-300 hover:bg-gray-700/50 rounded-lg text-sm transition-colors">
+                      Profile Settings
+                    </button>
+                    <button className="w-full text-left px-3 py-2 text-gray-300 hover:bg-gray-700/50 rounded-lg text-sm transition-colors">
+                      Account Settings
+                    </button>
+                    <button className="w-full text-left px-3 py-2 text-gray-300 hover:bg-gray-700/50 rounded-lg text-sm transition-colors">
+                      Help & Support
+                    </button>
+                    <div className="border-t border-gray-600/50 pt-1 mt-2">
+                      <button className="w-full text-left px-3 py-2 text-red-400 hover:bg-gray-700/50 rounded-lg text-sm transition-colors">
+                        Sign Out
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
 
-        <div className="grid lg:grid-cols-4 gap-6">
-          {/* Sidebar */}
-          <div className="lg:col-span-1">
-            <Card className="p-4">
+        {/* Content */}
+        <div className="px-6 space-y-6">
+          <div>
+            <h1 className="text-2xl font-bold text-white mb-2">Settings</h1>
+            <p className="text-gray-400">Manage your account preferences and settings</p>
+          </div>
+
+          <div className="grid lg:grid-cols-4 gap-6">
+            {/* Sidebar */}
+            <div className="lg:col-span-1">
               <nav className="space-y-2">
                 {tabs.map((tab) => {
                   const IconComponent = tab.icon
@@ -311,26 +357,26 @@ export function SettingsPage() {
                     <button
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id)}
-                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors ${
+                      className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors ${
                         activeTab === tab.id
                           ? 'bg-blue-500/20 text-blue-300 border border-blue-500/50'
-                          : 'text-gray-300 hover:bg-gray-700/50'
+                          : 'text-gray-400 hover:bg-gray-700/50 hover:text-gray-300'
                       }`}
                     >
-                      <IconComponent className="w-4 h-4" />
-                      <span className="text-sm">{tab.label}</span>
+                      <IconComponent className="w-5 h-5" />
+                      {tab.label}
                     </button>
                   )
                 })}
               </nav>
-            </Card>
-          </div>
+            </div>
 
-          {/* Content */}
-          <div className="lg:col-span-3">
-            <Card className="p-6">
-              {renderTabContent()}
-            </Card>
+            {/* Content */}
+            <div className="lg:col-span-3">
+              <Card className="p-6">
+                {renderTabContent()}
+              </Card>
+            </div>
           </div>
         </div>
       </div>
