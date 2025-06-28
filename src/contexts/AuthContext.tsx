@@ -187,14 +187,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signOut = async () => {
     try {
       console.log('🔓 AuthContext: Starting sign out process...')
-      console.log('🔓 Environment:', {
-        isDev: import.meta.env.DEV,
-        mode: import.meta.env.MODE,
-        baseUrl: import.meta.env.BASE_URL,
-        origin: window.location.origin
-      })
-      
-      setLoading(true)
       
       // Log current state before sign out
       console.log('🔓 Current auth state:', {
@@ -205,30 +197,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         userEmail: user?.email
       })
       
-      // Check localStorage before sign out
-      const lsKeys = Object.keys(localStorage).filter(key => key.includes('supabase'))
-      console.log('🔓 localStorage keys before signOut:', lsKeys)
-      
-      // First, try to sign out from Supabase
-      console.log('🔓 AuthContext: Calling supabase.auth.signOut...')
-      const { error } = await supabase.auth.signOut({ scope: 'local' })
-      
-      if (error) {
-        console.error('❌ AuthContext: Supabase sign out error:', error)
-        console.error('❌ Error details:', {
-          message: error.message,
-          status: error.status
-        })
-        // Continue with local cleanup even if Supabase fails
-      } else {
-        console.log('✅ AuthContext: Supabase sign out successful')
-      }
-      
-      // Clear local state immediately to ensure UI updates
-      console.log('🔓 AuthContext: Clearing local auth state...')
+      // Clear local state immediately to prevent loading state issues
+      console.log('🔓 AuthContext: Clearing local auth state immediately...')
       setUser(null)
       setSession(null)
       setProfile(null)
+      setLoading(false) // Set loading to false immediately after clearing user
       
       // Clear any Supabase data from localStorage manually as a failsafe
       try {
@@ -242,23 +216,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.error('⚠️ AuthContext: Could not clear localStorage:', localStorageError)
       }
       
-      // Verify state after cleanup
-      console.log('🔓 State after cleanup:', {
-        hasUser: !!user,
-        hasSession: !!session,
-        hasProfile: !!profile
-      })
+      // Now try to sign out from Supabase (don't block UI on this)
+      console.log('🔓 AuthContext: Calling supabase.auth.signOut...')
+      const { error } = await supabase.auth.signOut({ scope: 'local' })
       
-      // Check if auth state actually changed
-      const { data: currentSession } = await supabase.auth.getSession()
-      console.log('🔓 Current session after signOut:', {
-        hasSession: !!currentSession.session,
-        sessionUser: currentSession.session?.user?.email
-      })
+      if (error) {
+        console.error('❌ AuthContext: Supabase sign out error:', error)
+        console.error('❌ Error details:', {
+          message: error.message,
+          status: error.status
+        })
+        // Don't throw error, local cleanup is already done
+      } else {
+        console.log('✅ AuthContext: Supabase sign out successful')
+      }
       
-      setLoading(false)
       console.log('✅ AuthContext: Sign out process complete')
-      
       return { error: error || null }
     } catch (exception) {
       console.error('❌ AuthContext: Sign out exception:', exception)

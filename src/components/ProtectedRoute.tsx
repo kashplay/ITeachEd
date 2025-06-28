@@ -14,7 +14,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
     // Reset timeout reached when loading state changes
     setTimeoutReached(false)
     
-    // Don't set timeout if user is null (during sign out)
+    // Don't set timeout if user is null or not loading
     if (!loading || !user) {
       return
     }
@@ -28,10 +28,10 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
     }, 15000) // 15 second timeout
 
     return () => clearTimeout(timeout)
-  }, [loading, user]) // Added user as dependency
+  }, [loading, user])
 
-  // If user is null (signed out), redirect immediately without timeout
-  if (!user && !loading) {
+  // If user is null, redirect immediately (regardless of loading state)
+  if (!user) {
     console.log('🔄 ProtectedRoute: No user found, redirecting to login')
     return <Navigate to="/auth/login" replace />
   }
@@ -53,11 +53,6 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
         </div>
       </div>
     )
-  }
-
-  if (!user) {
-    console.log('🔄 ProtectedRoute: No user found, redirecting to login')
-    return <Navigate to="/auth/login" replace />
   }
 
   console.log('✅ ProtectedRoute: User authenticated, rendering protected content')
