@@ -29,7 +29,7 @@ export function Layout({ children }: LayoutProps) {
           />
         )}
         
-        <main className={`flex-1 ${showSidebar ? 'ml-[88px]' : ''} ${isDashboardPage ? 'ml-[88px]' : ''}`}>
+        <main className={`flex-1 ${showSidebar ? 'ml-0' : ''}`}>
           {children}
         </main>
       </div>
