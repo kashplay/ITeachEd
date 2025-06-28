@@ -10,6 +10,7 @@ import {
   LogOut
 } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
+import eLogoLight from '../../assets/images/e-logo-full-light.svg'
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -25,7 +26,7 @@ interface SidebarProps {
   onToggle: () => void
 }
 
-export function Sidebar({ collapsed, onToggle }: SidebarProps) {
+export function Sidebar({ collapsed: _collapsed, onToggle: _onToggle }: SidebarProps) {
   const location = useLocation()
   const { signOut } = useAuth()
 
@@ -41,9 +42,11 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
     <div className="w-[88px] h-screen bg-[#1a1d3a] border-r border-gray-700/30 fixed left-0 top-0 z-40 flex flex-col items-center py-8">
       {/* Logo */}
       <div className="mb-6">
-        <div className="w-10 h-10 bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] rounded-lg flex items-center justify-center">
-          <span className="text-white font-bold text-lg">e</span>
-        </div>
+        <img 
+          src={eLogoLight} 
+          alt="E Logo" 
+          className="w-12 h-8 object-contain"
+        />
       </div>
 
       {/* Divider */}
