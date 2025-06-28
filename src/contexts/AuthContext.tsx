@@ -34,7 +34,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      if (error) {
+        console.error('Error getting session:', error)
+      }
       setSession(session)
       setUser(session?.user ?? null)
       if (session?.user) {
@@ -46,6 +49,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        console.log('Auth state changed:', event, session?.user?.email)
         setSession(session)
         setUser(session?.user ?? null)
         if (session?.user) {
@@ -69,6 +73,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .single()
 
       if (error && error.code !== 'PGRST116') {
+        console.error('Error fetching profile:', error)
         throw error
       }
 
@@ -81,51 +86,109 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const signUp = async (email: string, password: string, fullName: string) => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          full_name: fullName
+    try {
+      console.log('Attempting to sign up with:', email)
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: fullName
+          }
         }
+      })
+      
+      if (error) {
+        console.error('Sign up error:', error)
+      } else {
+        console.log('Sign up successful:', data)
       }
-    })
-    return { data, error }
+      
+      return { data, error }
+    } catch (error) {
+      console.error('Sign up exception:', error)
+      return { data: null, error }
+    }
   }
 
   const signIn = async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    })
-    return { data, error }
+    try {
+      console.log('Attempting to sign in with:', email)
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      })
+      
+      if (error) {
+        console.error('Sign in error:', error)
+      } else {
+        console.log('Sign in successful:', data)
+      }
+      
+      return { data, error }
+    } catch (error) {
+      console.error('Sign in exception:', error)
+      return { data: null, error }
+    }
   }
 
   const signInWithGoogle = async () => {
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/dashboard`
+    try {
+      console.log('Attempting Google sign in')
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/dashboard`
+        }
+      })
+      
+      if (error) {
+        console.error('Google sign in error:', error)
+      } else {
+        console.log('Google sign in initiated:', data)
       }
-    })
-    return { data, error }
+      
+      return { data, error }
+    } catch (error) {
+      console.error('Google sign in exception:', error)
+      return { data: null, error }
+    }
   }
 
   const signOut = async () => {
-    await supabase.auth.signOut()
+    try {
+      console.log('Signing out')
+      await supabase.auth.signOut()
+    } catch (error) {
+      console.error('Sign out error:', error)
+    }
   }
 
   const resetPassword = async (email: string) => {
-    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`
-    })
-    return { data, error }
+    try {
+      console.log('Resetting password for:', email)
+      const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`
+      })
+      
+      if (error) {
+        console.error('Reset password error:', error)
+      } else {
+        console.log('Reset password email sent:', data)
+      }
+      
+      return { data, error }
+    } catch (error) {
+      console.error('Reset password exception:', error)
+      return { data: null, error }
+    }
   }
 
   const updateProfile = async (updates: Partial<UserProfile>) => {
     if (!user) return
 
     try {
+      console.log('Updating profile:', updates)
       const { error } = await supabase
         .from('user_profiles')
         .upsert({ 
@@ -134,9 +197,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           updated_at: new Date().toISOString()
         })
 
-      if (error) throw error
+      if (error) {
+        console.error('Update profile error:', error)
+        throw error
+      }
 
       setProfile(prev => prev ? { ...prev, ...updates } : null)
+      console.log('Profile updated successfully')
     } catch (error) {
       console.error('Error updating profile:', error)
       throw error
