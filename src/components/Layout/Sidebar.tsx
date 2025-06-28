@@ -42,11 +42,13 @@ export function Sidebar({ collapsed: _collapsed, onToggle: _onToggle }: SidebarP
     <div className="w-[88px] h-screen bg-[#1a1d3a] border-r border-gray-700/30 fixed left-0 top-0 z-40 flex flex-col items-center py-8">
       {/* Logo */}
       <div className="mb-6">
-        <img 
-          src={eLogoLight} 
-          alt="E Logo" 
-          className="w-12 h-8 object-contain"
-        />
+        <Link to="/dashboard" className="block hover:opacity-80 transition-opacity duration-200">
+          <img 
+            src={eLogoLight} 
+            alt="E Logo" 
+            className="w-12 h-8 object-contain cursor-pointer"
+          />
+        </Link>
       </div>
 
       {/* Divider */}
