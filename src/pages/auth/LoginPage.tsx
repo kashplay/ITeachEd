@@ -4,6 +4,7 @@ import { Mail, Lock, Eye, EyeOff, ChevronLeft, ChevronRight } from 'lucide-react
 import { useAuth } from '../../contexts/AuthContext'
 import { Button } from '../../components/ui/Button'
 import { Input } from '../../components/ui/Input'
+import iteachedLogo from '../../assets/images/iteached-logo.svg'
 
 // Google Icon Component
 const GoogleIcon = () => (
@@ -103,7 +104,7 @@ export function LoginPage() {
       {/* Logo in top left corner */}
       <div className="absolute top-6 left-6 z-10">
         <img 
-          src="/images/iteached-logo.svg" 
+          src={iteachedLogo} 
           alt="ITeachEd" 
           className="h-8"
         />

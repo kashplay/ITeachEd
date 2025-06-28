@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
+import iteachedLogo from '../../assets/images/iteached-logo.svg'
 import { Mail, ArrowLeft } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
 import { Button } from '../../components/ui/Button'
@@ -65,7 +66,7 @@ export function ForgotPasswordPage() {
         <div className="text-center">
           <div className="flex items-center justify-center mb-6">
             <img 
-                              src="/images/iteached-logo.svg" 
+                              src={iteachedLogo} 
               alt="ITeachEd" 
               className="h-10"
             />

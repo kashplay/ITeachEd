@@ -2,6 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Play, Users, BookOpen, Trophy, Briefcase } from 'lucide-react'
 import { Button } from '../components/ui/Button'
+import iteachedLogo from '../assets/images/iteached-logo.svg'
 
 export function LandingPage() {
   return (
@@ -132,7 +133,7 @@ export function LandingPage() {
           <div className="text-center">
             <div className="flex items-center justify-center mb-4">
               <img 
-                src="/images/iteached-logo.svg" 
+                src={iteachedLogo} 
                 alt="ITeachEd" 
                 className="h-8"
               />

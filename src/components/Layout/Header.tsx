@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { Search, Bell, Menu, X, Moon, Sun } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
 import { Button } from '../ui/Button'
+import iteachedLogo from '../../assets/images/iteached-logo.svg'
 
 export function Header() {
   const { user, signOut } = useAuth()
@@ -20,7 +21,7 @@ export function Header() {
           <div className="flex justify-between items-center h-16">
             <Link to="/" className="flex items-center">
               <img 
-                src="/images/iteached-logo.svg" 
+                src={iteachedLogo} 
                 alt="ITeachEd" 
                 className="h-8"
               />
@@ -93,7 +94,7 @@ export function Header() {
         <div className="flex justify-between items-center h-16">
           <Link to="/dashboard" className="flex items-center">
             <img 
-              src="/images/iteached-logo.svg" 
+              src={iteachedLogo} 
               alt="ITeachEd" 
               className="h-8"
             />

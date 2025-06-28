@@ -4,6 +4,7 @@ import { ChevronRight, ChevronLeft, Sparkles } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { Button } from '../components/ui/Button'
 import { OnboardingData } from '../types'
+import iteachedLogo from '../assets/images/iteached-logo.svg'
 
 const steps = [
   {
@@ -163,7 +164,7 @@ export function OnboardingPage() {
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-6">
             <img 
-                              src="/images/iteached-logo.svg" 
+                              src={iteachedLogo} 
               alt="ITeachEd AI Career Assessment" 
               className="h-10"
             />
