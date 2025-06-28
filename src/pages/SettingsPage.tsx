@@ -1,5 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { User, Bell, Shield, Palette, Globe, Trash2 } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { Card } from '../components/ui/Card'
 import { Button } from '../components/ui/Button'
@@ -7,6 +8,7 @@ import { Input } from '../components/ui/Input'
 
 export function SettingsPage() {
   const { user, profile, updateProfile, signOut } = useAuth()
+  const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [activeTab, setActiveTab] = useState('profile')
   const [profileData, setProfileData] = useState({
@@ -35,6 +37,25 @@ export function SettingsPage() {
       console.error('Error saving profile:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  // Navigate to landing page when user signs out
+  React.useEffect(() => {
+    if (!user) {
+      navigate('/')
+    }
+  }, [user, navigate])
+
+  const handleSignOut = async () => {
+    try {
+      const { error } = await signOut()
+      if (error) {
+        console.error('Sign out failed:', error)
+      }
+      // Navigation will be handled by useEffect when user becomes null
+    } catch (error) {
+      console.error('Sign out error:', error)
     }
   }
 
@@ -160,6 +181,14 @@ export function SettingsPage() {
                 <p className="text-sm text-gray-400 mb-3">Update your account password</p>
                 <Button variant="outline" size="sm">
                   Change Password
+                </Button>
+              </Card>
+
+              <Card className="p-4">
+                <h4 className="font-medium text-white mb-2">Sign Out</h4>
+                <p className="text-sm text-gray-400 mb-3">Sign out of your account on this device</p>
+                <Button variant="outline" size="sm" onClick={handleSignOut}>
+                  Sign Out
                 </Button>
               </Card>
 

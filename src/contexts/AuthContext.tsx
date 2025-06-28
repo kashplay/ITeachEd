@@ -11,7 +11,7 @@ interface AuthContextType {
   signUp: (email: string, password: string, fullName: string) => Promise<any>
   signIn: (email: string, password: string) => Promise<any>
   signInWithGoogle: () => Promise<any>
-  signOut: () => Promise<void>
+  signOut: () => Promise<{ error: any }>
   resetPassword: (email: string) => Promise<any>
   updateProfile: (updates: Partial<UserProfile>) => Promise<void>
 }
@@ -52,11 +52,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.log('Auth state changed:', event, session?.user?.email)
         setSession(session)
         setUser(session?.user ?? null)
+        
         if (session?.user) {
           await fetchProfile(session.user.id)
         } else {
+          // Clear profile when user signs out
           setProfile(null)
         }
+        
         setLoading(false)
       }
     )
@@ -158,9 +161,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signOut = async () => {
     try {
       console.log('Signing out')
-      await supabase.auth.signOut()
+      setLoading(true)
+      
+      // Sign out from Supabase
+      const { error } = await supabase.auth.signOut({ scope: 'local' })
+      
+      if (error) {
+        console.error('Sign out error:', error)
+        setLoading(false)
+        return { error }
+      }
+      
+      // Clear local state immediately to ensure UI updates
+      setUser(null)
+      setSession(null)
+      setProfile(null)
+      
+      console.log('Sign out successful')
+      setLoading(false)
+      return { error: null }
     } catch (error) {
-      console.error('Sign out error:', error)
+      console.error('Sign out exception:', error)
+      // Even if there's an error, clear local state
+      setUser(null)
+      setSession(null)
+      setProfile(null)
+      setLoading(false)
+      return { error }
     }
   }
 

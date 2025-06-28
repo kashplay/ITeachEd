@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import iteachedLogo from '../../assets/images/iteached-logo.svg'
 import { Mail, Lock, User, Eye, EyeOff } from 'lucide-react'
@@ -17,7 +17,7 @@ const GoogleIcon = () => (
 )
 
 export function SignUpPage() {
-  const { signUp, signInWithGoogle } = useAuth()
+  const { user, signUp, signInWithGoogle } = useAuth()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
@@ -29,6 +29,14 @@ export function SignUpPage() {
     confirmPassword: ''
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
+
+  // Redirect to onboarding if user is authenticated
+  useEffect(() => {
+    if (user) {
+      setLoading(false) // Reset loading state
+      navigate('/onboarding', { replace: true })
+    }
+  }, [user, navigate])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -56,12 +64,12 @@ export function SignUpPage() {
       const { error } = await signUp(formData.email, formData.password, formData.fullName)
       if (error) {
         setErrors({ general: error.message })
-      } else {
-        navigate('/onboarding')
+        setLoading(false)
       }
+      // Keep loading state until navigation happens via useEffect
+      // Navigation will be handled by useEffect when auth state changes
     } catch (error) {
       setErrors({ general: 'An unexpected error occurred' })
-    } finally {
       setLoading(false)
     }
   }

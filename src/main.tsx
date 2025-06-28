@@ -5,11 +5,12 @@ import './index.css';
 
 // Development helpers
 if (import.meta.env.DEV) {
-  import('./utils/createTestUser').then(({ createTestUser, signInWithTestUser, testUsers }) => {
+  import('./utils/createTestUser').then(({ createTestUser, signInWithTestUser, testSignOut, testUsers }) => {
     // Make test utilities available in browser console for development
     (window as any).devHelpers = {
       createTestUser,
       signInWithTestUser,
+      testSignOut,
       testUsers,
       help: () => {
         console.log(`
@@ -18,6 +19,7 @@ if (import.meta.env.DEV) {
 Available commands:
 • devHelpers.createTestUser() - Create test user
 • devHelpers.signInWithTestUser() - Sign in with test user
+• devHelpers.testSignOut() - Sign out current user
 • devHelpers.testUsers - View test user credentials
 • devHelpers.help() - Show this help message
 

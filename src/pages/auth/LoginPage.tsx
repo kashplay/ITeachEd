@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Mail, Lock, Eye, EyeOff, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
@@ -21,7 +21,7 @@ const GoogleIcon = () => (
 )
 
 export function LoginPage() {
-  const { signIn, signInWithGoogle } = useAuth()
+  const { user, signIn, signInWithGoogle } = useAuth()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
@@ -31,6 +31,14 @@ export function LoginPage() {
     password: ''
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
+
+  // Redirect to dashboard if user is already authenticated
+  useEffect(() => {
+    if (user) {
+      setLoading(false) // Reset loading state
+      navigate('/dashboard', { replace: true })
+    }
+  }, [user, navigate])
 
   const slides = [
     {
@@ -64,12 +72,12 @@ export function LoginPage() {
       const { error } = await signIn(formData.email, formData.password)
       if (error) {
         setErrors({ general: error.message })
-      } else {
-        navigate('/dashboard')
+        setLoading(false)
       }
+      // Keep loading state until navigation happens via useEffect
+      // Navigation will be handled by useEffect when auth state changes
     } catch (error) {
       setErrors({ general: 'An unexpected error occurred' })
-    } finally {
       setLoading(false)
     }
   }
@@ -107,11 +115,13 @@ export function LoginPage() {
     <div className="min-h-screen bg-gray-950 flex flex-col">
       {/* Logo in top left corner */}
       <div className="absolute top-6 left-6 z-10">
-        <img 
-          src={iteachedLogo} 
-          alt="ITeachEd" 
-          className="h-8"
-        />
+        <Link to="/" className="block hover:opacity-80 transition-opacity">
+          <img 
+            src={iteachedLogo} 
+            alt="ITeachEd" 
+            className="h-8"
+          />
+        </Link>
       </div>
 
       <div className="flex flex-1">

@@ -81,4 +81,30 @@ export async function signInWithTestUser() {
     console.error('❌ Exception during test user sign in:', error)
     return { data: null, error }
   }
+}
+
+/**
+ * Signs out the current user (for testing)
+ */
+export async function testSignOut() {
+  if (!import.meta.env.DEV) {
+    console.warn('testSignOut can only be used in development mode')
+    return { error: new Error('Not in development mode') }
+  }
+
+  try {
+    console.log('🔓 Testing sign out...')
+    const { error } = await supabase.auth.signOut({ scope: 'local' })
+    
+    if (error) {
+      console.error('❌ Sign out failed:', error.message)
+    } else {
+      console.log('✅ Sign out successful')
+    }
+
+    return { error }
+  } catch (error) {
+    console.error('❌ Exception during sign out:', error)
+    return { error }
+  }
 } 

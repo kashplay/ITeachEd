@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Search, Bell, Menu, X, Moon, Sun } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
 import { Button } from '../ui/Button'
@@ -8,11 +8,31 @@ import iteachedLogo from '../../assets/images/iteached-logo.svg'
 export function Header() {
   const { user, signOut } = useAuth()
   const location = useLocation()
+  const navigate = useNavigate()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [darkMode, setDarkMode] = useState(true)
 
   const isLandingPage = location.pathname === '/'
   const isAuthPage = location.pathname.startsWith('/auth')
+
+  // Navigate to landing page when user signs out
+  React.useEffect(() => {
+    if (!user && !location.pathname.startsWith('/auth') && location.pathname !== '/') {
+      navigate('/')
+    }
+  }, [user, navigate, location.pathname])
+
+  const handleSignOut = async () => {
+    try {
+      const { error } = await signOut()
+      if (error) {
+        console.error('Sign out failed:', error)
+      }
+      // Navigation will be handled by useEffect when user becomes null
+    } catch (error) {
+      console.error('Sign out error:', error)
+    }
+  }
 
   if (isLandingPage) {
     return (
@@ -129,7 +149,7 @@ export function Header() {
               <div className="absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-lg border border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                 <div className="p-2">
                   <button 
-                    onClick={signOut}
+                    onClick={handleSignOut}
                     className="w-full text-left px-3 py-2 text-gray-300 hover:bg-gray-700 rounded-md"
                   >
                     Sign Out
