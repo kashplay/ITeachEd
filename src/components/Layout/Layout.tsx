@@ -26,12 +26,11 @@ export function Layout({ children }: LayoutProps) {
   const hasCustomHeader = isDashboardPage || isLearningPage || isAchievementsPage || isGuildsPage || isJobsPage || isSettingsPage
   const showSidebar = !isAuthPage && !isLandingPage && !hasCustomHeader
 
-  // Don't render header during initial loading on landing page to prevent flash
-  const shouldShowHeader = !hasCustomHeader && !(isLandingPage && loading)
-
+  // Header component now handles its own rendering logic
+  // We always render it, but it decides internally whether to show or not
   return (
     <div className="min-h-screen bg-gray-950">
-      {shouldShowHeader && <Header />}
+      <Header />
       
       <div className="flex">
         {showSidebar && (

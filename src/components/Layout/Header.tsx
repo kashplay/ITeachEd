@@ -6,7 +6,7 @@ import { Button } from '../ui/Button'
 import iteachedLogo from '../../assets/images/iteached-logo.svg'
 
 export function Header() {
-  const { user, signOut } = useAuth()
+  const { user, signOut, loading } = useAuth()
   const location = useLocation()
   const navigate = useNavigate()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -17,11 +17,11 @@ export function Header() {
 
   // Navigate to landing page when user signs out
   React.useEffect(() => {
-    if (!user && !location.pathname.startsWith('/auth') && location.pathname !== '/') {
+    if (!user && !loading && !location.pathname.startsWith('/auth') && location.pathname !== '/') {
       console.log('🔄 Header: User is null, navigating to landing page from:', location.pathname)
       navigate('/', { replace: true })
     }
-  }, [user, navigate, location.pathname])
+  }, [user, loading, navigate, location.pathname])
 
   const handleSignOut = async () => {
     try {
@@ -42,7 +42,18 @@ export function Header() {
     }
   }
 
+  // Don't render header on auth pages or dashboard (dashboard has its own header)
+  if (isAuthPage || isDashboardPage) {
+    return null
+  }
+
+  // For landing page, only show header if user is not authenticated and not loading
   if (isLandingPage) {
+    // Don't show header during loading or if user is authenticated
+    if (loading || user) {
+      return null
+    }
+
     return (
       <header className="bg-gray-900/80 backdrop-blur-md border-b border-gray-800 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -56,19 +67,11 @@ export function Header() {
             </Link>
 
             <div className="hidden md:flex items-center space-x-6">
-              {user ? (
-                <Link to="/dashboard">
-                  <Button variant="primary" size="sm">
-                    Dashboard
-                  </Button>
-                </Link>
-              ) : (
-                <Link to="/auth/login">
-                  <Button variant="outline" size="sm">
-                    Login
-                  </Button>
-                </Link>
-              )}
+              <Link to="/auth/login">
+                <Button variant="outline" size="sm">
+                  Login
+                </Button>
+              </Link>
             </div>
 
             <button
@@ -83,19 +86,11 @@ export function Header() {
         {mobileMenuOpen && (
           <div className="md:hidden bg-gray-900 border-t border-gray-800">
             <div className="px-4 py-6 space-y-4">
-              {user ? (
-                <Link to="/dashboard" className="block">
-                  <Button variant="primary" size="sm" className="w-full">
-                    Dashboard
-                  </Button>
-                </Link>
-              ) : (
-                <Link to="/auth/login" className="block">
-                  <Button variant="outline" size="sm" className="w-full">
-                    Login
-                  </Button>
-                </Link>
-              )}
+              <Link to="/auth/login" className="block">
+                <Button variant="outline" size="sm" className="w-full">
+                  Login
+                </Button>
+              </Link>
             </div>
           </div>
         )}
@@ -103,11 +98,7 @@ export function Header() {
     )
   }
 
-  // Don't show header elements on auth pages or dashboard (dashboard has its own header)
-  if (isAuthPage || isDashboardPage) {
-    return null
-  }
-
+  // For other protected pages (not dashboard), show the regular header
   return (
     <header className="bg-gray-900 border-b border-gray-800 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
