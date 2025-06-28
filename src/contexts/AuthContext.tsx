@@ -187,7 +187,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signOut = async () => {
     try {
       console.log('🔓 AuthContext: Starting sign out process...')
+      console.log('🔓 Environment:', {
+        isDev: import.meta.env.DEV,
+        mode: import.meta.env.MODE,
+        baseUrl: import.meta.env.BASE_URL,
+        origin: window.location.origin
+      })
+      
       setLoading(true)
+      
+      // Log current state before sign out
+      console.log('🔓 Current auth state:', {
+        hasUser: !!user,
+        hasSession: !!session,
+        hasProfile: !!profile,
+        userId: user?.id,
+        userEmail: user?.email
+      })
+      
+      // Check localStorage before sign out
+      const lsKeys = Object.keys(localStorage).filter(key => key.includes('supabase'))
+      console.log('🔓 localStorage keys before signOut:', lsKeys)
       
       // First, try to sign out from Supabase
       console.log('🔓 AuthContext: Calling supabase.auth.signOut...')
@@ -195,6 +215,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       if (error) {
         console.error('❌ AuthContext: Supabase sign out error:', error)
+        console.error('❌ Error details:', {
+          message: error.message,
+          status: error.status,
+          statusText: error.statusText
+        })
         // Continue with local cleanup even if Supabase fails
       } else {
         console.log('✅ AuthContext: Supabase sign out successful')
@@ -208,12 +233,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       // Clear any Supabase data from localStorage manually as a failsafe
       try {
-        const keys = Object.keys(localStorage).filter(key => key.includes('supabase'))
-        keys.forEach(key => localStorage.removeItem(key))
-        console.log('🔓 AuthContext: Cleared localStorage keys:', keys)
+        const keysToRemove = Object.keys(localStorage).filter(key => key.includes('supabase'))
+        keysToRemove.forEach(key => {
+          console.log('🔓 Removing localStorage key:', key)
+          localStorage.removeItem(key)
+        })
+        console.log('🔓 AuthContext: Cleared localStorage keys:', keysToRemove)
       } catch (localStorageError) {
         console.error('⚠️ AuthContext: Could not clear localStorage:', localStorageError)
       }
+      
+      // Verify state after cleanup
+      console.log('🔓 State after cleanup:', {
+        hasUser: !!user,
+        hasSession: !!session,
+        hasProfile: !!profile
+      })
+      
+      // Check if auth state actually changed
+      const { data: currentSession } = await supabase.auth.getSession()
+      console.log('🔓 Current session after signOut:', {
+        hasSession: !!currentSession.session,
+        sessionUser: currentSession.session?.user?.email
+      })
       
       setLoading(false)
       console.log('✅ AuthContext: Sign out process complete')
@@ -221,6 +263,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return { error: error || null }
     } catch (exception) {
       console.error('❌ AuthContext: Sign out exception:', exception)
+      console.error('❌ Exception details:', {
+        name: exception.name,
+        message: exception.message,
+        stack: exception.stack
+      })
+      
       // Even if there's an error, clear local state to ensure user can't stay logged in
       setUser(null)
       setSession(null)
@@ -289,12 +337,123 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     updateProfile
   }
 
-  // Expose auth context for debugging in development
+  // Expose auth context for debugging
   React.useEffect(() => {
-    if (import.meta.env.DEV) {
-      (window as any).testAuthContext = value
-    }
-  }, [value])
+    (window as any).testAuthContext = value;
+    
+    // Production debugging utilities
+    (window as any).debugAuth = {
+      async checkAuthState() {
+        console.log('🔍 Auth Debug - Current State:', {
+          user: !!user,
+          session: !!session,
+          profile: !!profile,
+          loading,
+          userId: user?.id,
+          userEmail: user?.email,
+          environment: {
+            isDev: import.meta.env.DEV,
+            mode: import.meta.env.MODE,
+            origin: window.location.origin
+          }
+        });
+        
+        const { data: sessionData } = await supabase.auth.getSession();
+        console.log('🔍 Supabase Session:', {
+          hasSession: !!sessionData.session,
+          sessionUserId: sessionData.session?.user?.id,
+          sessionUserEmail: sessionData.session?.user?.email
+        });
+        
+        const lsKeys = Object.keys(localStorage).filter(key => key.includes('supabase'));
+        console.log('🔍 LocalStorage Keys:', lsKeys);
+        
+        if (user) {
+          try {
+            const { data: profileData, error } = await supabase
+              .from('user_profiles')
+              .select('*')
+              .eq('user_id', user.id)
+              .single();
+            
+            console.log('🔍 Profile Check:', {
+              hasProfile: !!profileData,
+              profileError: error?.message,
+              profileData: profileData ? 'exists' : 'none'
+            });
+          } catch (error) {
+            console.log('🔍 Profile Check Error:', error);
+          }
+        }
+      },
+      
+      async forceSignOut() {
+        console.log('🔧 Force Sign Out - Starting...');
+        try {
+          // Multiple sign out approaches
+          await supabase.auth.signOut({ scope: 'global' });
+          await supabase.auth.signOut({ scope: 'local' });
+          await supabase.auth.signOut();
+          
+          // Clear all local storage
+          localStorage.clear();
+          sessionStorage.clear();
+          
+          // Force reload
+          window.location.reload();
+        } catch (error) {
+          console.error('🔧 Force Sign Out Error:', error);
+        }
+      },
+      
+      async alternativeSignOut() {
+        console.log('🔧 Alternative Sign Out - Starting...');
+        try {
+          // Try global scope first
+          console.log('🔧 Trying global scope...');
+          await supabase.auth.signOut({ scope: 'global' });
+          
+          // Wait a bit
+          await new Promise(resolve => setTimeout(resolve, 500));
+          
+          // Clear state manually
+          setUser(null);
+          setSession(null);
+          setProfile(null);
+          
+          // Clear cookies if they exist
+          document.cookie.split(";").forEach(function(c) { 
+            document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+          });
+          
+          console.log('🔧 Alternative sign out complete');
+          return { error: null };
+        } catch (error) {
+          console.error('🔧 Alternative Sign Out Error:', error);
+          return { error };
+        }
+      },
+      
+      async testSignOut() {
+        console.log('🧪 Testing Sign Out Process...');
+        await this.checkAuthState();
+        console.log('🧪 Calling signOut...');
+        const result = await signOut();
+        console.log('🧪 Sign out result:', result);
+        setTimeout(() => {
+          console.log('🧪 State after 1 second:');
+          this.checkAuthState();
+        }, 1000);
+      }
+    };
+    
+    console.log('🔧 Auth debugging utilities available:', {
+      'debugAuth.checkAuthState()': 'Check current auth state',
+      'debugAuth.forceSignOut()': 'Force complete sign out',
+      'debugAuth.alternativeSignOut()': 'Try alternative sign out method',
+      'debugAuth.testSignOut()': 'Test sign out process'
+    });
+  }, [value, user, session, profile, loading, signOut])
 
   return (
     <AuthContext.Provider value={value}>
