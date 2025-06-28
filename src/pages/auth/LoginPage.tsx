@@ -5,6 +5,10 @@ import { useAuth } from '../../contexts/AuthContext'
 import { Button } from '../../components/ui/Button'
 import { Input } from '../../components/ui/Input'
 import iteachedLogo from '../../assets/images/iteached-logo.svg'
+// Import feature images for reliable Netlify deployment
+import dashboardPreview from '../../assets/images/features/dashboard-preview.png'
+import aiTutorPreview from '../../assets/images/features/ai-tutor-preview.png'
+import progressTrackingPreview from '../../assets/images/features/progress-tracking-preview.png'
 
 // Google Icon Component
 const GoogleIcon = () => (
@@ -30,17 +34,17 @@ export function LoginPage() {
 
   const slides = [
     {
-      image: '/dashboard-preview.png',
+      image: dashboardPreview,
       title: 'Your Goals.\nYour Roadmap.',
       description: 'AI builds a step-by-step learning plan tailored to your skills, interests, and career goals'
     },
     {
-      image: '/ai-tutor-preview.png',
+      image: aiTutorPreview,
       title: 'Learn Faster with Your Own\nAI Tutor',
       description: 'Interactive lessons, smart explanations, and instant answers'
     },
     {
-      image: '/progress-tracking-preview.png',
+      image: progressTrackingPreview,
       title: 'Track Progress.\nStay Motivated.',
       description: 'See your growth over time, earn rewards, and stay engaged with personalized encouragement along the way'
     }
