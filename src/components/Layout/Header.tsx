@@ -48,11 +48,9 @@ export function Header() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link to="/" className="flex items-center">
-              <img 
-                src={iteachedLogo} 
-                alt="ITeachEd" 
-                className="h-8"
-              />
+              <div className="w-10 h-10 bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-lg">e</span>
+              </div>
             </Link>
 
             <div className="hidden md:flex items-center space-x-6">
@@ -111,8 +109,8 @@ export function Header() {
     )
   }
 
-  // Don't show header elements on auth pages
-  if (isAuthPage) {
+  // Don't show header elements on auth pages or dashboard (dashboard has its own header)
+  if (isAuthPage || location.pathname === '/dashboard') {
     return null
   }
 
@@ -121,11 +119,9 @@ export function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <Link to="/dashboard" className="flex items-center">
-            <img 
-              src={iteachedLogo} 
-              alt="ITeachEd" 
-              className="h-8"
-            />
+            <div className="w-10 h-10 bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-lg">e</span>
+            </div>
           </Link>
 
           <div className="flex-1 max-w-lg mx-8">

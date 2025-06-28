@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { Header } from './Header'
 import { Sidebar } from './Sidebar'
 import { AuthDebug } from '../AuthDebug'
 
@@ -18,20 +17,16 @@ export function Layout({ children }: LayoutProps) {
 
   return (
     <div className="min-h-screen bg-gray-950">
-      <Header />
+      {showSidebar && (
+        <Sidebar 
+          collapsed={sidebarCollapsed} 
+          onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} 
+        />
+      )}
       
-      <div className="flex">
-        {showSidebar && (
-          <Sidebar 
-            collapsed={sidebarCollapsed} 
-            onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} 
-          />
-        )}
-        
-        <main className={`flex-1 ${showSidebar ? 'ml-0' : ''}`}>
-          {children}
-        </main>
-      </div>
+      <main className={`${showSidebar ? 'ml-20' : ''}`}>
+        {children}
+      </main>
       
       <AuthDebug />
     </div>
