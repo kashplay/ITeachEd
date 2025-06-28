@@ -130,6 +130,24 @@ export function LoginPage() {
                 </div>
               )}
 
+              {/* Development Test Credentials Helper */}
+              {import.meta.env.DEV && (
+                <div className="p-3 bg-blue-900/30 border border-blue-500/50 rounded-lg">
+                  <p className="text-blue-300 text-sm font-medium mb-2">🔧 Dev Mode - Test Credentials:</p>
+                  <div className="text-xs text-blue-200 space-y-1">
+                    <div>Email: <code className="bg-blue-800/50 px-1 rounded">test@iteached.com</code></div>
+                    <div>Password: <code className="bg-blue-800/50 px-1 rounded">testpassword123</code></div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setFormData({ email: 'test@iteached.com', password: 'testpassword123' })}
+                    className="mt-2 text-xs text-blue-300 hover:text-blue-200 underline"
+                  >
+                    Fill test credentials
+                  </button>
+                </div>
+              )}
+
               <Button
                 variant="outline"
                 className="w-full"
