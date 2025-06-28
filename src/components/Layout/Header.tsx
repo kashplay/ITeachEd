@@ -20,7 +20,7 @@ export function Header() {
           <div className="flex justify-between items-center h-16">
             <Link to="/" className="flex items-center">
               <img 
-                src="/iteached-complete-logo.svg" 
+                src="/images/iteached-logo.svg" 
                 alt="ITeachEd" 
                 className="h-8"
               />
@@ -93,7 +93,7 @@ export function Header() {
         <div className="flex justify-between items-center h-16">
           <Link to="/dashboard" className="flex items-center">
             <img 
-              src="/iteached-complete-logo.svg" 
+              src="/images/iteached-logo.svg" 
               alt="ITeachEd" 
               className="h-8"
             />

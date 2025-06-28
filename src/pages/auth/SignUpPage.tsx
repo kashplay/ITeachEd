@@ -84,7 +84,7 @@ export function SignUpPage() {
           <div className="text-center">
             <div className="flex items-center justify-center mb-6">
               <img 
-                src="/iteached-complete-logo.svg" 
+                src="/images/iteached-logo.svg" 
                 alt="ITeachEd" 
                 className="h-10"
               />

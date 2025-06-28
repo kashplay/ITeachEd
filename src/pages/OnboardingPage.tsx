@@ -163,7 +163,7 @@ export function OnboardingPage() {
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-6">
             <img 
-              src="/iteached-complete-logo.svg" 
+                              src="/images/iteached-logo.svg" 
               alt="ITeachEd AI Career Assessment" 
               className="h-10"
             />

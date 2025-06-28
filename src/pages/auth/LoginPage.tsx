@@ -103,7 +103,7 @@ export function LoginPage() {
       {/* Logo in top left corner */}
       <div className="absolute top-6 left-6 z-10">
         <img 
-          src="/iteached-complete-logo.svg" 
+          src="/images/iteached-logo.svg" 
           alt="ITeachEd" 
           className="h-8"
         />
