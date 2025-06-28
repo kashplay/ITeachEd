@@ -68,26 +68,26 @@ export function DashboardPage() {
             
             {/* Profile Icon */}
             <div className="relative group">
-              <button className="flex items-center justify-center p-3 bg-gray-800/50 border border-gray-600/50 rounded-xl hover:bg-gray-700/50 transition-colors">
-                <div className="w-5 h-5 bg-gradient-to-r from-[#6244FF] to-[#FFAE2D] rounded-full flex items-center justify-center">
-                  <span className="text-white text-xs font-medium">
+              <button className="flex items-center justify-center p-2 bg-gray-800/50 border border-gray-600/50 rounded-xl hover:bg-gray-700/50 transition-colors">
+                <div className="w-8 h-8 bg-gradient-to-r from-[#6244FF] to-[#FFAE2D] rounded-full flex items-center justify-center">
+                  <span className="text-white text-sm font-medium">
                     {userName?.[0]?.toUpperCase() || 'U'}
                   </span>
                 </div>
               </button>
               
               {/* Profile Dropdown */}
-              <div className="absolute right-0 mt-2 w-48 bg-gray-800/90 backdrop-blur-sm rounded-xl shadow-lg border border-gray-600/50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                <div className="p-3">
-                  <div className="flex items-center space-x-3 pb-3 border-b border-gray-600/50">
-                    <div className="w-8 h-8 bg-gradient-to-r from-[#6244FF] to-[#FFAE2D] rounded-full flex items-center justify-center">
+              <div className="absolute right-0 mt-2 w-64 bg-gray-800/95 backdrop-blur-sm rounded-xl shadow-xl border border-gray-600/50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                <div className="p-4">
+                  <div className="flex items-center space-x-3 pb-4 border-b border-gray-600/50">
+                    <div className="w-10 h-10 bg-gradient-to-r from-[#6244FF] to-[#FFAE2D] rounded-full flex items-center justify-center flex-shrink-0">
                       <span className="text-white text-sm font-medium">
                         {userName?.[0]?.toUpperCase() || 'U'}
                       </span>
                     </div>
-                    <div>
-                      <div className="text-white text-sm font-medium">{userName}</div>
-                      <div className="text-gray-400 text-xs">{user?.email}</div>
+                    <div className="min-w-0 flex-1">
+                      <div className="text-white text-sm font-medium truncate">{userName}</div>
+                      <div className="text-gray-400 text-xs truncate">{user?.email}</div>
                     </div>
                   </div>
                   <div className="pt-3 space-y-1">
