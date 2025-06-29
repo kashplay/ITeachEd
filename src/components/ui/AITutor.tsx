@@ -58,9 +58,9 @@ export function AITutor({ className = "" }: AITutorProps) {
 
   return (
     <div className={`fixed bottom-6 right-6 z-50 ${className}`}>
-      {/* Chat Window */}
+      {/* Chat Window - Only show when open */}
       {isOpen && (
-        <div className="mb-4 w-80 h-96 bg-gray-800/95 backdrop-blur-sm border border-gray-600/50 rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+        <div className="w-80 h-96 bg-gray-800/95 backdrop-blur-sm border border-gray-600/50 rounded-2xl shadow-2xl flex flex-col overflow-hidden">
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b border-gray-600/50 bg-gradient-to-r from-[#6244FF]/20 to-[#FFAE2D]/20">
             <div className="flex items-center space-x-3">
@@ -134,35 +134,29 @@ export function AITutor({ className = "" }: AITutorProps) {
         </div>
       )}
 
-      {/* Floating Button - Reduced size */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className={`w-12 h-12 bg-gradient-to-r from-[#6244FF] to-[#FFAE2D] rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group relative ${
-          isOpen ? 'scale-95' : 'hover:scale-110'
-        }`}
-      >
-        <MessageCircle className="w-5 h-5 text-white" />
-        
-        {/* Notification dot - only show when closed */}
-        {!isOpen && (
+      {/* Floating Button - Only show when closed */}
+      {!isOpen && (
+        <button
+          onClick={() => setIsOpen(true)}
+          className="w-12 h-12 bg-gradient-to-r from-[#6244FF] to-[#FFAE2D] rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group relative hover:scale-110"
+        >
+          <MessageCircle className="w-5 h-5 text-white" />
+          
+          {/* Notification dot */}
           <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full flex items-center justify-center">
             <span className="text-white text-xs font-bold">1</span>
           </div>
-        )}
-        
-        {/* Pulse animation - only when closed */}
-        {!isOpen && (
+          
+          {/* Pulse animation */}
           <div className="absolute inset-0 rounded-full bg-gradient-to-r from-[#6244FF] to-[#FFAE2D] animate-ping opacity-20"></div>
-        )}
 
-        {/* Tooltip when closed */}
-        {!isOpen && (
+          {/* Tooltip */}
           <div className="absolute bottom-full right-0 mb-2 px-3 py-2 bg-gray-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap shadow-lg">
             Ask your AI Tutor
             <div className="absolute top-full right-4 w-2 h-2 bg-gray-800 rotate-45 transform -translate-y-1"></div>
           </div>
-        )}
-      </button>
+        </button>
+      )}
     </div>
   )
 }
