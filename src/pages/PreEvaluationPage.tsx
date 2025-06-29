@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, ChevronRight } from 'lucide-react'
+import { ArrowLeft, Sparkles } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { Button } from '../components/ui/Button'
 
@@ -402,8 +402,7 @@ export function PreEvaluationPage() {
       console.error('❌ Error details:', {
         message: error instanceof Error ? error.message : 'Unknown error',
         stack: error instanceof Error ? error.stack : undefined,
-        user: user?.id,
-        hasProfile: !!profile
+        user: user?.id
       })
       
       // Show user-friendly error message with option to proceed
@@ -586,10 +585,10 @@ export function PreEvaluationPage() {
               loading={loading}
               size="lg"
               className="px-8"
-              icon={ChevronRight}
+              icon={Sparkles}
               iconPosition="right"
             >
-              Proceed to Dashboard
+              Start Learning
             </Button>
           ) : loading ? (
             <div className="flex items-center space-x-3">

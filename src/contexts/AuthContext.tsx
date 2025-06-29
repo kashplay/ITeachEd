@@ -291,101 +291,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.log('🔄 updateProfile: Starting profile update for user:', user.id)
       console.log('🔄 updateProfile: Update data:', updates)
       
-      // First, try to get the existing profile with timeout
-      console.log('🔄 updateProfile: Fetching existing profile...')
-      const { data: existingProfile, error: fetchError } = await Promise.race([
-        supabase
-          .from('user_profiles')
-          .select('*')
-          .eq('user_id', user.id)
-          .single(),
-        new Promise<any>((_, reject) => 
-          setTimeout(() => reject(new Error('Profile fetch timeout')), 10000)
-        )
-      ])
-      
-      if (fetchError && fetchError.code !== 'PGRST116') {
-        console.warn('⚠️ updateProfile: Error fetching existing profile:', fetchError)
-      }
-      
-      console.log('🔄 updateProfile: Existing profile:', existingProfile ? 'found' : 'not found')
-      
-      // Prepare the data for upsert
+      // Prepare the data for upsert (always include defaults for new profiles)
       const profileData = {
         user_id: user.id,
-        ...updates,
-        updated_at: new Date().toISOString()
+        full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
+        guild_level: 'ROOKIE',
+        xp: 0,
+        pathways_completed: 0,
+        guild_rank: 999999,
+        total_hours: 0,
+        projects_completed: 0,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        ...updates // Apply the updates on top of defaults
       }
       
-      // If no existing profile, add default values
-      if (!existingProfile) {
-        console.log('🔄 updateProfile: Creating new profile with defaults')
-        profileData.full_name = user.user_metadata?.full_name || user.email?.split('@')[0] || 'User'
-        profileData.guild_level = 'ROOKIE'
-        profileData.xp = 0
-        profileData.pathways_completed = 0
-        profileData.guild_rank = 999999
-        profileData.total_hours = 0
-        profileData.projects_completed = 0
-        profileData.created_at = new Date().toISOString()
-      }
+      console.log('🔄 updateProfile: Profile data prepared for upsert')
       
-      console.log('🔄 updateProfile: Final profile data:', profileData)
-      
-      // Try upsert with timeout
-      console.log('🔄 updateProfile: Attempting database upsert...')
-      let data, error
-      
-      try {
-        const result = await Promise.race([
-          supabase
-            .from('user_profiles')
-            .upsert(profileData, {
-              onConflict: 'user_id'
-            })
-            .select()
-            .single(),
-          new Promise<any>((_, reject) => 
-            setTimeout(() => reject(new Error('Database upsert timeout')), 10000)
-          )
-        ])
-        
-        data = result.data
-        error = result.error
-        
-      } catch (timeoutError) {
-        console.error('❌ updateProfile: Database operation timed out, trying simple approach...')
-        
-        // Fallback: try a simple insert/update approach
-        try {
-          // Try insert first
-          const insertResult = await supabase
-            .from('user_profiles')
-            .insert(profileData)
-            .select()
-            .single()
-          
-          data = insertResult.data
-          error = insertResult.error
-          
-          if (error && error.code === '23505') {
-            // Unique constraint violation, try update instead
-            console.log('🔄 updateProfile: Profile exists, trying update...')
-            const updateResult = await supabase
-              .from('user_profiles')
-              .update(profileData)
-              .eq('user_id', user.id)
-              .select()
-              .single()
-            
-            data = updateResult.data
-            error = updateResult.error
-          }
-        } catch (fallbackError) {
-          console.error('❌ updateProfile: Fallback approach also failed:', fallbackError)
-          throw fallbackError
-        }
-      }
+      // Use direct upsert without fetching existing profile first
+      console.log('🔄 updateProfile: Attempting direct upsert...')
+      const { data, error } = await supabase
+        .from('user_profiles')
+        .upsert(profileData, {
+          onConflict: 'user_id'
+        })
+        .select()
+        .single()
 
       if (error) {
         console.error('❌ updateProfile: Database error:', error)
