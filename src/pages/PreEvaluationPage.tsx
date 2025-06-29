@@ -332,7 +332,7 @@ export function PreEvaluationPage() {
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [answers, setAnswers] = useState<Record<number, string>>({})
   const [loading, setLoading] = useState(false)
-  const [evaluationComplete, setEvaluationComplete] = useState(false)
+  const [showStartButton, setShowStartButton] = useState(false)
 
   const question = questions[currentQuestion]
   const isLastQuestion = currentQuestion === questions.length - 1
@@ -349,29 +349,29 @@ export function PreEvaluationPage() {
     if (!isLastQuestion) {
       setTimeout(() => {
         setCurrentQuestion(prev => prev + 1)
-      }, 300)
+      }, 500)
     } else {
-      // On last question, just mark as complete but don't auto-redirect
+      // On last question, show the start button after a delay
       setTimeout(() => {
-        setEvaluationComplete(true)
-      }, 300)
+        setShowStartButton(true)
+      }, 500)
     }
   }
 
   const handleBack = () => {
     if (currentQuestion > 0) {
       setCurrentQuestion(prev => prev - 1)
-      setEvaluationComplete(false) // Reset completion state if going back
+      setShowStartButton(false) // Reset start button state if going back
     } else {
       // If on first question, go back to landing page
       navigate('/')
     }
   }
 
-  const handleProceedToDashboard = async () => {
+  const handleStartLearning = async () => {
     setLoading(true)
     try {
-      console.log('🚀 Starting dashboard navigation process...')
+      console.log('🚀 Starting learning journey...')
       
       // Analyze answers to determine learning profile
       const learningProfile = analyzeLearningProfile(answers)
@@ -380,7 +380,7 @@ export function PreEvaluationPage() {
       // Prepare profile update data
       const profileUpdate = {
         learning_style: learningProfile.primaryStyle,
-        experience_level: 'beginner', // Default for new users
+        experience_level: 'beginner',
         evaluation_completed: true,
         evaluation_results: learningProfile,
         evaluation_answers: answers
@@ -393,34 +393,27 @@ export function PreEvaluationPage() {
       
       console.log('✅ Profile updated successfully, navigating to dashboard...')
       
-      // Redirect to dashboard
-      navigate('/dashboard')
+      // Small delay to ensure state is updated
+      setTimeout(() => {
+        navigate('/dashboard', { replace: true })
+      }, 100)
       
-      console.log('🎯 Navigation to dashboard initiated')
     } catch (error) {
-      console.error('❌ Error in dashboard navigation process:', error)
-      console.error('❌ Error details:', {
-        message: error instanceof Error ? error.message : 'Unknown error',
-        stack: error instanceof Error ? error.stack : undefined,
-        user: user?.id
-      })
+      console.error('❌ Error in learning journey process:', error)
       
-      // Show user-friendly error message with option to proceed
+      // Show user-friendly error message
       const userChoice = confirm(
         'There was an issue saving your evaluation results. Would you like to:\n\n' +
-        'OK - Proceed to dashboard anyway (you can retake the evaluation later)\n' +
+        'OK - Proceed to dashboard anyway\n' +
         'Cancel - Try again'
       )
       
       if (userChoice) {
         console.log('🔄 User chose to proceed without saving evaluation')
-        // Proceed to dashboard without saving evaluation
-        navigate('/dashboard')
-        return
+        navigate('/dashboard', { replace: true })
+      } else {
+        setLoading(false)
       }
-    } finally {
-      setLoading(false)
-      console.log('🏁 Dashboard navigation process complete')
     }
   }
 
@@ -538,7 +531,7 @@ export function PreEvaluationPage() {
               <button
                 key={option.id}
                 onClick={() => handleOptionSelect(option.id)}
-                disabled={loading}
+                disabled={loading || isSelected}
                 className={`p-6 rounded-2xl border-2 transition-all duration-300 text-left transform hover:scale-105 ${
                   isSelected
                     ? 'border-[#FFAE2D] bg-[#FFAE2D]/10 scale-105'
@@ -577,11 +570,11 @@ export function PreEvaluationPage() {
           </div>
         </div>
 
-        {/* Navigation - Show proceed button only when evaluation is complete */}
+        {/* Start Learning Button - Only show when evaluation is complete */}
         <div className="flex justify-center pb-8">
-          {evaluationComplete && isLastQuestion ? (
+          {showStartButton && isLastQuestion ? (
             <Button
-              onClick={handleProceedToDashboard}
+              onClick={handleStartLearning}
               loading={loading}
               size="lg"
               className="px-8"
@@ -590,11 +583,6 @@ export function PreEvaluationPage() {
             >
               Start Learning
             </Button>
-          ) : loading ? (
-            <div className="flex items-center space-x-3">
-              <div className="animate-spin rounded-full h-6 w-6 border-2 border-[#FFAE2D] border-t-transparent"></div>
-              <span className="text-white">Processing your answer...</span>
-            </div>
           ) : null}
         </div>
       </div>
