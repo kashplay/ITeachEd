@@ -1,22 +1,20 @@
 import React from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { 
-  LogOut
+  LogOut,
+  Home,
+  Settings
 } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
 import eLogoLight from '../../assets/images/e-logo-full-light.svg'
 
-// Import custom SVG icons
-import selectedHomePage from '../../assets/images/selected-home-page.svg'
-import unselectedHomePage from '../../assets/images/unselected-home-page.svg'
+// Import custom SVG icons for the ones we don't have Lucide equivalents
 import selectedCoursePage from '../../assets/images/selected-course-page.svg'
 import unselectedCoursePage from '../../assets/images/unselected-course-page.svg'
 import selectedMyGoals from '../../assets/images/selected-my-goals.svg'
 import unselectedMyGoals from '../../assets/images/unselected-my-goals.svg'
 import selectedMyNotes from '../../assets/images/selected-my-notes.svg'
 import unselectedMyNotes from '../../assets/images/unselected-my-notes.svg'
-import selectedSetting from '../../assets/images/selected-setting.svg'
-import unselectedSetting from '../../assets/images/unselected-setting.svg'
 
 // Custom icon component for smooth transitions
 interface CustomIconProps {
@@ -55,6 +53,27 @@ const CustomIcon: React.FC<CustomIconProps> = ({ selectedSrc, unselectedSrc, isA
   )
 }
 
+// Lucide icon component with active state styling
+interface LucideIconProps {
+  icon: React.ComponentType<{ className?: string }>
+  isActive: boolean
+  alt: string
+}
+
+const LucideIcon: React.FC<LucideIconProps> = ({ icon: IconComponent, isActive, alt }) => {
+  return (
+    <div className="relative w-8 h-8 flex items-center justify-center">
+      <IconComponent 
+        className={`w-6 h-6 transition-all duration-300 ease-out ${
+          isActive 
+            ? 'text-white scale-110' 
+            : 'text-gray-400'
+        }`}
+      />
+    </div>
+  )
+}
+
 // Navigation item types
 interface NavigationItemWithCustomIcon {
   name: string
@@ -77,10 +96,7 @@ const navigation: NavigationItem[] = [
   { 
     name: 'Dashboard', 
     href: '/dashboard', 
-    customIcon: {
-      selected: selectedHomePage,
-      unselected: unselectedHomePage
-    }
+    icon: Home
   },
   { 
     name: 'Learning Paths', 
@@ -109,10 +125,7 @@ const navigation: NavigationItem[] = [
   { 
     name: 'Settings', 
     href: '/settings', 
-    customIcon: {
-      selected: selectedSetting,
-      unselected: unselectedSetting
-    }
+    icon: Settings
   },
 ]
 
@@ -164,10 +177,10 @@ export function Sidebar({ collapsed: _collapsed, onToggle: _onToggle }: SidebarP
                 ${isActive 
                   ? hasCustomIcon 
                     ? 'bg-transparent scale-105 shadow-lg shadow-blue-500/25' 
-                    : 'bg-[#6366f1] shadow-lg shadow-blue-500/25 text-white scale-105'
+                    : 'bg-[#6366f1] shadow-lg shadow-blue-500/25 scale-105'
                   : hasCustomIcon
-                    ? 'text-gray-400 hover:scale-110 hover:shadow-md hover:shadow-blue-500/10'
-                    : 'text-gray-400 hover:bg-gray-700/50 hover:text-white hover:scale-110'
+                    ? 'hover:scale-110 hover:shadow-md hover:shadow-blue-500/10'
+                    : 'hover:bg-gray-700/50 hover:scale-110'
                 }
               `}
               title={item.name}
@@ -180,10 +193,11 @@ export function Sidebar({ collapsed: _collapsed, onToggle: _onToggle }: SidebarP
                   alt={item.name}
                 />
               ) : (
-                (() => {
-                  const IconComponent = (item as NavigationItemWithLucideIcon).icon;
-                  return <IconComponent className="w-6 h-6" />;
-                })()
+                <LucideIcon
+                  icon={(item as NavigationItemWithLucideIcon).icon}
+                  isActive={isActive}
+                  alt={item.name}
+                />
               )}
               
               {/* Tooltip */}
