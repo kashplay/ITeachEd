@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { ArrowLeft, ChevronDown, ChevronRight, Bold, Italic, Underline, Strikethrough, AlignLeft, AlignCenter, AlignRight, AlignJustify, List, Quote, Code, Type, Palette, RotateCcw, Star, MessageCircle, X, Send, Bot, Search, Bell, Play, Clock, CheckCircle } from 'lucide-react'
+import { ArrowLeft, ChevronDown, ChevronRight, Bold, Italic, Underline, Strikethrough, AlignLeft, AlignCenter, AlignRight, AlignJustify, List, Quote, Code, Type, Palette, RotateCcw, Star, MessageCircle, X, Send, Bot, Play, Clock, CheckCircle } from 'lucide-react'
 import { Card } from '../components/ui/Card'
 import { Button } from '../components/ui/Button'
 import { useAuth } from '../contexts/AuthContext'
@@ -717,14 +717,8 @@ export function LearningPage() {
       
       {/* Main Content */}
       <div className="ml-[88px] flex h-screen">
-        {/* Header - Fixed at top with notification and profile icons */}
+        {/* Header - Fixed at top with only profile icon */}
         <div className="fixed top-0 right-0 z-40 flex items-center space-x-4 p-6">
-          {/* Notification Bell */}
-          <button className="relative p-3 bg-gray-800/50 border border-gray-600/50 rounded-xl hover:bg-gray-700/50 transition-colors backdrop-blur-sm">
-            <Bell className="w-5 h-5 text-gray-300" />
-            <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
-          </button>
-          
           {/* Profile Icon */}
           <div className="relative group">
             <button className="flex items-center justify-center p-2 bg-gray-800/50 border border-gray-600/50 rounded-xl hover:bg-gray-700/50 transition-colors backdrop-blur-sm">
