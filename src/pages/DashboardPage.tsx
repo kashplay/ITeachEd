@@ -3,6 +3,7 @@ import { ArrowRight, Search, Bell, Monitor, Target, Hexagon, Film, User } from '
 import { useAuth } from '../contexts/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import { Sidebar } from '../components/Layout/Sidebar'
+import { AITutor } from '../components/ui/AITutor'
 
 export function DashboardPage() {
   const { user, profile, signOut } = useAuth()
@@ -289,6 +290,9 @@ export function DashboardPage() {
           </div>
         </div>
       </div>
+
+      {/* AI Tutor - Fixed position in bottom right corner */}
+      <AITutor />
     </div>
   )
 }
