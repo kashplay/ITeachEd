@@ -464,7 +464,7 @@ export function PreEvaluationPage() {
       <header className="flex items-center justify-between p-6">
         <button 
           onClick={handleBack}
-          className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors"
+          className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-gradient-to-r from-[#FFAE2D] to-[#FFD700] text-black font-medium hover:from-[#FFD700] hover:to-[#FFAE2D] transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl"
         >
           <ArrowLeft className="w-5 h-5" />
           <span>Back</span>
