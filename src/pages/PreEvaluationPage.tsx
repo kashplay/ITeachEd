@@ -332,41 +332,42 @@ export function PreEvaluationPage() {
   
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [answers, setAnswers] = useState<Record<number, string>>({})
-  const [selectedOption, setSelectedOption] = useState<string>('')
   const [loading, setLoading] = useState(false)
 
   const question = questions[currentQuestion]
   const isLastQuestion = currentQuestion === questions.length - 1
 
   const handleOptionSelect = (optionId: string) => {
-    setSelectedOption(optionId)
-    setAnswers(prev => ({
-      ...prev,
+    // Save the answer
+    const newAnswers = {
+      ...answers,
       [question.id]: optionId
-    }))
-  }
-
-  const handleNext = () => {
-    if (selectedOption && !isLastQuestion) {
-      setCurrentQuestion(prev => prev + 1)
-      setSelectedOption(answers[questions[currentQuestion + 1]?.id] || '')
     }
+    setAnswers(newAnswers)
+
+    // Auto-proceed to next question after a short delay for visual feedback
+    setTimeout(() => {
+      if (isLastQuestion) {
+        // Complete evaluation on last question
+        handleComplete(newAnswers)
+      } else {
+        // Move to next question
+        setCurrentQuestion(prev => prev + 1)
+      }
+    }, 300)
   }
 
   const handleBack = () => {
     if (currentQuestion > 0) {
       setCurrentQuestion(prev => prev - 1)
-      setSelectedOption(answers[questions[currentQuestion - 1]?.id] || '')
     }
   }
 
-  const handleComplete = async () => {
-    if (!selectedOption) return
-
+  const handleComplete = async (finalAnswers: Record<number, string>) => {
     setLoading(true)
     try {
       // Analyze answers to determine learning profile
-      const learningProfile = analyzeLearningProfile(answers)
+      const learningProfile = analyzeLearningProfile(finalAnswers)
       
       // Save the evaluation results to user profile
       await updateProfile({
@@ -374,7 +375,7 @@ export function PreEvaluationPage() {
         experience_level: 'beginner', // Default for new users
         evaluation_completed: true,
         evaluation_results: learningProfile,
-        evaluation_answers: answers
+        evaluation_answers: finalAnswers
       })
 
       // Redirect to dashboard
@@ -509,24 +510,35 @@ export function PreEvaluationPage() {
 
         {/* Options */}
         <div className="grid grid-cols-2 gap-6 mb-12">
-          {question.options.map((option) => (
-            <button
-              key={option.id}
-              onClick={() => handleOptionSelect(option.id)}
-              className={`p-6 rounded-2xl border-2 transition-all duration-300 text-left ${
-                selectedOption === option.id
-                  ? 'border-[#FFAE2D] bg-[#FFAE2D]/10'
-                  : 'border-gray-600/50 bg-gray-800/30 hover:border-gray-500/50 hover:bg-gray-700/30'
-              }`}
-            >
-              <div className="flex items-center space-x-4">
-                {option.icon}
-                <div className="flex-1">
-                  <p className="text-white font-medium">{option.text}</p>
+          {question.options.map((option) => {
+            const isSelected = answers[question.id] === option.id
+            return (
+              <button
+                key={option.id}
+                onClick={() => handleOptionSelect(option.id)}
+                disabled={loading}
+                className={`p-6 rounded-2xl border-2 transition-all duration-300 text-left transform hover:scale-105 ${
+                  isSelected
+                    ? 'border-[#FFAE2D] bg-[#FFAE2D]/10 scale-105'
+                    : 'border-gray-600/50 bg-gray-800/30 hover:border-gray-500/50 hover:bg-gray-700/30'
+                } ${loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+              >
+                <div className="flex items-center space-x-4">
+                  {option.icon}
+                  <div className="flex-1">
+                    <p className="text-white font-medium">{option.text}</p>
+                  </div>
+                  {isSelected && (
+                    <div className="w-6 h-6 bg-[#FFAE2D] rounded-full flex items-center justify-center">
+                      <svg className="w-4 h-4 text-black" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                  )}
                 </div>
-              </div>
-            </button>
-          ))}
+              </button>
+            )
+          })}
         </div>
 
         {/* Progress Bar */}
@@ -543,33 +555,15 @@ export function PreEvaluationPage() {
           </div>
         </div>
 
-        {/* Navigation */}
-        <div className="flex justify-center pb-8">
-          {isLastQuestion ? (
-            <Button
-              onClick={handleComplete}
-              disabled={!selectedOption}
-              loading={loading}
-              size="lg"
-              className="px-8"
-              icon={ChevronRight}
-              iconPosition="right"
-            >
-              Complete Evaluation
-            </Button>
-          ) : (
-            <Button
-              onClick={handleNext}
-              disabled={!selectedOption}
-              size="lg"
-              className="px-8"
-              icon={ChevronRight}
-              iconPosition="right"
-            >
-              Next Question
-            </Button>
-          )}
-        </div>
+        {/* Loading State for Final Question */}
+        {loading && (
+          <div className="flex justify-center pb-8">
+            <div className="flex items-center space-x-3">
+              <div className="animate-spin rounded-full h-6 w-6 border-2 border-[#FFAE2D] border-t-transparent"></div>
+              <span className="text-white">Analyzing your learning profile...</span>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )
