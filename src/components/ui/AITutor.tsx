@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
-import { MessageCircle, X, Send, Bot, User } from 'lucide-react'
+import { MessageCircle, X, Send, Bot } from 'lucide-react'
+import { useAuth } from '../../contexts/AuthContext'
 
 interface Message {
   id: string
@@ -13,6 +14,9 @@ interface AITutorProps {
 }
 
 export function AITutor({ className = "" }: AITutorProps) {
+  const { user } = useAuth()
+  const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'
+  
   const [isOpen, setIsOpen] = useState(false)
   const [message, setMessage] = useState('')
   const [messages, setMessages] = useState<Message[]>([
@@ -90,11 +94,13 @@ export function AITutor({ className = "" }: AITutorProps) {
                 <div className={`flex items-start space-x-2 max-w-[80%] ${msg.sender === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}>
                   <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${
                     msg.sender === 'user' 
-                      ? 'bg-blue-500' 
+                      ? 'bg-gradient-to-r from-[#6244FF] to-[#FFAE2D]' 
                       : 'bg-gradient-to-r from-[#6244FF] to-[#FFAE2D]'
                   }`}>
                     {msg.sender === 'user' ? (
-                      <User className="w-3 h-3 text-white" />
+                      <span className="text-white text-xs font-medium">
+                        {userName?.[0]?.toUpperCase() || 'U'}
+                      </span>
                     ) : (
                       <Bot className="w-3 h-3 text-white" />
                     )}
