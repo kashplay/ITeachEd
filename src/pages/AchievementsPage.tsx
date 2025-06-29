@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
-import { Trophy, Award, Star, Target, Users, Clock, Book, Briefcase, Search, Bell, ChevronLeft, ChevronRight, Calendar } from 'lucide-react'
+import { Trophy, Award, Star, Target, Users, Clock, Book, Briefcase, Search, Bell, ChevronLeft, ChevronRight, Calendar, Play } from 'lucide-react'
 import { Card } from '../components/ui/Card'
+import { Button } from '../components/ui/Button'
 import { useAuth } from '../contexts/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import { Sidebar } from '../components/Layout/Sidebar'
@@ -83,9 +84,9 @@ const continueWhereLeftOff: Course[] = [
     id: '7',
     title: 'Cleaning & organising data',
     description: 'Data cleaning techniques',
-    progress: 0,
-    xp: 0,
-    weeklyXP: 0,
+    progress: 45,
+    xp: 180,
+    weeklyXP: 60,
     status: 'in-progress',
     lastActivity: '2 days ago'
   },
@@ -375,6 +376,12 @@ export function AchievementsPage() {
       console.error('❌ Goals: Sign out exception:', error)
       navigate('/', { replace: true })
     }
+  }
+
+  const handleContinueCourse = (courseId: string, courseTitle: string) => {
+    console.log(`Continuing course: ${courseTitle} (ID: ${courseId})`)
+    // Here you would navigate to the course or open the learning module
+    // For now, we'll just log it
   }
 
   const getGoalsByStatus = (status: string) => {
@@ -863,14 +870,24 @@ export function AchievementsPage() {
                         </div>
                       </div>
                     </div>
-                    <div className="w-full bg-gray-700 rounded-full h-2 mb-2">
+                    <div className="w-full bg-gray-700 rounded-full h-2 mb-3">
                       <div 
                         className="bg-blue-500 h-2 rounded-full transition-all duration-300"
                         style={{ width: `${featuredCourse.progress}%` }}
                       />
                     </div>
-                    <div className="text-right text-xs text-gray-400">
-                      {featuredCourse.weeklyXP} XP this week
+                    <div className="flex items-center justify-between">
+                      <div className="text-xs text-gray-400">
+                        {featuredCourse.weeklyXP} XP this week
+                      </div>
+                      <Button 
+                        size="sm" 
+                        icon={Play}
+                        onClick={() => handleContinueCourse(featuredCourse.id, featuredCourse.title)}
+                        className="text-xs px-3 py-1"
+                      >
+                        Continue
+                      </Button>
                     </div>
                   </div>
 
@@ -881,14 +898,46 @@ export function AchievementsPage() {
                         <div className="flex-1">
                           <div className="flex items-center space-x-3">
                             <span className="text-gray-400 text-sm font-medium">{index + 1}</span>
-                            <div>
+                            <div className="flex-1">
                               <h4 className="text-white text-sm font-medium">{course.title}</h4>
                               <p className="text-gray-400 text-xs">last activity {course.lastActivity}</p>
                             </div>
                           </div>
+                          
+                          {/* Progress bar for in-progress courses */}
+                          {course.status === 'in-progress' && course.progress > 0 && (
+                            <div className="mt-2 ml-8">
+                              <div className="flex justify-between text-xs mb-1">
+                                <span className="text-gray-400">{course.progress}%</span>
+                                <span className="text-gray-300">{course.xp} XP</span>
+                              </div>
+                              <div className="w-full bg-gray-700 rounded-full h-1">
+                                <div 
+                                  className="bg-blue-500 h-1 rounded-full transition-all duration-300"
+                                  style={{ width: `${course.progress}%` }}
+                                />
+                              </div>
+                            </div>
+                          )}
                         </div>
-                        <div className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(course.status)}`}>
-                          {getStatusText(course.status)}
+                        
+                        <div className="flex items-center space-x-2">
+                          {/* Continue button for in-progress courses */}
+                          {course.status === 'in-progress' && (
+                            <Button 
+                              size="sm" 
+                              icon={Play}
+                              onClick={() => handleContinueCourse(course.id, course.title)}
+                              className="text-xs px-2 py-1 mr-2"
+                            >
+                              Continue
+                            </Button>
+                          )}
+                          
+                          {/* Status badge */}
+                          <div className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(course.status)}`}>
+                            {getStatusText(course.status)}
+                          </div>
                         </div>
                       </div>
                     ))}
