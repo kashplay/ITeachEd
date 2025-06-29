@@ -1,26 +1,18 @@
 <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
   <!-- Background circle with gradient -->
-  <circle cx="24" cy="24" r="24" fill="url(#gradient1)" opacity="0.2"/>
-  <circle cx="24" cy="24" r="20" fill="url(#gradient2)" opacity="0.3"/>
+  <circle cx="24" cy="24" r="24" fill="url(#gradient3)"/>
   
-  <!-- Trophy/Target icon -->
-  <path d="M24 10L26.5 17H34L28.5 21.5L31 28.5L24 24L17 28.5L19.5 21.5L14 17H21.5L24 10Z" fill="#FFAE2D" stroke="#FFFFFF" stroke-width="1"/>
+  <!-- Trophy/Goals icon -->
+  <path d="M24 12L26.5 19H34L28.5 23.5L31 30.5L24 26L17 30.5L19.5 23.5L14 19H21.5L24 12Z" fill="white"/>
   
-  <!-- Trophy base -->
-  <rect x="20" y="32" width="8" height="4" rx="1" fill="#6244FF" stroke="#FFFFFF" stroke-width="1"/>
-  <rect x="18" y="36" width="12" height="2" rx="1" fill="#6244FF" stroke="#FFFFFF" stroke-width="1"/>
-  
-  <!-- Inner star highlight -->
-  <path d="M24 14L25.5 19H29.5L26.5 21.5L27.5 25.5L24 23L20.5 25.5L21.5 21.5L18.5 19H22.5L24 14Z" fill="#FFFFFF" opacity="0.8"/>
+  <!-- Base/stand -->
+  <rect x="20" y="32" width="8" height="3" rx="1" fill="white"/>
+  <rect x="18" y="35" width="12" height="2" rx="1" fill="white"/>
   
   <defs>
-    <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="gradient3" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" style="stop-color:#6244FF;stop-opacity:1" />
       <stop offset="100%" style="stop-color:#FFAE2D;stop-opacity:1" />
-    </linearGradient>
-    <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#6244FF;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#4F37CC;stop-opacity:1" />
     </linearGradient>
   </defs>
 </svg>

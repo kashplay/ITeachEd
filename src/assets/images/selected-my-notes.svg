@@ -1,32 +1,22 @@
 <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
   <!-- Background circle with gradient -->
-  <circle cx="24" cy="24" r="24" fill="url(#gradient1)" opacity="0.2"/>
-  <circle cx="24" cy="24" r="20" fill="url(#gradient2)" opacity="0.3"/>
+  <circle cx="24" cy="24" r="24" fill="url(#gradient4)"/>
   
-  <!-- Note/Document icon -->
-  <path d="M16 10C14.8954 10 14 10.8954 14 12V36C14 37.1046 14.8954 38 16 38H32C33.1046 38 34 37.1046 34 36V18L26 10H16Z" fill="#6244FF" stroke="#FFFFFF" stroke-width="1"/>
-  
-  <!-- Folded corner -->
-  <path d="M26 10V18H34L26 10Z" fill="#4F37CC" stroke="#FFFFFF" stroke-width="1"/>
+  <!-- Notes/Document icon -->
+  <path d="M17 13C16.4477 13 16 13.4477 16 14V34C16 34.5523 16.4477 35 17 35H31C31.5523 35 32 34.5523 32 34V19L26 13H17Z" fill="white"/>
+  <path d="M26 13V19H32" stroke="url(#gradient4)" stroke-width="2" stroke-linejoin="round" fill="none"/>
   
   <!-- Text lines -->
-  <rect x="18" y="22" width="10" height="1" fill="#FFFFFF" opacity="0.8"/>
-  <rect x="18" y="25" width="8" height="1" fill="#FFFFFF" opacity="0.8"/>
-  <rect x="18" y="28" width="10" height="1" fill="#FFFFFF" opacity="0.8"/>
-  <rect x="18" y="31" width="6" height="1" fill="#FFFFFF" opacity="0.8"/>
+  <path d="M20 22H28M20 25H28M20 28H25" stroke="url(#gradient4)" stroke-width="2" stroke-linecap="round"/>
   
   <!-- Pen/Edit icon -->
-  <circle cx="28" cy="30" r="3" fill="#FFAE2D" stroke="#FFFFFF" stroke-width="1"/>
-  <path d="M26.5 31.5L29.5 28.5" stroke="#FFFFFF" stroke-width="1" stroke-linecap="round"/>
+  <circle cx="28" cy="30" r="3" fill="url(#gradient4)"/>
+  <path d="M26.5 28.5L29.5 31.5" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
   
   <defs>
-    <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="gradient4" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" style="stop-color:#6244FF;stop-opacity:1" />
       <stop offset="100%" style="stop-color:#FFAE2D;stop-opacity:1" />
-    </linearGradient>
-    <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#6244FF;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#4F37CC;stop-opacity:1" />
     </linearGradient>
   </defs>
 </svg>

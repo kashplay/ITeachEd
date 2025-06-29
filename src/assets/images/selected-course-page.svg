@@ -1,33 +1,19 @@
 <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
   <!-- Background circle with gradient -->
-  <circle cx="24" cy="24" r="24" fill="url(#gradient1)" opacity="0.2"/>
-  <circle cx="24" cy="24" r="20" fill="url(#gradient2)" opacity="0.3"/>
+  <circle cx="24" cy="24" r="24" fill="url(#gradient2)"/>
   
-  <!-- Book/Learning icon -->
-  <path d="M14 12C14 10.8954 14.8954 10 16 10H32C33.1046 10 34 10.8954 34 12V36C34 37.1046 33.1046 38 32 38H16C14.8954 38 14 37.1046 14 36V12Z" fill="#6244FF" stroke="#FFFFFF" stroke-width="1"/>
+  <!-- Book/Course icon -->
+  <path d="M16 14C16 13.4477 16.4477 13 17 13H31C31.5523 13 32 13.4477 32 14V34C32 34.5523 31.5523 35 31 35H17C16.4477 35 16 34.5523 16 34V14Z" fill="white"/>
+  <path d="M20 18H28M20 22H28M20 26H25" stroke="url(#gradient2)" stroke-width="2" stroke-linecap="round"/>
   
-  <!-- Book spine -->
-  <rect x="16" y="12" width="2" height="24" fill="#FFFFFF" opacity="0.8"/>
-  
-  <!-- Pages -->
-  <rect x="20" y="16" width="10" height="1" fill="#FFFFFF" opacity="0.6"/>
-  <rect x="20" y="19" width="8" height="1" fill="#FFFFFF" opacity="0.6"/>
-  <rect x="20" y="22" width="10" height="1" fill="#FFFFFF" opacity="0.6"/>
-  <rect x="20" y="25" width="6" height="1" fill="#FFFFFF" opacity="0.6"/>
-  <rect x="20" y="28" width="9" height="1" fill="#FFFFFF" opacity="0.6"/>
-  <rect x="20" y="31" width="7" height="1" fill="#FFFFFF" opacity="0.6"/>
-  
-  <!-- Bookmark -->
-  <path d="M28 10V20L30 18L32 20V10" fill="#FFAE2D" stroke="#FFFFFF" stroke-width="0.5"/>
+  <!-- Play button overlay -->
+  <circle cx="24" cy="30" r="4" fill="url(#gradient2)"/>
+  <path d="M22.5 28L26.5 30L22.5 32V28Z" fill="white"/>
   
   <defs>
-    <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#6244FF;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#FFAE2D;stop-opacity:1" />
-    </linearGradient>
     <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" style="stop-color:#6244FF;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#4F37CC;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FFAE2D;stop-opacity:1" />
     </linearGradient>
   </defs>
 </svg>
