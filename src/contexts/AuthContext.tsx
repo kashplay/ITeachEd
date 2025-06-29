@@ -85,20 +85,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const fetchProfile = async (userId: string) => {
     try {
-      // Set a timeout to prevent hanging
-      const timeoutPromise = new Promise<never>((_, reject) => {
-        setTimeout(() => reject(new Error('Profile fetch timed out')), 3000)
-      })
-      
-      // Create the query promise
-      const queryPromise = supabase
+      const { data, error } = await supabase
         .from('user_profiles')
         .select('*')
         .eq('user_id', userId)
         .single()
-      
-      // Race the query against the timeout
-      const { data, error } = await Promise.race([queryPromise, timeoutPromise])
 
       if (error && error.code !== 'PGRST116') {
         console.error('Error fetching profile:', error)
@@ -225,20 +216,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         updated_at: new Date().toISOString()
       }
       
-      // Create a timeout promise to prevent hanging
-      const timeoutPromise = new Promise<never>((_, reject) => {
-        setTimeout(() => reject(new Error('Profile update timed out after 5 seconds')), 5000)
-      })
-      
       // Use upsert to handle both insert and update cases
-      const upsertPromise = supabase
+      const { error } = await supabase
         .from('user_profiles')
         .upsert(profileData, {
           onConflict: 'user_id'
         })
-      
-      // Race the upsert against the timeout
-      const { error } = await Promise.race([upsertPromise, timeoutPromise])
       
       if (error) {
         throw error
@@ -248,12 +231,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await fetchProfile(user.id)
       
     } catch (error) {
-      if (error instanceof Error) {
-        if (error.message.includes('timed out')) {
-          throw new Error('Profile update is taking too long. Please try again.')
-        }
-      }
-      
       throw error
     }
   }

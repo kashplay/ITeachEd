@@ -375,7 +375,7 @@ export function PreEvaluationPage() {
       // Analyze answers to determine learning profile
       const learningProfile = analyzeLearningProfile(answers)
       
-      // Create a simplified profile update with timeout
+      // Create a simplified profile update
       const profileUpdate = {
         learning_style: learningProfile.primaryStyle,
         experience_level: 'beginner',
@@ -384,14 +384,8 @@ export function PreEvaluationPage() {
         evaluation_answers: answers
       }
       
-      // Set a timeout to prevent infinite loading
-      const updatePromise = updateProfile(profileUpdate)
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Profile update timeout')), 10000)
-      )
-      
-      // Race between update and timeout
-      await Promise.race([updatePromise, timeoutPromise])
+      // Update profile without timeout
+      await updateProfile(profileUpdate)
       
       // Navigate to dashboard
       navigate('/dashboard', { replace: true })
