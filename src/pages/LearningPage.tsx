@@ -1,176 +1,12 @@
-import React, { useState } from 'react'
-import { 
-  Play, 
-  Clock, 
-  Users, 
-  BookOpen, 
-  Bell, 
-  ChevronDown, 
-  ChevronRight,
-  FileText,
-  Video,
-  CheckCircle,
-  Circle,
-  MessageCircle,
-  X,
-  Send,
-  Bot,
-  ArrowLeft,
-  Star,
-  Award,
-  List,
-  Download,
-  RotateCcw,
-  Undo2,
-  Bold,
-  Italic,
-  Underline,
-  Strikethrough,
-  AlignLeft,
-  AlignCenter,
-  AlignRight,
-  AlignJustify,
-  Link,
-  Image,
-  Code,
-  Quote,
-  Type,
-  Palette
-} from 'lucide-react'
+import React, { useState, useEffect } from 'react'
+import { ArrowLeft, ChevronDown, Bold, Italic, Underline, Strikethrough, AlignLeft, AlignCenter, AlignRight, AlignJustify, List, Quote, Code, Type, Palette, RotateCcw, Star, MessageCircle, X, Send, Bot } from 'lucide-react'
 import { Card } from '../components/ui/Card'
 import { Button } from '../components/ui/Button'
 import { useAuth } from '../contexts/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import { Sidebar } from '../components/Layout/Sidebar'
 
-// Module and Lesson interfaces
-interface Lesson {
-  id: string
-  title: string
-  type: 'video' | 'reading' | 'interactive' | 'quiz'
-  duration: string
-  completed: boolean
-}
-
-interface Module {
-  id: string
-  title: string
-  progress: number
-  totalLessons: number
-  completedLessons: number
-  lessons: Lesson[]
-  expanded: boolean
-}
-
-// Sample modules data
-const modulesData: Module[] = [
-  {
-    id: '1',
-    title: 'Introduction',
-    progress: 100,
-    totalLessons: 8,
-    completedLessons: 8,
-    expanded: true,
-    lessons: [
-      { id: '1-1', title: 'What is Business Analytics?', type: 'video', duration: '12 min', completed: true },
-      { id: '1-2', title: 'Key Concepts Overview', type: 'reading', duration: '8 min', completed: true },
-      { id: '1-3', title: 'Industry Applications', type: 'video', duration: '15 min', completed: true },
-      { id: '1-4', title: 'Tools and Technologies', type: 'reading', duration: '10 min', completed: true },
-      { id: '1-5', title: 'Data Types and Sources', type: 'interactive', duration: '20 min', completed: true },
-      { id: '1-6', title: 'Analytics Process', type: 'video', duration: '18 min', completed: true },
-      { id: '1-7', title: 'Case Study: Retail Analytics', type: 'reading', duration: '25 min', completed: true },
-      { id: '1-8', title: 'Module 1 Quiz', type: 'quiz', duration: '15 min', completed: true }
-    ]
-  },
-  {
-    id: '2',
-    title: 'In Depth Analytics',
-    progress: 65,
-    totalLessons: 10,
-    completedLessons: 6,
-    expanded: false,
-    lessons: [
-      { id: '2-1', title: 'Statistical Foundations', type: 'video', duration: '22 min', completed: true },
-      { id: '2-2', title: 'Descriptive Analytics', type: 'reading', duration: '15 min', completed: true },
-      { id: '2-3', title: 'Data Visualization Principles', type: 'interactive', duration: '30 min', completed: true },
-      { id: '2-4', title: 'Exploratory Data Analysis', type: 'video', duration: '25 min', completed: true },
-      { id: '2-5', title: 'Correlation vs Causation', type: 'reading', duration: '12 min', completed: true },
-      { id: '2-6', title: 'Hypothesis Testing', type: 'video', duration: '28 min', completed: true },
-      { id: '2-7', title: 'A/B Testing Framework', type: 'interactive', duration: '35 min', completed: false },
-      { id: '2-8', title: 'Statistical Significance', type: 'reading', duration: '18 min', completed: false },
-      { id: '2-9', title: 'Practical Exercises', type: 'interactive', duration: '45 min', completed: false },
-      { id: '2-10', title: 'Module 2 Assessment', type: 'quiz', duration: '20 min', completed: false }
-    ]
-  },
-  {
-    id: '3',
-    title: 'Advanced Maths',
-    progress: 0,
-    totalLessons: 12,
-    completedLessons: 0,
-    expanded: false,
-    lessons: [
-      { id: '3-1', title: 'Linear Algebra Basics', type: 'video', duration: '30 min', completed: false },
-      { id: '3-2', title: 'Matrix Operations', type: 'reading', duration: '20 min', completed: false },
-      { id: '3-3', title: 'Calculus for Analytics', type: 'video', duration: '35 min', completed: false },
-      { id: '3-4', title: 'Optimization Techniques', type: 'interactive', duration: '40 min', completed: false },
-      { id: '3-5', title: 'Probability Theory', type: 'reading', duration: '25 min', completed: false },
-      { id: '3-6', title: 'Distributions', type: 'video', duration: '28 min', completed: false },
-      { id: '3-7', title: 'Bayesian Statistics', type: 'reading', duration: '22 min', completed: false },
-      { id: '3-8', title: 'Monte Carlo Methods', type: 'interactive', duration: '50 min', completed: false },
-      { id: '3-9', title: 'Time Series Analysis', type: 'video', duration: '32 min', completed: false },
-      { id: '3-10', title: 'Regression Analysis', type: 'reading', duration: '28 min', completed: false },
-      { id: '3-11', title: 'Advanced Modeling', type: 'interactive', duration: '60 min', completed: false },
-      { id: '3-12', title: 'Final Assessment', type: 'quiz', duration: '30 min', completed: false }
-    ]
-  },
-  {
-    id: '4',
-    title: 'Deep Tech in BA',
-    progress: 0,
-    totalLessons: 9,
-    completedLessons: 0,
-    expanded: false,
-    lessons: [
-      { id: '4-1', title: 'Machine Learning Overview', type: 'video', duration: '25 min', completed: false },
-      { id: '4-2', title: 'Supervised Learning', type: 'reading', duration: '30 min', completed: false },
-      { id: '4-3', title: 'Unsupervised Learning', type: 'video', duration: '28 min', completed: false },
-      { id: '4-4', title: 'Neural Networks', type: 'interactive', duration: '45 min', completed: false },
-      { id: '4-5', title: 'Deep Learning Applications', type: 'reading', duration: '35 min', completed: false },
-      { id: '4-6', title: 'Natural Language Processing', type: 'video', duration: '40 min', completed: false },
-      { id: '4-7', title: 'Computer Vision', type: 'interactive', duration: '50 min', completed: false },
-      { id: '4-8', title: 'AI Ethics in Business', type: 'reading', duration: '20 min', completed: false },
-      { id: '4-9', title: 'Capstone Project', type: 'interactive', duration: '120 min', completed: false }
-    ]
-  },
-  {
-    id: '5',
-    title: 'Summary & Conclusion',
-    progress: 0,
-    totalLessons: 5,
-    completedLessons: 0,
-    expanded: false,
-    lessons: [
-      { id: '5-1', title: 'Course Review', type: 'video', duration: '20 min', completed: false },
-      { id: '5-2', title: 'Industry Best Practices', type: 'reading', duration: '25 min', completed: false },
-      { id: '5-3', title: 'Career Pathways', type: 'video', duration: '18 min', completed: false },
-      { id: '5-4', title: 'Certification Preparation', type: 'interactive', duration: '60 min', completed: false },
-      { id: '5-5', title: 'Final Exam', type: 'quiz', duration: '90 min', completed: false }
-    ]
-  }
-]
-
-// Content tabs
-const contentTabs = [
-  { id: 'main', label: 'Main Content', active: true },
-  { id: 'mindmap', label: 'Mindmap (Recommended)', active: false },
-  { id: 'infographic', label: 'Infographic', active: false },
-  { id: 'visualized', label: 'Visualized Framework', active: false },
-  { id: 'animated', label: 'Animated Diagram', active: false },
-  { id: 'interactive', label: 'Drag and Drop: KPI Matching', active: false }
-]
-
-// AI Tutor Component - Matching the main overview page design
+// AI Tutor Component
 interface Message {
   id: string
   text: string
@@ -182,7 +18,7 @@ interface AITutorProps {
   className?: string
 }
 
-const AITutor: React.FC<AITutorProps> = ({ className = "" }) => {
+function AITutor({ className = "" }: AITutorProps) {
   const { user } = useAuth()
   const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'
   
@@ -231,9 +67,9 @@ const AITutor: React.FC<AITutorProps> = ({ className = "" }) => {
 
   return (
     <div className={`fixed bottom-6 right-6 z-50 ${className}`}>
-      {/* Chat Window */}
+      {/* Chat Window - Only show when open */}
       {isOpen && (
-        <div className="w-80 h-96 bg-gray-800/95 backdrop-blur-sm border border-gray-600/50 rounded-2xl shadow-2xl flex flex-col overflow-hidden mb-4">
+        <div className="w-80 h-96 bg-gray-800/95 backdrop-blur-sm border border-gray-600/50 rounded-2xl shadow-2xl flex flex-col overflow-hidden">
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b border-gray-600/50 bg-gradient-to-r from-[#6244FF]/20 to-[#FFAE2D]/20">
             <div className="flex items-center space-x-3">
@@ -309,83 +145,87 @@ const AITutor: React.FC<AITutorProps> = ({ className = "" }) => {
         </div>
       )}
 
-      {/* Floating Button */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-12 h-12 bg-gradient-to-r from-[#6244FF] to-[#FFAE2D] rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group relative hover:scale-110"
-      >
-        {isOpen ? (
-          <X className="w-5 h-5 text-white" />
-        ) : (
+      {/* Floating Button - Only show when closed */}
+      {!isOpen && (
+        <button
+          onClick={() => setIsOpen(true)}
+          className="w-12 h-12 bg-gradient-to-r from-[#6244FF] to-[#FFAE2D] rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group relative hover:scale-110"
+        >
           <MessageCircle className="w-5 h-5 text-white" />
-        )}
-        
-        {!isOpen && (
-          <>
-            {/* Notification dot */}
-            <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full flex items-center justify-center">
-              <span className="text-white text-xs font-bold">1</span>
-            </div>
-            
-            {/* Pulse animation */}
-            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-[#6244FF] to-[#FFAE2D] animate-ping opacity-20"></div>
+          
+          {/* Notification dot */}
+          <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full flex items-center justify-center">
+            <span className="text-white text-xs font-bold">1</span>
+          </div>
+          
+          {/* Pulse animation */}
+          <div className="absolute inset-0 rounded-full bg-gradient-to-r from-[#6244FF] to-[#FFAE2D] animate-ping opacity-20"></div>
 
-            {/* Tooltip */}
-            <div className="absolute bottom-full right-0 mb-2 px-3 py-2 bg-gray-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap shadow-lg">
-              Ask your AI Tutor
-              <div className="absolute top-full right-4 w-2 h-2 bg-gray-800 rotate-45 transform -translate-y-1"></div>
-            </div>
-          </>
-        )}
-      </button>
+          {/* Tooltip */}
+          <div className="absolute bottom-full right-0 mb-2 px-3 py-2 bg-gray-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap shadow-lg">
+            Ask your AI Tutor
+            <div className="absolute top-full right-4 w-2 h-2 bg-gray-800 rotate-45 transform -translate-y-1"></div>
+          </div>
+        </button>
+      )}
     </div>
   )
 }
 
-// Rich Text Editor Toolbar Component
+// Rich Text Toolbar Component
 interface RichTextToolbarProps {
-  onFormat: (format: string, value?: string) => void
+  onFormat: (command: string, value?: string) => void
 }
 
-const RichTextToolbar: React.FC<RichTextToolbarProps> = ({ onFormat }) => {
-  const [showColorPicker, setShowColorPicker] = useState(false)
-  const [showFontSize, setShowFontSize] = useState(false)
+function RichTextToolbar({ onFormat }: RichTextToolbarProps) {
+  const [fontSize, setFontSize] = useState('14')
+  const [textColor, setTextColor] = useState('#ffffff')
 
   const colors = [
-    '#000000', '#FFFFFF', '#FF0000', '#00FF00', '#0000FF', '#FFFF00', 
-    '#FF00FF', '#00FFFF', '#FFA500', '#800080', '#008000', '#FFC0CB'
+    '#000000', '#ffffff', '#ff0000', '#00ff00', '#0000ff', '#ffff00',
+    '#ff00ff', '#00ffff', '#ffa500', '#800080', '#008000', '#ffc0cb'
   ]
 
-  const fontSizes = ['12px', '14px', '16px', '18px', '20px', '24px', '28px', '32px']
+  const fontSizes = ['12', '14', '16', '18', '20', '24', '28', '32']
+
+  const handleFontSizeChange = (size: string) => {
+    setFontSize(size)
+    onFormat('fontSize', size + 'px')
+  }
+
+  const handleColorChange = (color: string) => {
+    setTextColor(color)
+    onFormat('foreColor', color)
+  }
 
   return (
-    <div className="flex items-center space-x-1 p-2 bg-gray-700/30 border-b border-gray-600/50 flex-wrap gap-1">
+    <div className="flex flex-wrap items-center gap-1 p-3 border-b border-gray-600/30 bg-gray-800/20">
       {/* Text Formatting */}
-      <div className="flex items-center space-x-1 border-r border-gray-600/50 pr-2">
+      <div className="flex items-center gap-1 pr-2 border-r border-gray-600/30">
         <button
           onClick={() => onFormat('bold')}
-          className="p-2 hover:bg-gray-600/50 rounded transition-colors"
+          className="p-2 hover:bg-gray-700/50 rounded-lg transition-colors"
           title="Bold"
         >
           <Bold className="w-4 h-4 text-gray-300" />
         </button>
         <button
           onClick={() => onFormat('italic')}
-          className="p-2 hover:bg-gray-600/50 rounded transition-colors"
+          className="p-2 hover:bg-gray-700/50 rounded-lg transition-colors"
           title="Italic"
         >
           <Italic className="w-4 h-4 text-gray-300" />
         </button>
         <button
           onClick={() => onFormat('underline')}
-          className="p-2 hover:bg-gray-600/50 rounded transition-colors"
+          className="p-2 hover:bg-gray-700/50 rounded-lg transition-colors"
           title="Underline"
         >
           <Underline className="w-4 h-4 text-gray-300" />
         </button>
         <button
-          onClick={() => onFormat('strikethrough')}
-          className="p-2 hover:bg-gray-600/50 rounded transition-colors"
+          onClick={() => onFormat('strikeThrough')}
+          className="p-2 hover:bg-gray-700/50 rounded-lg transition-colors"
           title="Strikethrough"
         >
           <Strikethrough className="w-4 h-4 text-gray-300" />
@@ -393,31 +233,31 @@ const RichTextToolbar: React.FC<RichTextToolbarProps> = ({ onFormat }) => {
       </div>
 
       {/* Alignment */}
-      <div className="flex items-center space-x-1 border-r border-gray-600/50 pr-2">
+      <div className="flex items-center gap-1 pr-2 border-r border-gray-600/30">
         <button
           onClick={() => onFormat('justifyLeft')}
-          className="p-2 hover:bg-gray-600/50 rounded transition-colors"
+          className="p-2 hover:bg-gray-700/50 rounded-lg transition-colors"
           title="Align Left"
         >
           <AlignLeft className="w-4 h-4 text-gray-300" />
         </button>
         <button
           onClick={() => onFormat('justifyCenter')}
-          className="p-2 hover:bg-gray-600/50 rounded transition-colors"
+          className="p-2 hover:bg-gray-700/50 rounded-lg transition-colors"
           title="Align Center"
         >
           <AlignCenter className="w-4 h-4 text-gray-300" />
         </button>
         <button
           onClick={() => onFormat('justifyRight')}
-          className="p-2 hover:bg-gray-600/50 rounded transition-colors"
+          className="p-2 hover:bg-gray-700/50 rounded-lg transition-colors"
           title="Align Right"
         >
           <AlignRight className="w-4 h-4 text-gray-300" />
         </button>
         <button
           onClick={() => onFormat('justifyFull')}
-          className="p-2 hover:bg-gray-600/50 rounded transition-colors"
+          className="p-2 hover:bg-gray-700/50 rounded-lg transition-colors"
           title="Justify"
         >
           <AlignJustify className="w-4 h-4 text-gray-300" />
@@ -425,89 +265,61 @@ const RichTextToolbar: React.FC<RichTextToolbarProps> = ({ onFormat }) => {
       </div>
 
       {/* Font Size */}
-      <div className="relative border-r border-gray-600/50 pr-2">
-        <button
-          onClick={() => setShowFontSize(!showFontSize)}
-          className="p-2 hover:bg-gray-600/50 rounded transition-colors flex items-center space-x-1"
-          title="Font Size"
+      <div className="flex items-center gap-1 pr-2 border-r border-gray-600/30">
+        <Type className="w-4 h-4 text-gray-400" />
+        <select
+          value={fontSize}
+          onChange={(e) => handleFontSizeChange(e.target.value)}
+          className="bg-gray-700/50 border border-gray-600/50 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-blue-500"
         >
-          <Type className="w-4 h-4 text-gray-300" />
-          <ChevronDown className="w-3 h-3 text-gray-300" />
-        </button>
-        {showFontSize && (
-          <div className="absolute top-full left-0 mt-1 bg-gray-800 border border-gray-600 rounded-lg shadow-lg z-10">
-            {fontSizes.map(size => (
-              <button
-                key={size}
-                onClick={() => {
-                  onFormat('fontSize', size)
-                  setShowFontSize(false)
-                }}
-                className="block w-full text-left px-3 py-2 text-gray-300 hover:bg-gray-700 text-sm"
-              >
-                {size}
-              </button>
-            ))}
-          </div>
-        )}
+          {fontSizes.map(size => (
+            <option key={size} value={size}>{size}px</option>
+          ))}
+        </select>
       </div>
 
       {/* Text Color */}
-      <div className="relative border-r border-gray-600/50 pr-2">
-        <button
-          onClick={() => setShowColorPicker(!showColorPicker)}
-          className="p-2 hover:bg-gray-600/50 rounded transition-colors flex items-center space-x-1"
-          title="Text Color"
-        >
-          <Palette className="w-4 h-4 text-gray-300" />
-          <ChevronDown className="w-3 h-3 text-gray-300" />
-        </button>
-        {showColorPicker && (
-          <div className="absolute top-full left-0 mt-1 bg-gray-800 border border-gray-600 rounded-lg shadow-lg p-2 z-10">
-            <div className="grid grid-cols-6 gap-1">
-              {colors.map(color => (
-                <button
-                  key={color}
-                  onClick={() => {
-                    onFormat('foreColor', color)
-                    setShowColorPicker(false)
-                  }}
-                  className="w-6 h-6 rounded border border-gray-600 hover:scale-110 transition-transform"
-                  style={{ backgroundColor: color }}
-                  title={color}
-                />
-              ))}
-            </div>
-          </div>
-        )}
+      <div className="flex items-center gap-1 pr-2 border-r border-gray-600/30">
+        <Palette className="w-4 h-4 text-gray-400" />
+        <div className="flex flex-wrap gap-1">
+          {colors.map(color => (
+            <button
+              key={color}
+              onClick={() => handleColorChange(color)}
+              className="w-4 h-4 rounded border border-gray-600/50 hover:scale-110 transition-transform"
+              style={{ backgroundColor: color }}
+              title={`Color: ${color}`}
+            />
+          ))}
+        </div>
       </div>
 
       {/* Lists and Special */}
-      <div className="flex items-center space-x-1">
+      <div className="flex items-center gap-1">
         <button
           onClick={() => onFormat('insertUnorderedList')}
-          className="p-2 hover:bg-gray-600/50 rounded transition-colors"
+          className="p-2 hover:bg-gray-700/50 rounded-lg transition-colors"
           title="Bullet List"
         >
           <List className="w-4 h-4 text-gray-300" />
         </button>
         <button
           onClick={() => onFormat('insertOrderedList')}
-          className="p-2 hover:bg-gray-600/50 rounded transition-colors"
+          className="p-2 hover:bg-gray-700/50 rounded-lg transition-colors"
           title="Numbered List"
         >
-          <span className="text-gray-300 text-sm font-mono">1.</span>
+          <span className="text-gray-300 text-sm font-medium">1.</span>
         </button>
         <button
           onClick={() => onFormat('formatBlock', 'blockquote')}
-          className="p-2 hover:bg-gray-600/50 rounded transition-colors"
+          className="p-2 hover:bg-gray-700/50 rounded-lg transition-colors"
           title="Quote"
         >
           <Quote className="w-4 h-4 text-gray-300" />
         </button>
         <button
           onClick={() => onFormat('formatBlock', 'pre')}
-          className="p-2 hover:bg-gray-600/50 rounded transition-colors"
+          className="p-2 hover:bg-gray-700/50 rounded-lg transition-colors"
           title="Code Block"
         >
           <Code className="w-4 h-4 text-gray-300" />
@@ -517,384 +329,289 @@ const RichTextToolbar: React.FC<RichTextToolbarProps> = ({ onFormat }) => {
   )
 }
 
+// Module data
+const modules = [
+  {
+    id: 1,
+    title: 'Introduction',
+    lessons: 8,
+    completed: true,
+    progress: 100
+  },
+  {
+    id: 2,
+    title: 'In Depth Analytics',
+    lessons: 12,
+    completed: false,
+    progress: 75
+  },
+  {
+    id: 3,
+    title: 'Advanced Maths',
+    lessons: 10,
+    completed: false,
+    progress: 0
+  },
+  {
+    id: 4,
+    title: 'Deep Tech in BA',
+    lessons: 8,
+    completed: false,
+    progress: 0
+  },
+  {
+    id: 5,
+    title: 'Summary & Conclusion',
+    lessons: 6,
+    completed: false,
+    progress: 0
+  }
+]
+
+// Tab content data
+const tabContent = {
+  'Main Content': {
+    title: 'Business Analytics Fundamentals',
+    content: `
+      <div class="space-y-6">
+        <div class="bg-gray-700/30 rounded-xl p-6">
+          <h3 class="text-xl font-semibold text-white mb-4">Overview</h3>
+          <p class="text-gray-300 leading-relaxed mb-4">
+            Business Analytics is the practice of iterative, methodical exploration of an organization's data, with 
+            an emphasis on statistical analysis. It is used by companies committed to data-driven decision-
+            making to gain insights that inform business decisions and can be used to automate and optimize 
+            business processes.
+          </p>
+          
+          <h4 class="text-lg font-medium text-white mb-3">Key Learning Points:</h4>
+          <ul class="space-y-2 text-gray-300">
+            <li class="flex items-start">
+              <span class="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+              Understanding the fundamental concepts and terminology of business analytics
+            </li>
+            <li class="flex items-start">
+              <span class="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+              Learning how to collect, process, and analyze business data effectively
+            </li>
+            <li class="flex items-start">
+              <span class="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+              Developing skills to interpret analytical results and derive actionable insights
+            </li>
+            <li class="flex items-start">
+              <span class="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+              Applying business analytics techniques to real-world business problems
+            </li>
+            <li class="flex items-start">
+              <span class="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+              Understanding the ethical implications and limitations of data-driven decision making
+            </li>
+          </ul>
+        </div>
+
+        <div class="bg-gray-700/30 rounded-xl p-6">
+          <h3 class="text-xl font-semibold text-white mb-4">Business Analytics Process</h3>
+          
+          <div class="space-y-4">
+            <div class="border-l-4 border-blue-500 pl-4">
+              <h4 class="text-lg font-medium text-white mb-2">1. Problem Definition</h4>
+              <p class="text-gray-300">Clearly articulate the business problem or opportunity that needs to be addressed</p>
+            </div>
+            
+            <div class="border-l-4 border-green-500 pl-4">
+              <h4 class="text-lg font-medium text-white mb-2">2. Data Collection</h4>
+              <p class="text-gray-300">Gather relevant data from various internal and external sources</p>
+            </div>
+            
+            <div class="border-l-4 border-yellow-500 pl-4">
+              <h4 class="text-lg font-medium text-white mb-2">3. Data Preparation</h4>
+              <p class="text-gray-300">Clean, transform, and organize data for analysis</p>
+            </div>
+            
+            <div class="border-l-4 border-purple-500 pl-4">
+              <h4 class="text-lg font-medium text-white mb-2">4. Analysis & Modeling</h4>
+              <p class="text-gray-300">Apply statistical and analytical techniques to extract insights</p>
+            </div>
+            
+            <div class="border-l-4 border-red-500 pl-4">
+              <h4 class="text-lg font-medium text-white mb-2">5. Interpretation & Action</h4>
+              <p class="text-gray-300">Translate findings into actionable business recommendations</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-gray-700/30 rounded-xl p-6">
+          <h3 class="text-xl font-semibold text-white mb-4">Types of Business Analytics</h3>
+          
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="bg-gray-600/30 rounded-lg p-4">
+              <h4 class="text-lg font-medium text-white mb-2">Descriptive Analytics</h4>
+              <p class="text-gray-300 text-sm">What happened? Analyzes historical data to understand past performance.</p>
+            </div>
+            
+            <div class="bg-gray-600/30 rounded-lg p-4">
+              <h4 class="text-lg font-medium text-white mb-2">Predictive Analytics</h4>
+              <p class="text-gray-300 text-sm">What might happen? Uses statistical models to forecast future outcomes.</p>
+            </div>
+            
+            <div class="bg-gray-600/30 rounded-lg p-4">
+              <h4 class="text-lg font-medium text-white mb-2">Prescriptive Analytics</h4>
+              <p class="text-gray-300 text-sm">What should we do? Recommends actions to optimize outcomes.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    `
+  },
+  'Mindmap (Recommended)': {
+    title: 'Business Analytics Mindmap',
+    content: `
+      <div class="flex items-center justify-center h-96 bg-gray-700/30 rounded-xl">
+        <div class="text-center">
+          <div class="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-white mb-2">Interactive Mindmap</h3>
+          <p class="text-gray-400">Visual representation of Business Analytics concepts and relationships</p>
+        </div>
+      </div>
+    `
+  },
+  'Infographic': {
+    title: 'Business Analytics Infographic',
+    content: `
+      <div class="flex items-center justify-center h-96 bg-gray-700/30 rounded-xl">
+        <div class="text-center">
+          <div class="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-white mb-2">Data Visualization</h3>
+          <p class="text-gray-400">Comprehensive infographic showing key statistics and insights</p>
+        </div>
+      </div>
+    `
+  },
+  'Visualized Framework': {
+    title: 'Analytics Framework',
+    content: `
+      <div class="flex items-center justify-center h-96 bg-gray-700/30 rounded-xl">
+        <div class="text-center">
+          <div class="w-16 h-16 bg-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-white mb-2">Framework Structure</h3>
+          <p class="text-gray-400">Structured approach to implementing business analytics</p>
+        </div>
+      </div>
+    `
+  },
+  'Animated Diagram': {
+    title: 'Process Flow',
+    content: `
+      <div class="flex items-center justify-center h-96 bg-gray-700/30 rounded-xl">
+        <div class="text-center">
+          <div class="w-16 h-16 bg-orange-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-white mb-2">Animated Process</h3>
+          <p class="text-gray-400">Step-by-step animated guide through the analytics process</p>
+        </div>
+      </div>
+    `
+  },
+  'Drag and Drop: KPI Matching': {
+    title: 'Interactive Exercise',
+    content: `
+      <div class="flex items-center justify-center h-96 bg-gray-700/30 rounded-xl">
+        <div class="text-center">
+          <div class="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"></path>
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-white mb-2">KPI Matching Exercise</h3>
+          <p class="text-gray-400">Interactive drag-and-drop exercise to match KPIs with business functions</p>
+        </div>
+      </div>
+    `
+  }
+}
+
 export function LearningPage() {
   const { user, signOut } = useAuth()
   const navigate = useNavigate()
   const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'
-  
-  const [modules, setModules] = useState<Module[]>(modulesData)
-  const [activeTab, setActiveTab] = useState('main')
+  const [activeTab, setActiveTab] = useState('Main Content')
   const [notes, setNotes] = useState('')
-  const [lastUpdated] = useState('June 16, 2025 12:34')
+  const [lastUpdated, setLastUpdated] = useState(new Date())
+
+  // Auto-save notes functionality
+  useEffect(() => {
+    const savedNotes = localStorage.getItem('learning-notes-business-analytics')
+    if (savedNotes) {
+      setNotes(savedNotes)
+    }
+  }, [])
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (notes.trim()) {
+        localStorage.setItem('learning-notes-business-analytics', notes)
+        setLastUpdated(new Date())
+      }
+    }, 2000)
+
+    return () => clearTimeout(timeoutId)
+  }, [notes])
 
   // Navigate to landing page when user signs out
   React.useEffect(() => {
     if (!user) {
-      console.log('🔄 Learning Portal: User is null, navigating to landing page')
+      console.log('🔄 Learning: User is null, navigating to landing page')
       navigate('/', { replace: true })
     }
   }, [user, navigate])
 
-  // Auto-save notes functionality
-  React.useEffect(() => {
-    const autoSaveTimer = setTimeout(() => {
-      if (notes.trim()) {
-        // Auto-save notes to localStorage or backend
-        localStorage.setItem(`notes-${activeTab}`, notes)
-        console.log('Notes auto-saved for', activeTab)
-      }
-    }, 2000) // Auto-save after 2 seconds of inactivity
-
-    return () => clearTimeout(autoSaveTimer)
-  }, [notes, activeTab])
-
   const handleSignOut = async () => {
     try {
-      console.log('🔓 Learning Portal: Sign out button clicked')
+      console.log('🔓 Learning: Sign out button clicked')
       const { error } = await signOut()
       if (error) {
-        console.error('❌ Learning Portal: Sign out failed:', error)
+        console.error('❌ Learning: Sign out failed:', error)
         navigate('/', { replace: true })
       } else {
-        console.log('✅ Learning Portal: Sign out successful, waiting for navigation...')
+        console.log('✅ Learning: Sign out successful, waiting for navigation...')
       }
     } catch (error) {
-      console.error('❌ Learning Portal: Sign out exception:', error)
+      console.error('❌ Learning: Sign out exception:', error)
       navigate('/', { replace: true })
     }
   }
 
-  const toggleModule = (moduleId: string) => {
-    setModules(prev => prev.map(module => 
-      module.id === moduleId 
-        ? { ...module, expanded: !module.expanded }
-        : module
-    ))
+  const handleFormat = (command: string, value?: string) => {
+    document.execCommand(command, false, value)
   }
 
-  const handleLessonClick = (lessonId: string) => {
-    console.log('Opening lesson:', lessonId)
-    // Here you would navigate to the specific lesson content
+  const handleNotesChange = (e: React.FormEvent<HTMLDivElement>) => {
+    setNotes(e.currentTarget.innerHTML)
   }
 
-  const handleRichTextFormat = (format: string, value?: string) => {
-    const notesEditor = document.getElementById('notes-editor') as HTMLDivElement
-    if (notesEditor) {
-      notesEditor.focus()
-      if (value) {
-        document.execCommand(format, false, value)
-      } else {
-        document.execCommand(format, false)
-      }
-      // Update notes state with the formatted content
-      setNotes(notesEditor.innerHTML)
+  const formatDate = (date: Date) => {
+    const options: Intl.DateTimeFormatOptions = {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
     }
-  }
-
-  const getTypeIcon = (type: string) => {
-    switch (type) {
-      case 'video': return <Video className="w-4 h-4" />
-      case 'reading': return <FileText className="w-4 h-4" />
-      case 'interactive': return <Star className="w-4 h-4" />
-      case 'quiz': return <Award className="w-4 h-4" />
-      default: return <Circle className="w-4 h-4" />
-    }
-  }
-
-  const renderContent = () => {
-    switch (activeTab) {
-      case 'main':
-        return (
-          <div className="h-full overflow-y-auto">
-            <div className="p-6">
-              <div className="max-w-4xl mx-auto">
-                <h2 className="text-2xl font-bold text-white mb-6">Business Analytics Fundamentals</h2>
-                
-                <div className="space-y-6">
-                  <div className="bg-gray-700/50 rounded-lg p-4">
-                    <h3 className="text-lg font-semibold text-white mb-3">Overview</h3>
-                    <p className="text-gray-300 mb-4">
-                      Business Analytics is the practice of iterative, methodical exploration of an organization's data, 
-                      with an emphasis on statistical analysis. It is used by companies committed to data-driven 
-                      decision-making to gain insights that inform business decisions and can be used to automate 
-                      and optimize business processes.
-                    </p>
-                    
-                    <h4 className="text-md font-medium text-white mb-2">Key Learning Points:</h4>
-                    <ul className="list-disc pl-5 space-y-2 text-gray-300">
-                      <li>Understanding the fundamental concepts and terminology of business analytics</li>
-                      <li>Learning how to collect, process, and analyze business data effectively</li>
-                      <li>Developing skills to interpret analytical results and derive actionable insights</li>
-                      <li>Applying business analytics techniques to real-world business problems</li>
-                      <li>Understanding the ethical implications and limitations of data-driven decision making</li>
-                    </ul>
-                  </div>
-                  
-                  <div className="bg-gray-700/50 rounded-lg p-4">
-                    <h3 className="text-lg font-semibold text-white mb-3">Business Analytics Process</h3>
-                    <ol className="list-decimal pl-5 space-y-3 text-gray-300">
-                      <li>
-                        <strong className="text-white">Problem Definition</strong>
-                        <p>Clearly articulate the business problem or opportunity that needs to be addressed</p>
-                      </li>
-                      <li>
-                        <strong className="text-white">Data Collection</strong>
-                        <p>Gather relevant data from various sources (internal databases, external APIs, surveys, etc.)</p>
-                      </li>
-                      <li>
-                        <strong className="text-white">Data Cleaning & Preparation</strong>
-                        <p>Process the raw data to handle missing values, outliers, and ensure consistency</p>
-                      </li>
-                      <li>
-                        <strong className="text-white">Exploratory Analysis</strong>
-                        <p>Perform initial data exploration to understand patterns, relationships, and potential insights</p>
-                      </li>
-                      <li>
-                        <strong className="text-white">Advanced Analysis</strong>
-                        <p>Apply statistical methods, predictive modeling, or other analytical techniques</p>
-                      </li>
-                      <li>
-                        <strong className="text-white">Results Interpretation</strong>
-                        <p>Translate analytical findings into business insights</p>
-                      </li>
-                      <li>
-                        <strong className="text-white">Communication & Action</strong>
-                        <p>Present insights to stakeholders and implement data-driven decisions</p>
-                      </li>
-                    </ol>
-                  </div>
-                  
-                  <div className="bg-gray-700/50 rounded-lg p-4">
-                    <h3 className="text-lg font-semibold text-white mb-3">Types of Business Analytics</h3>
-                    <div className="space-y-3">
-                      <div>
-                        <h4 className="text-md font-medium text-white">1. Descriptive Analytics</h4>
-                        <p className="text-gray-300">Focuses on understanding what happened in the past through data summarization and visualization</p>
-                      </div>
-                      <div>
-                        <h4 className="text-md font-medium text-white">2. Diagnostic Analytics</h4>
-                        <p className="text-gray-300">Examines why something happened by identifying patterns and relationships in data</p>
-                      </div>
-                      <div>
-                        <h4 className="text-md font-medium text-white">3. Predictive Analytics</h4>
-                        <p className="text-gray-300">Uses statistical models and forecasting techniques to understand what could happen in the future</p>
-                      </div>
-                      <div>
-                        <h4 className="text-md font-medium text-white">4. Prescriptive Analytics</h4>
-                        <p className="text-gray-300">Suggests actions to take based on predictions and the likely outcome of each decision option</p>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="bg-blue-900/30 border border-blue-500/30 rounded-lg p-4">
-                    <h3 className="text-lg font-semibold text-white mb-2 flex items-center">
-                      <Star className="w-5 h-5 text-yellow-400 mr-2" />
-                      Key Takeaways
-                    </h3>
-                    <ul className="list-disc pl-5 space-y-2 text-gray-300">
-                      <li>Business analytics transforms raw data into actionable business insights</li>
-                      <li>The process is iterative and requires both technical and business domain knowledge</li>
-                      <li>Different types of analytics serve different business purposes and timeframes</li>
-                      <li>Effective communication of insights is as important as the analysis itself</li>
-                      <li>Ethical considerations should guide all analytics activities</li>
-                    </ul>
-                  </div>
-
-                  {/* Additional content to demonstrate scrolling */}
-                  <div className="bg-gray-700/50 rounded-lg p-4">
-                    <h3 className="text-lg font-semibold text-white mb-3">Tools and Technologies</h3>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <h4 className="text-md font-medium text-white mb-2">Data Collection Tools</h4>
-                        <ul className="list-disc pl-5 space-y-1 text-gray-300">
-                          <li>SQL databases</li>
-                          <li>APIs and web scraping</li>
-                          <li>Survey platforms</li>
-                          <li>IoT sensors</li>
-                        </ul>
-                      </div>
-                      <div>
-                        <h4 className="text-md font-medium text-white mb-2">Analysis Tools</h4>
-                        <ul className="list-disc pl-5 space-y-1 text-gray-300">
-                          <li>Python/R programming</li>
-                          <li>Excel and Google Sheets</li>
-                          <li>Tableau, Power BI</li>
-                          <li>Machine learning platforms</li>
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-gray-700/50 rounded-lg p-4">
-                    <h3 className="text-lg font-semibold text-white mb-3">Industry Applications</h3>
-                    <div className="space-y-3">
-                      <div>
-                        <h4 className="text-md font-medium text-white">Retail & E-commerce</h4>
-                        <p className="text-gray-300">Customer segmentation, inventory optimization, price optimization, recommendation systems</p>
-                      </div>
-                      <div>
-                        <h4 className="text-md font-medium text-white">Healthcare</h4>
-                        <p className="text-gray-300">Patient outcome prediction, resource allocation, drug discovery, epidemic modeling</p>
-                      </div>
-                      <div>
-                        <h4 className="text-md font-medium text-white">Finance</h4>
-                        <p className="text-gray-300">Risk assessment, fraud detection, algorithmic trading, credit scoring</p>
-                      </div>
-                      <div>
-                        <h4 className="text-md font-medium text-white">Manufacturing</h4>
-                        <p className="text-gray-300">Quality control, predictive maintenance, supply chain optimization, demand forecasting</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-gray-700/50 rounded-lg p-4 mb-8">
-                    <h3 className="text-lg font-semibold text-white mb-3">Next Steps</h3>
-                    <p className="text-gray-300 mb-3">
-                      Now that you understand the fundamentals, you're ready to dive deeper into specific analytics techniques and tools.
-                    </p>
-                    <div className="flex space-x-4">
-                      <button className="bg-blue-500 hover:bg-blue-400 text-white px-4 py-2 rounded-lg transition-colors">
-                        Continue to Module 2
-                      </button>
-                      <button className="border border-gray-500 text-gray-300 hover:bg-gray-700 px-4 py-2 rounded-lg transition-colors">
-                        Take Practice Quiz
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )
-      case 'mindmap':
-        return (
-          <div className="h-full overflow-y-auto">
-            <div className="p-4 flex items-center justify-center min-h-full">
-              <div className="text-center">
-                <div className="w-full max-w-2xl mx-auto">
-                  <img 
-                    src="https://images.pexels.com/photos/3861969/pexels-photo-3861969.jpeg?auto=compress&cs=tinysrgb&w=800" 
-                    alt="Business Analytics Mindmap"
-                    className="w-full h-auto rounded-lg shadow-lg"
-                  />
-                </div>
-                <p className="text-gray-600 mt-4">Interactive Business Analytics Mindmap</p>
-              </div>
-            </div>
-          </div>
-        )
-      case 'infographic':
-        return (
-          <div className="h-full overflow-y-auto">
-            <div className="p-4 flex items-center justify-center min-h-full">
-              <div className="text-center">
-                <div className="w-full max-w-2xl mx-auto">
-                  <img 
-                    src="https://images.pexels.com/photos/3861458/pexels-photo-3861458.jpeg?auto=compress&cs=tinysrgb&w=800" 
-                    alt="Business Analytics Infographic"
-                    className="w-full h-auto rounded-lg shadow-lg"
-                  />
-                </div>
-                <p className="text-gray-600 mt-4">Business Intelligence and Analytics Infographic</p>
-              </div>
-            </div>
-          </div>
-        )
-      case 'visualized':
-        return (
-          <div className="h-full overflow-y-auto">
-            <div className="p-8 flex items-center justify-center min-h-full bg-gradient-to-br from-yellow-400 to-orange-500 rounded-lg">
-              <div className="text-center text-white">
-                <h3 className="text-2xl font-bold mb-4">Porter's Value Chain Analysis</h3>
-                <div className="bg-blue-600 rounded-lg p-6 max-w-lg mx-auto">
-                  <div className="grid grid-cols-3 gap-2 text-sm">
-                    <div className="bg-blue-500 p-2 rounded">Firm Infrastructure</div>
-                    <div className="bg-blue-500 p-2 rounded">Human Resource Management</div>
-                    <div className="bg-blue-500 p-2 rounded">Technology Development</div>
-                    <div className="bg-blue-500 p-2 rounded">Procurement</div>
-                    <div className="bg-blue-700 p-2 rounded">Inbound Logistics</div>
-                    <div className="bg-blue-700 p-2 rounded">Operations</div>
-                    <div className="bg-blue-700 p-2 rounded">Outbound Logistics</div>
-                    <div className="bg-blue-700 p-2 rounded">Marketing & Sales</div>
-                    <div className="bg-blue-700 p-2 rounded">Service</div>
-                  </div>
-                  <div className="mt-4 text-xs">Primary Activities</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )
-      case 'animated':
-        return (
-          <div className="h-full overflow-y-auto">
-            <div className="p-4 flex items-center justify-center min-h-full">
-              <div className="text-center">
-                <div className="w-full max-w-2xl mx-auto">
-                  <img 
-                    src="https://images.pexels.com/photos/3861972/pexels-photo-3861972.jpeg?auto=compress&cs=tinysrgb&w=800" 
-                    alt="Data Platform Architecture"
-                    className="w-full h-auto rounded-lg shadow-lg"
-                  />
-                </div>
-                <p className="text-gray-600 mt-4">Animated Data Platform Architecture</p>
-              </div>
-            </div>
-          </div>
-        )
-      case 'interactive':
-        return (
-          <div className="h-full overflow-y-auto">
-            <div className="p-6">
-              <div className="text-center mb-6">
-                <h3 className="text-white text-xl font-bold mb-2">Matching KPIs to Business Functions</h3>
-                <p className="text-gray-400">Drag each KPI to the business function it most relates to</p>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-8">
-                {/* Draggable KPI Cards */}
-                <div>
-                  <h4 className="text-white font-medium mb-4">Draggable KPI Cards</h4>
-                  <div className="grid grid-cols-2 gap-3">
-                    {['Customer Acquisition Cost', 'Net Promoter Score', 'Monthly Recurring Revenue', 'Retention Rate', 'Gross Margin'].map((kpi) => (
-                      <div key={kpi} className="bg-blue-500 text-white p-3 rounded-lg text-sm font-medium cursor-move hover:bg-blue-400 transition-colors">
-                        {kpi}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                
-                {/* Drop Zones */}
-                <div>
-                  <h4 className="text-white font-medium mb-4">Business Functions</h4>
-                  <div className="space-y-3">
-                    {['Marketing', 'Customer Service', 'Finance', 'Operations'].map((func) => (
-                      <div key={func} className="flex items-center space-x-4">
-                        <div className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium min-w-[120px]">
-                          {func}
-                        </div>
-                        <div className="border-2 border-dashed border-gray-600 rounded-lg p-4 flex-1 text-center text-gray-400 hover:border-gray-500 transition-colors">
-                          Drop here
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  
-                  <div className="flex space-x-4 mt-6">
-                    <button className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-500 transition-colors">
-                      Reset
-                    </button>
-                    <button className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-400 transition-colors">
-                      Submit matches
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )
-      default:
-        return null
-    }
+    return date.toLocaleDateString('en-US', options)
   }
 
   return (
@@ -904,183 +621,113 @@ export function LearningPage() {
       
       {/* Main Content */}
       <div className="ml-[88px] flex h-screen">
-        {/* Left Panel - Modules and Lessons */}
+        {/* Left Sidebar - Modules */}
         <div className="w-80 bg-gray-800/30 backdrop-blur-sm border-r border-white/10 flex flex-col">
           {/* Header */}
           <div className="p-6 border-b border-white/10">
             <div className="flex items-center space-x-3 mb-4">
-              <button 
-                onClick={() => navigate('/achievements')}
-                className="p-2 hover:bg-gray-700/50 rounded-lg transition-colors"
-              >
-                <ArrowLeft className="w-5 h-5 text-gray-400" />
+              <button className="text-gray-400 hover:text-white transition-colors">
+                <ArrowLeft className="w-5 h-5" />
               </button>
-              <div>
-                <h1 className="text-xl font-bold text-white">Business Analytics</h1>
-                <p className="text-sm text-gray-400">5 Modules | 44 Lessons</p>
-              </div>
+              <h1 className="text-xl font-bold text-white">Business Analytics</h1>
             </div>
             
-            <div className="bg-orange-500 text-white px-3 py-1 rounded-full text-xs font-medium w-fit">
-              0% Completed
+            <div className="flex items-center justify-between mb-4">
+              <button className="px-4 py-2 bg-gray-700/50 text-gray-300 rounded-lg text-sm hover:bg-gray-600/50 transition-colors">
+                Continue later
+              </button>
+              <button className="px-4 py-2 bg-green-500 text-white rounded-lg text-sm hover:bg-green-600 transition-colors">
+                Mark this done
+              </button>
+            </div>
+            
+            <div className="text-sm text-gray-400">
+              <span className="text-white font-medium">5 Modules</span> | <span className="text-white font-medium">44 Lessons</span>
+            </div>
+            
+            <div className="mt-3">
+              <div className="flex items-center space-x-2 text-sm">
+                <div className="px-2 py-1 bg-orange-500 text-white rounded text-xs font-medium">
+                  0% Completed
+                </div>
+              </div>
             </div>
           </div>
 
           {/* Modules List */}
           <div className="flex-1 overflow-y-auto p-4 space-y-3">
             {modules.map((module) => (
-              <div key={module.id} className="bg-gray-700/30 rounded-lg overflow-hidden">
-                <button
-                  onClick={() => toggleModule(module.id)}
-                  className="w-full p-4 text-left flex items-center justify-between hover:bg-gray-600/30 transition-colors"
-                >
-                  <div className="flex-1">
-                    <h3 className="text-white font-medium mb-1">{module.title}</h3>
-                    <div className="flex items-center space-x-2 text-sm text-gray-400">
-                      <span>{module.completedLessons}/{module.totalLessons} lessons</span>
-                      <span>•</span>
-                      <span>{module.progress}%</span>
+              <div key={module.id} className="bg-gray-700/30 rounded-xl p-4 hover:bg-gray-600/30 transition-colors cursor-pointer">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-white font-medium">{module.id}. {module.title}</h3>
+                  <ChevronDown className="w-4 h-4 text-gray-400" />
+                </div>
+                
+                {module.progress > 0 && (
+                  <div className="mb-2">
+                    <div className="w-full bg-gray-600 rounded-full h-2">
+                      <div 
+                        className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                        style={{ width: `${module.progress}%` }}
+                      />
                     </div>
                   </div>
-                  <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${module.expanded ? 'rotate-180' : ''}`} />
-                </button>
-                
-                {module.expanded && (
-                  <div className="border-t border-gray-600/50">
-                    {module.lessons.map((lesson) => (
-                      <button
-                        key={lesson.id}
-                        onClick={() => handleLessonClick(lesson.id)}
-                        className="w-full p-3 text-left flex items-center space-x-3 hover:bg-gray-600/30 transition-colors border-b border-gray-600/30 last:border-b-0"
-                      >
-                        <div className={`w-5 h-5 flex items-center justify-center ${lesson.completed ? 'text-green-400' : 'text-gray-400'}`}>
-                          {lesson.completed ? <CheckCircle className="w-4 h-4" /> : getTypeIcon(lesson.type)}
-                        </div>
-                        <div className="flex-1">
-                          <div className="text-white text-sm font-medium">{lesson.title}</div>
-                          <div className="text-gray-400 text-xs">{lesson.duration}</div>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
                 )}
+                
+                <div className="text-sm text-gray-400">
+                  {module.lessons} lessons
+                </div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Center Panel - Main Content */}
+        {/* Center Content */}
         <div className="flex-1 flex flex-col">
-          {/* Top Header - Removed Search Bar */}
-          <div className="p-6 border-b border-white/10 flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              {/* Empty space where search bar was */}
-            </div>
-            
-            <div className="flex items-center space-x-4">
-              {/* Continue later and Mark as done buttons */}
-              <button className="text-gray-400 hover:text-white transition-colors">
-                Continue later
-              </button>
-              <button className="bg-green-500 hover:bg-green-400 text-white px-4 py-2 rounded-lg transition-colors">
-                Mark this done
-              </button>
-              
-              {/* Notification Bell */}
-              <button className="relative p-3 bg-gray-800/50 border border-gray-600/50 rounded-xl hover:bg-gray-700/50 transition-colors">
-                <Bell className="w-5 h-5 text-gray-300" />
-                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
-              </button>
-              
-              {/* Profile Icon */}
-              <div className="relative group">
-                <button className="flex items-center justify-center p-2 bg-gray-800/50 border border-gray-600/50 rounded-xl hover:bg-gray-700/50 transition-colors">
-                  <div className="w-8 h-8 bg-gradient-to-r from-[#6244FF] to-[#FFAE2D] rounded-full flex items-center justify-center">
-                    <span className="text-white text-sm font-medium">
-                      {userName?.[0]?.toUpperCase() || 'U'}
-                    </span>
-                  </div>
-                </button>
-                
-                {/* Profile Dropdown */}
-                <div className="absolute right-0 mt-2 w-64 bg-gray-800/95 backdrop-blur-sm rounded-xl shadow-xl border border-gray-600/50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                  <div className="p-4">
-                    <div className="flex items-center space-x-3 pb-4 border-b border-gray-600/50">
-                      <div className="w-10 h-10 bg-gradient-to-r from-[#6244FF] to-[#FFAE2D] rounded-full flex items-center justify-center flex-shrink-0">
-                        <span className="text-white text-sm font-medium">
-                          {userName?.[0]?.toUpperCase() || 'U'}
-                        </span>
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="text-white text-sm font-medium truncate">{userName}</div>
-                        <div className="text-gray-400 text-xs truncate">{user?.email}</div>
-                      </div>
-                    </div>
-                    <div className="pt-3 space-y-1">
-                      <button className="w-full text-left px-3 py-2 text-gray-300 hover:bg-gray-700/50 rounded-lg text-sm transition-colors">
-                        Profile Settings
-                      </button>
-                      <button className="w-full text-left px-3 py-2 text-gray-300 hover:bg-gray-700/50 rounded-lg text-sm transition-colors">
-                        Account Settings
-                      </button>
-                      <button className="w-full text-left px-3 py-2 text-gray-300 hover:bg-gray-700/50 rounded-lg text-sm transition-colors">
-                        Help & Support
-                      </button>
-                      <div className="border-t border-gray-600/50 pt-1 mt-2">
-                        <button 
-                          onClick={handleSignOut}
-                          className="w-full text-left px-3 py-2 text-red-400 hover:bg-gray-700/50 rounded-lg text-sm transition-colors"
-                        >
-                          Sign Out
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Content Tabs */}
-          <div className="p-6 border-b border-white/10">
-            <div className="flex space-x-1 overflow-x-auto pb-2">
-              {contentTabs.map((tab) => (
+          {/* Tab Navigation */}
+          <div className="border-b border-white/10 bg-gray-800/20 px-6 py-4">
+            <div className="flex space-x-1 overflow-x-auto">
+              {Object.keys(tabContent).map((tab) => (
                 <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
-                    activeTab === tab.id
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
+                    activeTab === tab
                       ? 'bg-blue-500 text-white'
                       : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
                   }`}
                 >
-                  {tab.id === 'main' && <List className="w-4 h-4 inline-block mr-1" />}
-                  {tab.label}
+                  {tab}
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Main Content Area with Fixed Height and Scrolling */}
-          <div className="flex-1 overflow-hidden">
-            <div className="h-full bg-gray-800/30 backdrop-blur-sm border-l border-white/10 border-r border-white/10">
-              {renderContent()}
-            </div>
+          {/* Content Area */}
+          <div className="flex-1 overflow-y-auto p-6">
+            <div 
+              className="prose prose-invert max-w-none"
+              dangerouslySetInnerHTML={{ 
+                __html: tabContent[activeTab as keyof typeof tabContent]?.content || '' 
+              }}
+            />
           </div>
         </div>
 
-        {/* Right Panel - Notes with Rich Text Editor */}
+        {/* Right Sidebar - Notes */}
         <div className="w-80 bg-gray-800/30 backdrop-blur-sm border-l border-white/10 flex flex-col">
-          {/* Notes Header with Last Updated, Export, and Star */}
-          <div className="p-6 border-b border-white/10">
-            <div className="flex items-center justify-between mb-2">
+          {/* Notes Header */}
+          <div className="p-4 border-b border-white/10">
+            <div className="flex items-center justify-between mb-3">
               <div className="flex items-center space-x-2">
-                <Undo2 className="w-4 h-4 text-gray-400" />
-                <span className="text-sm text-gray-400">Last updated {lastUpdated}</span>
+                <RotateCcw className="w-4 h-4 text-gray-400" />
+                <span className="text-sm text-gray-400">Last updated {formatDate(lastUpdated)}</span>
               </div>
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-2">
                 <button className="text-gray-400 hover:text-white transition-colors">
-                  <Download className="w-4 h-4" />
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
                 </button>
                 <button className="text-gray-400 hover:text-yellow-400 transition-colors">
                   <Star className="w-4 h-4" />
@@ -1089,33 +736,29 @@ export function LearningPage() {
             </div>
             <h3 className="text-lg font-semibold text-white">Notes</h3>
           </div>
-          
+
           {/* Rich Text Toolbar */}
-          <RichTextToolbar onFormat={handleRichTextFormat} />
-          
-          {/* Notes Editor */}
+          <RichTextToolbar onFormat={handleFormat} />
+
+          {/* Notes Content */}
           <div className="flex-1 p-4">
             <div
-              id="notes-editor"
               contentEditable
-              suppressContentEditableWarning
-              onInput={(e) => setNotes(e.currentTarget.innerHTML)}
-              className="w-full h-full bg-gray-700/30 border border-gray-600/50 rounded-lg p-4 text-white focus:outline-none focus:border-blue-500 resize-none overflow-y-auto"
-              style={{ minHeight: '300px' }}
-              data-placeholder="Start typing notes here..."
+              onInput={handleNotesChange}
+              className="w-full h-full bg-gray-700/20 rounded-xl p-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 min-h-[300px] overflow-y-auto"
+              style={{ 
+                fontSize: '14px',
+                lineHeight: '1.6',
+                color: '#ffffff'
+              }}
+              suppressContentEditableWarning={true}
+              data-placeholder="Start typing notes here"
             />
-          </div>
-          
-          {/* Auto-save indicator */}
-          <div className="p-4 border-t border-white/10">
-            <div className="flex items-center justify-center text-xs text-gray-400">
-              <span>Notes auto-saved</span>
-            </div>
           </div>
         </div>
       </div>
 
-      {/* AI Tutor - Matching the main overview page design */}
+      {/* AI Tutor */}
       <AITutor />
     </div>
   )
