@@ -400,98 +400,162 @@ export function LearningPage() {
     switch (activeTab) {
       case 'main':
         return (
-          <div className="w-full h-full bg-gray-800 rounded-lg p-6 overflow-y-auto">
-            <div className="max-w-3xl mx-auto">
-              <h2 className="text-2xl font-bold text-white mb-6">Business Analytics Fundamentals</h2>
-              
-              <div className="space-y-6">
-                <div className="bg-gray-700/50 rounded-lg p-4">
-                  <h3 className="text-lg font-semibold text-white mb-3">Overview</h3>
-                  <p className="text-gray-300 mb-4">
-                    Business Analytics is the practice of iterative, methodical exploration of an organization's data, 
-                    with an emphasis on statistical analysis. It is used by companies committed to data-driven 
-                    decision-making to gain insights that inform business decisions and can be used to automate 
-                    and optimize business processes.
-                  </p>
+          <div className="h-full overflow-y-auto">
+            <div className="p-6">
+              <div className="max-w-4xl mx-auto">
+                <h2 className="text-2xl font-bold text-white mb-6">Business Analytics Fundamentals</h2>
+                
+                <div className="space-y-6">
+                  <div className="bg-gray-700/50 rounded-lg p-4">
+                    <h3 className="text-lg font-semibold text-white mb-3">Overview</h3>
+                    <p className="text-gray-300 mb-4">
+                      Business Analytics is the practice of iterative, methodical exploration of an organization's data, 
+                      with an emphasis on statistical analysis. It is used by companies committed to data-driven 
+                      decision-making to gain insights that inform business decisions and can be used to automate 
+                      and optimize business processes.
+                    </p>
+                    
+                    <h4 className="text-md font-medium text-white mb-2">Key Learning Points:</h4>
+                    <ul className="list-disc pl-5 space-y-2 text-gray-300">
+                      <li>Understanding the fundamental concepts and terminology of business analytics</li>
+                      <li>Learning how to collect, process, and analyze business data effectively</li>
+                      <li>Developing skills to interpret analytical results and derive actionable insights</li>
+                      <li>Applying business analytics techniques to real-world business problems</li>
+                      <li>Understanding the ethical implications and limitations of data-driven decision making</li>
+                    </ul>
+                  </div>
                   
-                  <h4 className="text-md font-medium text-white mb-2">Key Learning Points:</h4>
-                  <ul className="list-disc pl-5 space-y-2 text-gray-300">
-                    <li>Understanding the fundamental concepts and terminology of business analytics</li>
-                    <li>Learning how to collect, process, and analyze business data effectively</li>
-                    <li>Developing skills to interpret analytical results and derive actionable insights</li>
-                    <li>Applying business analytics techniques to real-world business problems</li>
-                    <li>Understanding the ethical implications and limitations of data-driven decision making</li>
-                  </ul>
-                </div>
-                
-                <div className="bg-gray-700/50 rounded-lg p-4">
-                  <h3 className="text-lg font-semibold text-white mb-3">Business Analytics Process</h3>
-                  <ol className="list-decimal pl-5 space-y-3 text-gray-300">
-                    <li>
-                      <strong className="text-white">Problem Definition</strong>
-                      <p>Clearly articulate the business problem or opportunity that needs to be addressed</p>
-                    </li>
-                    <li>
-                      <strong className="text-white">Data Collection</strong>
-                      <p>Gather relevant data from various sources (internal databases, external APIs, surveys, etc.)</p>
-                    </li>
-                    <li>
-                      <strong className="text-white">Data Cleaning & Preparation</strong>
-                      <p>Process the raw data to handle missing values, outliers, and ensure consistency</p>
-                    </li>
-                    <li>
-                      <strong className="text-white">Exploratory Analysis</strong>
-                      <p>Perform initial data exploration to understand patterns, relationships, and potential insights</p>
-                    </li>
-                    <li>
-                      <strong className="text-white">Advanced Analysis</strong>
-                      <p>Apply statistical methods, predictive modeling, or other analytical techniques</p>
-                    </li>
-                    <li>
-                      <strong className="text-white">Results Interpretation</strong>
-                      <p>Translate analytical findings into business insights</p>
-                    </li>
-                    <li>
-                      <strong className="text-white">Communication & Action</strong>
-                      <p>Present insights to stakeholders and implement data-driven decisions</p>
-                    </li>
-                  </ol>
-                </div>
-                
-                <div className="bg-gray-700/50 rounded-lg p-4">
-                  <h3 className="text-lg font-semibold text-white mb-3">Types of Business Analytics</h3>
-                  <div className="space-y-3">
-                    <div>
-                      <h4 className="text-md font-medium text-white">1. Descriptive Analytics</h4>
-                      <p className="text-gray-300">Focuses on understanding what happened in the past through data summarization and visualization</p>
-                    </div>
-                    <div>
-                      <h4 className="text-md font-medium text-white">2. Diagnostic Analytics</h4>
-                      <p className="text-gray-300">Examines why something happened by identifying patterns and relationships in data</p>
-                    </div>
-                    <div>
-                      <h4 className="text-md font-medium text-white">3. Predictive Analytics</h4>
-                      <p className="text-gray-300">Uses statistical models and forecasting techniques to understand what could happen in the future</p>
-                    </div>
-                    <div>
-                      <h4 className="text-md font-medium text-white">4. Prescriptive Analytics</h4>
-                      <p className="text-gray-300">Suggests actions to take based on predictions and the likely outcome of each decision option</p>
+                  <div className="bg-gray-700/50 rounded-lg p-4">
+                    <h3 className="text-lg font-semibold text-white mb-3">Business Analytics Process</h3>
+                    <ol className="list-decimal pl-5 space-y-3 text-gray-300">
+                      <li>
+                        <strong className="text-white">Problem Definition</strong>
+                        <p>Clearly articulate the business problem or opportunity that needs to be addressed</p>
+                      </li>
+                      <li>
+                        <strong className="text-white">Data Collection</strong>
+                        <p>Gather relevant data from various sources (internal databases, external APIs, surveys, etc.)</p>
+                      </li>
+                      <li>
+                        <strong className="text-white">Data Cleaning & Preparation</strong>
+                        <p>Process the raw data to handle missing values, outliers, and ensure consistency</p>
+                      </li>
+                      <li>
+                        <strong className="text-white">Exploratory Analysis</strong>
+                        <p>Perform initial data exploration to understand patterns, relationships, and potential insights</p>
+                      </li>
+                      <li>
+                        <strong className="text-white">Advanced Analysis</strong>
+                        <p>Apply statistical methods, predictive modeling, or other analytical techniques</p>
+                      </li>
+                      <li>
+                        <strong className="text-white">Results Interpretation</strong>
+                        <p>Translate analytical findings into business insights</p>
+                      </li>
+                      <li>
+                        <strong className="text-white">Communication & Action</strong>
+                        <p>Present insights to stakeholders and implement data-driven decisions</p>
+                      </li>
+                    </ol>
+                  </div>
+                  
+                  <div className="bg-gray-700/50 rounded-lg p-4">
+                    <h3 className="text-lg font-semibold text-white mb-3">Types of Business Analytics</h3>
+                    <div className="space-y-3">
+                      <div>
+                        <h4 className="text-md font-medium text-white">1. Descriptive Analytics</h4>
+                        <p className="text-gray-300">Focuses on understanding what happened in the past through data summarization and visualization</p>
+                      </div>
+                      <div>
+                        <h4 className="text-md font-medium text-white">2. Diagnostic Analytics</h4>
+                        <p className="text-gray-300">Examines why something happened by identifying patterns and relationships in data</p>
+                      </div>
+                      <div>
+                        <h4 className="text-md font-medium text-white">3. Predictive Analytics</h4>
+                        <p className="text-gray-300">Uses statistical models and forecasting techniques to understand what could happen in the future</p>
+                      </div>
+                      <div>
+                        <h4 className="text-md font-medium text-white">4. Prescriptive Analytics</h4>
+                        <p className="text-gray-300">Suggests actions to take based on predictions and the likely outcome of each decision option</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-                
-                <div className="bg-blue-900/30 border border-blue-500/30 rounded-lg p-4">
-                  <h3 className="text-lg font-semibold text-white mb-2 flex items-center">
-                    <Star className="w-5 h-5 text-yellow-400 mr-2" />
-                    Key Takeaways
-                  </h3>
-                  <ul className="list-disc pl-5 space-y-2 text-gray-300">
-                    <li>Business analytics transforms raw data into actionable business insights</li>
-                    <li>The process is iterative and requires both technical and business domain knowledge</li>
-                    <li>Different types of analytics serve different business purposes and timeframes</li>
-                    <li>Effective communication of insights is as important as the analysis itself</li>
-                    <li>Ethical considerations should guide all analytics activities</li>
-                  </ul>
+                  
+                  <div className="bg-blue-900/30 border border-blue-500/30 rounded-lg p-4">
+                    <h3 className="text-lg font-semibold text-white mb-2 flex items-center">
+                      <Star className="w-5 h-5 text-yellow-400 mr-2" />
+                      Key Takeaways
+                    </h3>
+                    <ul className="list-disc pl-5 space-y-2 text-gray-300">
+                      <li>Business analytics transforms raw data into actionable business insights</li>
+                      <li>The process is iterative and requires both technical and business domain knowledge</li>
+                      <li>Different types of analytics serve different business purposes and timeframes</li>
+                      <li>Effective communication of insights is as important as the analysis itself</li>
+                      <li>Ethical considerations should guide all analytics activities</li>
+                    </ul>
+                  </div>
+
+                  {/* Additional content to demonstrate scrolling */}
+                  <div className="bg-gray-700/50 rounded-lg p-4">
+                    <h3 className="text-lg font-semibold text-white mb-3">Tools and Technologies</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <h4 className="text-md font-medium text-white mb-2">Data Collection Tools</h4>
+                        <ul className="list-disc pl-5 space-y-1 text-gray-300">
+                          <li>SQL databases</li>
+                          <li>APIs and web scraping</li>
+                          <li>Survey platforms</li>
+                          <li>IoT sensors</li>
+                        </ul>
+                      </div>
+                      <div>
+                        <h4 className="text-md font-medium text-white mb-2">Analysis Tools</h4>
+                        <ul className="list-disc pl-5 space-y-1 text-gray-300">
+                          <li>Python/R programming</li>
+                          <li>Excel and Google Sheets</li>
+                          <li>Tableau, Power BI</li>
+                          <li>Machine learning platforms</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-gray-700/50 rounded-lg p-4">
+                    <h3 className="text-lg font-semibold text-white mb-3">Industry Applications</h3>
+                    <div className="space-y-3">
+                      <div>
+                        <h4 className="text-md font-medium text-white">Retail & E-commerce</h4>
+                        <p className="text-gray-300">Customer segmentation, inventory optimization, price optimization, recommendation systems</p>
+                      </div>
+                      <div>
+                        <h4 className="text-md font-medium text-white">Healthcare</h4>
+                        <p className="text-gray-300">Patient outcome prediction, resource allocation, drug discovery, epidemic modeling</p>
+                      </div>
+                      <div>
+                        <h4 className="text-md font-medium text-white">Finance</h4>
+                        <p className="text-gray-300">Risk assessment, fraud detection, algorithmic trading, credit scoring</p>
+                      </div>
+                      <div>
+                        <h4 className="text-md font-medium text-white">Manufacturing</h4>
+                        <p className="text-gray-300">Quality control, predictive maintenance, supply chain optimization, demand forecasting</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-gray-700/50 rounded-lg p-4 mb-8">
+                    <h3 className="text-lg font-semibold text-white mb-3">Next Steps</h3>
+                    <p className="text-gray-300 mb-3">
+                      Now that you understand the fundamentals, you're ready to dive deeper into specific analytics techniques and tools.
+                    </p>
+                    <div className="flex space-x-4">
+                      <button className="bg-blue-500 hover:bg-blue-400 text-white px-4 py-2 rounded-lg transition-colors">
+                        Continue to Module 2
+                      </button>
+                      <button className="border border-gray-500 text-gray-300 hover:bg-gray-700 px-4 py-2 rounded-lg transition-colors">
+                        Take Practice Quiz
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -499,115 +563,125 @@ export function LearningPage() {
         )
       case 'mindmap':
         return (
-          <div className="w-full h-full bg-white rounded-lg p-4 flex items-center justify-center">
-            <div className="text-center">
-              <div className="w-full max-w-2xl mx-auto">
-                <img 
-                  src="https://images.pexels.com/photos/3861969/pexels-photo-3861969.jpeg?auto=compress&cs=tinysrgb&w=800" 
-                  alt="Business Analytics Mindmap"
-                  className="w-full h-auto rounded-lg shadow-lg"
-                />
+          <div className="h-full overflow-y-auto">
+            <div className="p-4 flex items-center justify-center min-h-full">
+              <div className="text-center">
+                <div className="w-full max-w-2xl mx-auto">
+                  <img 
+                    src="https://images.pexels.com/photos/3861969/pexels-photo-3861969.jpeg?auto=compress&cs=tinysrgb&w=800" 
+                    alt="Business Analytics Mindmap"
+                    className="w-full h-auto rounded-lg shadow-lg"
+                  />
+                </div>
+                <p className="text-gray-600 mt-4">Interactive Business Analytics Mindmap</p>
               </div>
-              <p className="text-gray-600 mt-4">Interactive Business Analytics Mindmap</p>
             </div>
           </div>
         )
       case 'infographic':
         return (
-          <div className="w-full h-full bg-white rounded-lg p-4 flex items-center justify-center">
-            <div className="text-center">
-              <div className="w-full max-w-2xl mx-auto">
-                <img 
-                  src="https://images.pexels.com/photos/3861458/pexels-photo-3861458.jpeg?auto=compress&cs=tinysrgb&w=800" 
-                  alt="Business Analytics Infographic"
-                  className="w-full h-auto rounded-lg shadow-lg"
-                />
+          <div className="h-full overflow-y-auto">
+            <div className="p-4 flex items-center justify-center min-h-full">
+              <div className="text-center">
+                <div className="w-full max-w-2xl mx-auto">
+                  <img 
+                    src="https://images.pexels.com/photos/3861458/pexels-photo-3861458.jpeg?auto=compress&cs=tinysrgb&w=800" 
+                    alt="Business Analytics Infographic"
+                    className="w-full h-auto rounded-lg shadow-lg"
+                  />
+                </div>
+                <p className="text-gray-600 mt-4">Business Intelligence and Analytics Infographic</p>
               </div>
-              <p className="text-gray-600 mt-4">Business Intelligence and Analytics Infographic</p>
             </div>
           </div>
         )
       case 'visualized':
         return (
-          <div className="w-full h-full bg-gradient-to-br from-yellow-400 to-orange-500 rounded-lg p-8 flex items-center justify-center">
-            <div className="text-center text-white">
-              <h3 className="text-2xl font-bold mb-4">Porter's Value Chain Analysis</h3>
-              <div className="bg-blue-600 rounded-lg p-6 max-w-lg mx-auto">
-                <div className="grid grid-cols-3 gap-2 text-sm">
-                  <div className="bg-blue-500 p-2 rounded">Firm Infrastructure</div>
-                  <div className="bg-blue-500 p-2 rounded">Human Resource Management</div>
-                  <div className="bg-blue-500 p-2 rounded">Technology Development</div>
-                  <div className="bg-blue-500 p-2 rounded">Procurement</div>
-                  <div className="bg-blue-700 p-2 rounded">Inbound Logistics</div>
-                  <div className="bg-blue-700 p-2 rounded">Operations</div>
-                  <div className="bg-blue-700 p-2 rounded">Outbound Logistics</div>
-                  <div className="bg-blue-700 p-2 rounded">Marketing & Sales</div>
-                  <div className="bg-blue-700 p-2 rounded">Service</div>
+          <div className="h-full overflow-y-auto">
+            <div className="p-8 flex items-center justify-center min-h-full bg-gradient-to-br from-yellow-400 to-orange-500 rounded-lg">
+              <div className="text-center text-white">
+                <h3 className="text-2xl font-bold mb-4">Porter's Value Chain Analysis</h3>
+                <div className="bg-blue-600 rounded-lg p-6 max-w-lg mx-auto">
+                  <div className="grid grid-cols-3 gap-2 text-sm">
+                    <div className="bg-blue-500 p-2 rounded">Firm Infrastructure</div>
+                    <div className="bg-blue-500 p-2 rounded">Human Resource Management</div>
+                    <div className="bg-blue-500 p-2 rounded">Technology Development</div>
+                    <div className="bg-blue-500 p-2 rounded">Procurement</div>
+                    <div className="bg-blue-700 p-2 rounded">Inbound Logistics</div>
+                    <div className="bg-blue-700 p-2 rounded">Operations</div>
+                    <div className="bg-blue-700 p-2 rounded">Outbound Logistics</div>
+                    <div className="bg-blue-700 p-2 rounded">Marketing & Sales</div>
+                    <div className="bg-blue-700 p-2 rounded">Service</div>
+                  </div>
+                  <div className="mt-4 text-xs">Primary Activities</div>
                 </div>
-                <div className="mt-4 text-xs">Primary Activities</div>
               </div>
             </div>
           </div>
         )
       case 'animated':
         return (
-          <div className="w-full h-full bg-white rounded-lg p-4 flex items-center justify-center">
-            <div className="text-center">
-              <div className="w-full max-w-2xl mx-auto">
-                <img 
-                  src="https://images.pexels.com/photos/3861972/pexels-photo-3861972.jpeg?auto=compress&cs=tinysrgb&w=800" 
-                  alt="Data Platform Architecture"
-                  className="w-full h-auto rounded-lg shadow-lg"
-                />
+          <div className="h-full overflow-y-auto">
+            <div className="p-4 flex items-center justify-center min-h-full">
+              <div className="text-center">
+                <div className="w-full max-w-2xl mx-auto">
+                  <img 
+                    src="https://images.pexels.com/photos/3861972/pexels-photo-3861972.jpeg?auto=compress&cs=tinysrgb&w=800" 
+                    alt="Data Platform Architecture"
+                    className="w-full h-auto rounded-lg shadow-lg"
+                  />
+                </div>
+                <p className="text-gray-600 mt-4">Animated Data Platform Architecture</p>
               </div>
-              <p className="text-gray-600 mt-4">Animated Data Platform Architecture</p>
             </div>
           </div>
         )
       case 'interactive':
         return (
-          <div className="w-full h-full bg-gray-800 rounded-lg p-6">
-            <div className="text-center mb-6">
-              <h3 className="text-white text-xl font-bold mb-2">Matching KPIs to Business Functions</h3>
-              <p className="text-gray-400">Drag each KPI to the business function it most relates to</p>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-8">
-              {/* Draggable KPI Cards */}
-              <div>
-                <h4 className="text-white font-medium mb-4">Draggable KPI Cards</h4>
-                <div className="grid grid-cols-2 gap-3">
-                  {['Customer Acquisition Cost', 'Net Promoter Score', 'Monthly Recurring Revenue', 'Retention Rate', 'Gross Margin'].map((kpi) => (
-                    <div key={kpi} className="bg-blue-500 text-white p-3 rounded-lg text-sm font-medium cursor-move hover:bg-blue-400 transition-colors">
-                      {kpi}
-                    </div>
-                  ))}
-                </div>
+          <div className="h-full overflow-y-auto">
+            <div className="p-6">
+              <div className="text-center mb-6">
+                <h3 className="text-white text-xl font-bold mb-2">Matching KPIs to Business Functions</h3>
+                <p className="text-gray-400">Drag each KPI to the business function it most relates to</p>
               </div>
               
-              {/* Drop Zones */}
-              <div>
-                <h4 className="text-white font-medium mb-4">Business Functions</h4>
-                <div className="space-y-3">
-                  {['Marketing', 'Customer Service', 'Finance', 'Operations'].map((func) => (
-                    <div key={func} className="flex items-center space-x-4">
-                      <div className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium min-w-[120px]">
-                        {func}
+              <div className="grid grid-cols-2 gap-8">
+                {/* Draggable KPI Cards */}
+                <div>
+                  <h4 className="text-white font-medium mb-4">Draggable KPI Cards</h4>
+                  <div className="grid grid-cols-2 gap-3">
+                    {['Customer Acquisition Cost', 'Net Promoter Score', 'Monthly Recurring Revenue', 'Retention Rate', 'Gross Margin'].map((kpi) => (
+                      <div key={kpi} className="bg-blue-500 text-white p-3 rounded-lg text-sm font-medium cursor-move hover:bg-blue-400 transition-colors">
+                        {kpi}
                       </div>
-                      <div className="border-2 border-dashed border-gray-600 rounded-lg p-4 flex-1 text-center text-gray-400 hover:border-gray-500 transition-colors">
-                        Drop here
-                      </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
                 
-                <div className="flex space-x-4 mt-6">
-                  <button className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-500 transition-colors">
-                    Reset
-                  </button>
-                  <button className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-400 transition-colors">
-                    Submit matches
-                  </button>
+                {/* Drop Zones */}
+                <div>
+                  <h4 className="text-white font-medium mb-4">Business Functions</h4>
+                  <div className="space-y-3">
+                    {['Marketing', 'Customer Service', 'Finance', 'Operations'].map((func) => (
+                      <div key={func} className="flex items-center space-x-4">
+                        <div className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium min-w-[120px]">
+                          {func}
+                        </div>
+                        <div className="border-2 border-dashed border-gray-600 rounded-lg p-4 flex-1 text-center text-gray-400 hover:border-gray-500 transition-colors">
+                          Drop here
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <div className="flex space-x-4 mt-6">
+                    <button className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-500 transition-colors">
+                      Reset
+                    </button>
+                    <button className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-400 transition-colors">
+                      Submit matches
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -790,20 +864,10 @@ export function LearningPage() {
             </div>
           </div>
 
-          {/* Main Content Area with Scrolling */}
-          <div className="flex-1 p-6">
-            <div className="h-full bg-gray-800/30 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden">
+          {/* Main Content Area with Fixed Height and Scrolling */}
+          <div className="flex-1 overflow-hidden">
+            <div className="h-full bg-gray-800/30 backdrop-blur-sm border-l border-white/10 border-r border-white/10">
               {renderContent()}
-            </div>
-          </div>
-
-          {/* Bottom Info Bar */}
-          <div className="p-4 border-t border-white/10 flex items-center justify-between text-sm text-gray-400">
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <Clock className="w-4 h-4" />
-                <span>Last updated {lastUpdated}</span>
-              </div>
             </div>
           </div>
         </div>
