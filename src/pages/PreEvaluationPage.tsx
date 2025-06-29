@@ -370,6 +370,7 @@ export function PreEvaluationPage() {
 
   const handleStartLearning = async () => {
     setLoading(true)
+    
     try {
       console.log('🚀 Starting learning journey...')
       
@@ -377,7 +378,7 @@ export function PreEvaluationPage() {
       const learningProfile = analyzeLearningProfile(answers)
       console.log('📊 Learning profile analyzed:', learningProfile)
       
-      // Prepare profile update data
+      // Create a simplified profile update with timeout
       const profileUpdate = {
         learning_style: learningProfile.primaryStyle,
         experience_level: 'beginner',
@@ -388,32 +389,27 @@ export function PreEvaluationPage() {
       
       console.log('💾 Updating profile with:', profileUpdate)
       
-      // Save the evaluation results to user profile
-      await updateProfile(profileUpdate)
+      // Set a timeout to prevent infinite loading
+      const updatePromise = updateProfile(profileUpdate)
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Profile update timeout')), 10000)
+      )
+      
+      // Race between update and timeout
+      await Promise.race([updatePromise, timeoutPromise])
       
       console.log('✅ Profile updated successfully, navigating to dashboard...')
       
-      // Small delay to ensure state is updated
-      setTimeout(() => {
-        navigate('/dashboard', { replace: true })
-      }, 100)
+      // Navigate to dashboard
+      navigate('/dashboard', { replace: true })
       
     } catch (error) {
       console.error('❌ Error in learning journey process:', error)
       
-      // Show user-friendly error message
-      const userChoice = confirm(
-        'There was an issue saving your evaluation results. Would you like to:\n\n' +
-        'OK - Proceed to dashboard anyway\n' +
-        'Cancel - Try again'
-      )
-      
-      if (userChoice) {
-        console.log('🔄 User chose to proceed without saving evaluation')
-        navigate('/dashboard', { replace: true })
-      } else {
-        setLoading(false)
-      }
+      // For now, let's just proceed to dashboard even if profile update fails
+      // This ensures users don't get stuck on the loading screen
+      console.log('⚠️ Proceeding to dashboard despite error to prevent infinite loading')
+      navigate('/dashboard', { replace: true })
     }
   }
 
