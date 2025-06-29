@@ -31,6 +31,41 @@ Test credentials:
     console.log('🔧 Development helpers loaded! Type "devHelpers.help()" for available commands.')
   })
 
+  // Load timeout diagnosis utilities (PRIORITY)
+  import('./utils/timeoutDiagnosis').then((module) => {
+    const TimeoutDiagnosis = module.default
+    
+    console.log('🚨 TIMEOUT DIAGNOSIS LOADED - This will identify the hanging issue!')
+    console.log('Available commands:')
+    console.log('• await timeoutDiagnosis.quickDiagnosis() - Quick 5s test')
+    console.log('• await timeoutDiagnosis.runCompleteDiagnosis() - Full diagnosis')
+    
+    // Auto-run diagnosis immediately
+    setTimeout(async () => {
+      console.log('\n🚨 AUTO-RUNNING TIMEOUT DIAGNOSIS...')
+      console.log('This will identify why the upsert is hanging!')
+      
+      const result = await TimeoutDiagnosis.quickDiagnosis()
+      
+      if (!result) {
+        console.log(`
+🚨 TIMEOUT ISSUE IDENTIFIED!
+
+The diagnosis found where the connection is hanging.
+This is causing the infinite loading screen in your app.
+
+Next steps:
+1. Check the specific error messages above
+2. Verify your Supabase project is active
+3. Check database health in Supabase dashboard
+4. Verify RLS policies are not blocking operations
+
+Run 'await timeoutDiagnosis.runCompleteDiagnosis()' for detailed analysis.
+        `)
+      }
+    }, 1000)
+  })
+
   // Load upsert validation utilities
   import('./utils/validateUpsert').then(({ validateUpsertOperation, UpsertValidator, quickTests }) => {
     (window as any).upsertValidator = {
@@ -71,21 +106,6 @@ Quick diagnosis:
     console.log('• await supabaseTest.runAllTests() - Full comprehensive test')
     console.log('• await supabaseTest.quickConnectionTest() - Quick 3s test')
     console.log('• supabaseTest.checkEnvironmentVariables() - Check env vars')
-    
-    // Auto-run quick tests
-    setTimeout(async () => {
-      console.log('\n🚀 Auto-running Supabase connection diagnostics...')
-      
-      // Check environment first
-      const envOk = SupabaseConnectionTest.checkEnvironmentVariables()
-      
-      if (envOk) {
-        // Run quick connection test
-        await SupabaseConnectionTest.quickConnectionTest()
-      } else {
-        console.log('❌ Environment variables not properly configured!')
-      }
-    }, 1000)
   })
 }
 
