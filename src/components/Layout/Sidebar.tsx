@@ -6,101 +6,68 @@ import {
 import { useAuth } from '../../contexts/AuthContext'
 import eLogoLight from '../../assets/images/e-logo-full-light.svg'
 
-// Import both selected and unselected SVG icons
-// Using the correct dashboard SVG files
-import selectedHomePage from '../../assets/images/selected-home-dashboard.svg'
-import unselectedHomePage from '../../assets/images/unselected-home-dashboard.svg'
-import selectedCoursePage from '../../assets/images/selected-course-page.svg'
+// Import only unselected SVG icons
+import unselectedHomePage from '../../assets/images/unselected-home-page.svg'
 import unselectedCoursePage from '../../assets/images/unselected-course-page.svg'
-import selectedMyGoals from '../../assets/images/selected-my-goals.svg'
 import unselectedMyGoals from '../../assets/images/unselected-my-goals.svg'
-import selectedMyNotes from '../../assets/images/selected-my-notes.svg'
 import unselectedMyNotes from '../../assets/images/unselected-my-notes.svg'
-import selectedSetting from '../../assets/images/selected-setting.svg'
 import unselectedSetting from '../../assets/images/unselected-setting.svg'
 
-// Custom icon component for smooth transitions between selected/unselected states
-interface CustomIconProps {
-  selectedSrc: string
-  unselectedSrc: string
-  isActive: boolean
+// Simple icon component that only uses unselected icons
+interface IconProps {
+  src: string
   alt: string
-  isDashboard?: boolean
+  isActive: boolean
 }
 
-const CustomIcon: React.FC<CustomIconProps> = ({ selectedSrc, unselectedSrc, isActive, alt, isDashboard = false }) => {
-  // Special sizing for dashboard icon to prevent shrinking
-  const selectedSize = isDashboard ? '56px' : '48px'
-  const unselectedSize = isDashboard ? '32px' : '24px'
-  
+const Icon: React.FC<IconProps> = ({ src, alt, isActive }) => {
   return (
-    <div className="relative w-12 h-12 flex items-center justify-center">
-      {/* Unselected icon */}
+    <div className="relative w-8 h-8 flex items-center justify-center">
       <img 
-        src={unselectedSrc} 
+        src={src} 
         alt={alt}
-        className={`absolute transition-all duration-300 ease-out ${
+        className={`transition-all duration-300 ease-out ${
           isActive 
-            ? 'opacity-0 scale-95' 
-            : 'opacity-100 scale-100'
+            ? 'opacity-100 scale-110 brightness-125' 
+            : 'opacity-70 scale-100 hover:opacity-100 hover:scale-105'
         }`}
         style={{ 
-          width: unselectedSize, 
-          height: unselectedSize,
-          objectFit: 'contain'
-        }}
-      />
-      {/* Selected icon */}
-      <img 
-        src={selectedSrc} 
-        alt={alt}
-        className={`absolute transition-all duration-300 ease-out ${
-          isActive 
-            ? 'opacity-100 scale-100' 
-            : 'opacity-0 scale-95'
-        }`}
-        style={{ 
-          width: selectedSize, 
-          height: selectedSize,
-          objectFit: 'contain'
+          width: '24px', 
+          height: '24px',
+          objectFit: 'contain',
+          filter: isActive ? 'brightness(1.3) saturate(1.2)' : 'brightness(0.9)'
         }}
       />
     </div>
   )
 }
 
-// Navigation items with both selected and unselected icons
+// Navigation items with only unselected icons
 const navigation = [
   { 
     name: 'Dashboard', 
     href: '/dashboard', 
-    selectedIcon: selectedHomePage,
-    unselectedIcon: unselectedHomePage,
-    isDashboard: true
+    icon: unselectedHomePage
   },
   { 
     name: 'Learning Paths', 
     href: '/learning', 
-    selectedIcon: selectedCoursePage,
-    unselectedIcon: unselectedCoursePage
+    icon: unselectedCoursePage
   },
   { 
     name: 'My Goals', 
     href: '/achievements', 
-    selectedIcon: selectedMyGoals,
-    unselectedIcon: unselectedMyGoals
+    icon: unselectedMyGoals
   },
   { 
     name: 'My Notes', 
     href: '/notes', 
-    selectedIcon: selectedMyNotes,
-    unselectedIcon: unselectedMyNotes
+    icon: unselectedMyNotes
   },
   { 
     name: 'Settings', 
     href: '/settings', 
-    selectedIcon: selectedSetting,
-    unselectedIcon: unselectedSetting
+    icon: unselectedSetting
   },
 ]
 
@@ -149,19 +116,22 @@ export function Sidebar({ collapsed: _collapsed, onToggle: _onToggle }: SidebarP
               className={`
                 w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 group relative
                 ${isActive 
-                  ? 'bg-transparent scale-105 shadow-lg shadow-blue-500/25' 
-                  : 'text-gray-400 hover:scale-110 hover:shadow-md hover:shadow-blue-500/10'
+                  ? 'bg-gradient-to-r from-[#6244FF]/20 to-[#FFAE2D]/20 border-2 border-[#6244FF]/40 shadow-lg shadow-[#6244FF]/25 scale-105' 
+                  : 'hover:bg-gray-700/30 hover:scale-110 hover:shadow-md hover:shadow-blue-500/10'
                 }
               `}
               title={item.name}
             >
-              <CustomIcon
-                selectedSrc={item.selectedIcon}
-                unselectedSrc={item.unselectedIcon}
+              <Icon
+                src={item.icon}
                 isActive={isActive}
                 alt={item.name}
-                isDashboard={item.isDashboard}
               />
+              
+              {/* Active indicator dot */}
+              {isActive && (
+                <div className="absolute -right-1 top-1/2 transform -translate-y-1/2 w-2 h-2 bg-[#6244FF] rounded-full shadow-lg"></div>
+              )}
               
               {/* Tooltip */}
               <div className="absolute left-full ml-3 px-3 py-2 bg-gray-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-lg">
