@@ -362,6 +362,9 @@ export function PreEvaluationPage() {
     if (currentQuestion > 0) {
       setCurrentQuestion(prev => prev - 1)
       setEvaluationComplete(false) // Reset completion state if going back
+    } else {
+      // If on first question, go back to landing page
+      navigate('/')
     }
   }
 
@@ -461,8 +464,7 @@ export function PreEvaluationPage() {
       <header className="flex items-center justify-between p-6">
         <button 
           onClick={handleBack}
-          disabled={currentQuestion === 0}
-          className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
           <span>Back</span>
