@@ -333,9 +333,11 @@ export function PreEvaluationPage() {
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [answers, setAnswers] = useState<Record<number, string>>({})
   const [loading, setLoading] = useState(false)
+  const [evaluationComplete, setEvaluationComplete] = useState(false)
 
   const question = questions[currentQuestion]
   const isLastQuestion = currentQuestion === questions.length - 1
+  const hasAnsweredCurrentQuestion = answers[question.id] !== undefined
 
   const handleOptionSelect = (optionId: string) => {
     // Save the answer
@@ -346,28 +348,30 @@ export function PreEvaluationPage() {
     setAnswers(newAnswers)
 
     // Auto-proceed to next question after a short delay for visual feedback
-    setTimeout(() => {
-      if (isLastQuestion) {
-        // Complete evaluation on last question
-        handleComplete(newAnswers)
-      } else {
-        // Move to next question
+    if (!isLastQuestion) {
+      setTimeout(() => {
         setCurrentQuestion(prev => prev + 1)
-      }
-    }, 300)
+      }, 300)
+    } else {
+      // On last question, just mark as complete but don't auto-redirect
+      setTimeout(() => {
+        setEvaluationComplete(true)
+      }, 300)
+    }
   }
 
   const handleBack = () => {
     if (currentQuestion > 0) {
       setCurrentQuestion(prev => prev - 1)
+      setEvaluationComplete(false) // Reset completion state if going back
     }
   }
 
-  const handleComplete = async (finalAnswers: Record<number, string>) => {
+  const handleProceedToDashboard = async () => {
     setLoading(true)
     try {
       // Analyze answers to determine learning profile
-      const learningProfile = analyzeLearningProfile(finalAnswers)
+      const learningProfile = analyzeLearningProfile(answers)
       
       // Save the evaluation results to user profile
       await updateProfile({
@@ -375,7 +379,7 @@ export function PreEvaluationPage() {
         experience_level: 'beginner', // Default for new users
         evaluation_completed: true,
         evaluation_results: learningProfile,
-        evaluation_answers: finalAnswers
+        evaluation_answers: answers
       })
 
       // Redirect to dashboard
@@ -555,15 +559,26 @@ export function PreEvaluationPage() {
           </div>
         </div>
 
-        {/* Loading State for Final Question */}
-        {loading && (
-          <div className="flex justify-center pb-8">
+        {/* Navigation - Show proceed button only when evaluation is complete */}
+        <div className="flex justify-center pb-8">
+          {evaluationComplete && isLastQuestion ? (
+            <Button
+              onClick={handleProceedToDashboard}
+              loading={loading}
+              size="lg"
+              className="px-8"
+              icon={ChevronRight}
+              iconPosition="right"
+            >
+              Proceed to Dashboard
+            </Button>
+          ) : loading ? (
             <div className="flex items-center space-x-3">
               <div className="animate-spin rounded-full h-6 w-6 border-2 border-[#FFAE2D] border-t-transparent"></div>
-              <span className="text-white">Analyzing your learning profile...</span>
+              <span className="text-white">Processing your answer...</span>
             </div>
-          </div>
-        )}
+          ) : null}
+        </div>
       </div>
     </div>
   )
