@@ -371,24 +371,57 @@ export function PreEvaluationPage() {
   const handleProceedToDashboard = async () => {
     setLoading(true)
     try {
+      console.log('🚀 Starting dashboard navigation process...')
+      
       // Analyze answers to determine learning profile
       const learningProfile = analyzeLearningProfile(answers)
+      console.log('📊 Learning profile analyzed:', learningProfile)
       
-      // Save the evaluation results to user profile
-      await updateProfile({
+      // Prepare profile update data
+      const profileUpdate = {
         learning_style: learningProfile.primaryStyle,
         experience_level: 'beginner', // Default for new users
         evaluation_completed: true,
         evaluation_results: learningProfile,
         evaluation_answers: answers
-      })
-
+      }
+      
+      console.log('💾 Updating profile with:', profileUpdate)
+      
+      // Save the evaluation results to user profile
+      await updateProfile(profileUpdate)
+      
+      console.log('✅ Profile updated successfully, navigating to dashboard...')
+      
       // Redirect to dashboard
       navigate('/dashboard')
+      
+      console.log('🎯 Navigation to dashboard initiated')
     } catch (error) {
-      console.error('Error saving evaluation:', error)
+      console.error('❌ Error in dashboard navigation process:', error)
+      console.error('❌ Error details:', {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
+        user: user?.id,
+        hasProfile: !!profile
+      })
+      
+      // Show user-friendly error message with option to proceed
+      const userChoice = confirm(
+        'There was an issue saving your evaluation results. Would you like to:\n\n' +
+        'OK - Proceed to dashboard anyway (you can retake the evaluation later)\n' +
+        'Cancel - Try again'
+      )
+      
+      if (userChoice) {
+        console.log('🔄 User chose to proceed without saving evaluation')
+        // Proceed to dashboard without saving evaluation
+        navigate('/dashboard')
+        return
+      }
     } finally {
       setLoading(false)
+      console.log('🏁 Dashboard navigation process complete')
     }
   }
 

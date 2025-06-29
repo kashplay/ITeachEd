@@ -9,6 +9,7 @@ export interface User {
 export interface UserProfile {
   id: string;
   user_id: string;
+  full_name?: string;
   career_goals?: string[];
   current_skills?: string[];
   learning_style?: string;
