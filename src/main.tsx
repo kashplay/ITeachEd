@@ -30,6 +30,30 @@ Test credentials:
     
     console.log('🔧 Development helpers loaded! Type "devHelpers.help()" for available commands.')
   })
+
+  // Load upsert validation utilities
+  import('./utils/validateUpsert').then(({ validateUpsertOperation, UpsertValidator }) => {
+    (window as any).upsertValidator = {
+      validateUpsertOperation,
+      UpsertValidator,
+      help: () => {
+        console.log(`
+🔍 Upsert Validation Utilities:
+
+Available commands:
+• upsertValidator.validateUpsertOperation() - Run full validation
+• upsertValidator.UpsertValidator.runFullValidation() - Detailed validation
+• upsertValidator.help() - Show this help message
+
+Usage:
+1. Sign in with a test user first: devHelpers.signInWithTestUser()
+2. Run validation: upsertValidator.validateUpsertOperation()
+        `)
+      }
+    }
+    
+    console.log('🔍 Upsert validation utilities loaded! Type "upsertValidator.help()" for available commands.')
+  })
 }
 
 createRoot(document.getElementById('root')!).render(
