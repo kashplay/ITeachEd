@@ -6,48 +6,30 @@ import {
 import { useAuth } from '../../contexts/AuthContext'
 import eLogoLight from '../../assets/images/e-logo-full-light.svg'
 
-// Import all custom SVG icons from assets
+// Import only the selected SVG icons
 import selectedHomePage from '../../assets/images/selected-home-page.svg'
-import unselectedHomePage from '../../assets/images/unselected-home-page.svg'
 import selectedCoursePage from '../../assets/images/selected-course-page.svg'
-import unselectedCoursePage from '../../assets/images/unselected-course-page.svg'
 import selectedMyGoals from '../../assets/images/selected-my-goals.svg'
-import unselectedMyGoals from '../../assets/images/unselected-my-goals.svg'
 import selectedMyNotes from '../../assets/images/selected-my-notes.svg'
-import unselectedMyNotes from '../../assets/images/unselected-my-notes.svg'
 import selectedSetting from '../../assets/images/selected-setting.svg'
-import unselectedSetting from '../../assets/images/unselected-setting.svg'
 
-// Custom icon component for smooth transitions
+// Custom icon component that uses only selected SVGs with CSS effects for inactive state
 interface CustomIconProps {
   selectedSrc: string
-  unselectedSrc: string
   isActive: boolean
   alt: string
 }
 
-const CustomIcon: React.FC<CustomIconProps> = ({ selectedSrc, unselectedSrc, isActive, alt }) => {
+const CustomIcon: React.FC<CustomIconProps> = ({ selectedSrc, isActive, alt }) => {
   return (
     <div className="relative w-8 h-8 flex items-center justify-center">
-      {/* Unselected icon */}
-      <img 
-        src={unselectedSrc} 
-        alt={alt}
-        className={`absolute transition-all duration-300 ease-out ${
-          isActive 
-            ? 'opacity-0 scale-95' 
-            : 'opacity-100 scale-100'
-        }`}
-        style={{ width: '24px', height: '24px' }}
-      />
-      {/* Selected icon */}
       <img 
         src={selectedSrc} 
         alt={alt}
-        className={`absolute transition-all duration-300 ease-out ${
+        className={`transition-all duration-300 ease-out ${
           isActive 
-            ? 'opacity-100 scale-100' 
-            : 'opacity-0 scale-95'
+            ? 'opacity-100 scale-100 filter-none' 
+            : 'opacity-40 scale-90 grayscale hover:opacity-60 hover:scale-95 hover:grayscale-0'
         }`}
         style={{ width: '48px', height: '48px' }}
       />
@@ -55,47 +37,32 @@ const CustomIcon: React.FC<CustomIconProps> = ({ selectedSrc, unselectedSrc, isA
   )
 }
 
-// Navigation items - all using custom icons now
+// Navigation items - all using selected icons with CSS effects for inactive state
 const navigation = [
   { 
     name: 'Dashboard', 
     href: '/dashboard', 
-    customIcon: {
-      selected: selectedHomePage,
-      unselected: unselectedHomePage
-    }
+    selectedIcon: selectedHomePage
   },
   { 
     name: 'Learning Paths', 
     href: '/learning', 
-    customIcon: {
-      selected: selectedCoursePage,
-      unselected: unselectedCoursePage
-    }
+    selectedIcon: selectedCoursePage
   },
   { 
     name: 'Achievements', 
     href: '/achievements', 
-    customIcon: {
-      selected: selectedMyGoals,
-      unselected: unselectedMyGoals
-    }
+    selectedIcon: selectedMyGoals
   },
   { 
     name: 'My Notes', 
     href: '/notes', 
-    customIcon: {
-      selected: selectedMyNotes,
-      unselected: unselectedMyNotes
-    }
+    selectedIcon: selectedMyNotes
   },
   { 
     name: 'Settings', 
     href: '/settings', 
-    customIcon: {
-      selected: selectedSetting,
-      unselected: unselectedSetting
-    }
+    selectedIcon: selectedSetting
   },
 ]
 
@@ -151,8 +118,7 @@ export function Sidebar({ collapsed: _collapsed, onToggle: _onToggle }: SidebarP
               title={item.name}
             >
               <CustomIcon
-                selectedSrc={item.customIcon.selected}
-                unselectedSrc={item.customIcon.unselected}
+                selectedSrc={item.selectedIcon}
                 isActive={isActive}
                 alt={item.name}
               />
