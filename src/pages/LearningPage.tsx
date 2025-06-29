@@ -4,7 +4,6 @@ import {
   Clock, 
   Users, 
   BookOpen, 
-  Search, 
   Bell, 
   ChevronDown, 
   ChevronRight,
@@ -12,7 +11,6 @@ import {
   Video,
   CheckCircle,
   Circle,
-  Save,
   MessageCircle,
   X,
   Send,
@@ -23,7 +21,21 @@ import {
   List,
   Download,
   RotateCcw,
-  Undo2
+  Undo2,
+  Bold,
+  Italic,
+  Underline,
+  Strikethrough,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  AlignJustify,
+  Link,
+  Image,
+  Code,
+  Quote,
+  Type,
+  Palette
 } from 'lucide-react'
 import { Card } from '../components/ui/Card'
 import { Button } from '../components/ui/Button'
@@ -330,6 +342,181 @@ const AITutor: React.FC<AITutorProps> = ({ className = "" }) => {
   )
 }
 
+// Rich Text Editor Toolbar Component
+interface RichTextToolbarProps {
+  onFormat: (format: string, value?: string) => void
+}
+
+const RichTextToolbar: React.FC<RichTextToolbarProps> = ({ onFormat }) => {
+  const [showColorPicker, setShowColorPicker] = useState(false)
+  const [showFontSize, setShowFontSize] = useState(false)
+
+  const colors = [
+    '#000000', '#FFFFFF', '#FF0000', '#00FF00', '#0000FF', '#FFFF00', 
+    '#FF00FF', '#00FFFF', '#FFA500', '#800080', '#008000', '#FFC0CB'
+  ]
+
+  const fontSizes = ['12px', '14px', '16px', '18px', '20px', '24px', '28px', '32px']
+
+  return (
+    <div className="flex items-center space-x-1 p-2 bg-gray-700/30 border-b border-gray-600/50 flex-wrap gap-1">
+      {/* Text Formatting */}
+      <div className="flex items-center space-x-1 border-r border-gray-600/50 pr-2">
+        <button
+          onClick={() => onFormat('bold')}
+          className="p-2 hover:bg-gray-600/50 rounded transition-colors"
+          title="Bold"
+        >
+          <Bold className="w-4 h-4 text-gray-300" />
+        </button>
+        <button
+          onClick={() => onFormat('italic')}
+          className="p-2 hover:bg-gray-600/50 rounded transition-colors"
+          title="Italic"
+        >
+          <Italic className="w-4 h-4 text-gray-300" />
+        </button>
+        <button
+          onClick={() => onFormat('underline')}
+          className="p-2 hover:bg-gray-600/50 rounded transition-colors"
+          title="Underline"
+        >
+          <Underline className="w-4 h-4 text-gray-300" />
+        </button>
+        <button
+          onClick={() => onFormat('strikethrough')}
+          className="p-2 hover:bg-gray-600/50 rounded transition-colors"
+          title="Strikethrough"
+        >
+          <Strikethrough className="w-4 h-4 text-gray-300" />
+        </button>
+      </div>
+
+      {/* Alignment */}
+      <div className="flex items-center space-x-1 border-r border-gray-600/50 pr-2">
+        <button
+          onClick={() => onFormat('justifyLeft')}
+          className="p-2 hover:bg-gray-600/50 rounded transition-colors"
+          title="Align Left"
+        >
+          <AlignLeft className="w-4 h-4 text-gray-300" />
+        </button>
+        <button
+          onClick={() => onFormat('justifyCenter')}
+          className="p-2 hover:bg-gray-600/50 rounded transition-colors"
+          title="Align Center"
+        >
+          <AlignCenter className="w-4 h-4 text-gray-300" />
+        </button>
+        <button
+          onClick={() => onFormat('justifyRight')}
+          className="p-2 hover:bg-gray-600/50 rounded transition-colors"
+          title="Align Right"
+        >
+          <AlignRight className="w-4 h-4 text-gray-300" />
+        </button>
+        <button
+          onClick={() => onFormat('justifyFull')}
+          className="p-2 hover:bg-gray-600/50 rounded transition-colors"
+          title="Justify"
+        >
+          <AlignJustify className="w-4 h-4 text-gray-300" />
+        </button>
+      </div>
+
+      {/* Font Size */}
+      <div className="relative border-r border-gray-600/50 pr-2">
+        <button
+          onClick={() => setShowFontSize(!showFontSize)}
+          className="p-2 hover:bg-gray-600/50 rounded transition-colors flex items-center space-x-1"
+          title="Font Size"
+        >
+          <Type className="w-4 h-4 text-gray-300" />
+          <ChevronDown className="w-3 h-3 text-gray-300" />
+        </button>
+        {showFontSize && (
+          <div className="absolute top-full left-0 mt-1 bg-gray-800 border border-gray-600 rounded-lg shadow-lg z-10">
+            {fontSizes.map(size => (
+              <button
+                key={size}
+                onClick={() => {
+                  onFormat('fontSize', size)
+                  setShowFontSize(false)
+                }}
+                className="block w-full text-left px-3 py-2 text-gray-300 hover:bg-gray-700 text-sm"
+              >
+                {size}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Text Color */}
+      <div className="relative border-r border-gray-600/50 pr-2">
+        <button
+          onClick={() => setShowColorPicker(!showColorPicker)}
+          className="p-2 hover:bg-gray-600/50 rounded transition-colors flex items-center space-x-1"
+          title="Text Color"
+        >
+          <Palette className="w-4 h-4 text-gray-300" />
+          <ChevronDown className="w-3 h-3 text-gray-300" />
+        </button>
+        {showColorPicker && (
+          <div className="absolute top-full left-0 mt-1 bg-gray-800 border border-gray-600 rounded-lg shadow-lg p-2 z-10">
+            <div className="grid grid-cols-6 gap-1">
+              {colors.map(color => (
+                <button
+                  key={color}
+                  onClick={() => {
+                    onFormat('foreColor', color)
+                    setShowColorPicker(false)
+                  }}
+                  className="w-6 h-6 rounded border border-gray-600 hover:scale-110 transition-transform"
+                  style={{ backgroundColor: color }}
+                  title={color}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Lists and Special */}
+      <div className="flex items-center space-x-1">
+        <button
+          onClick={() => onFormat('insertUnorderedList')}
+          className="p-2 hover:bg-gray-600/50 rounded transition-colors"
+          title="Bullet List"
+        >
+          <List className="w-4 h-4 text-gray-300" />
+        </button>
+        <button
+          onClick={() => onFormat('insertOrderedList')}
+          className="p-2 hover:bg-gray-600/50 rounded transition-colors"
+          title="Numbered List"
+        >
+          <span className="text-gray-300 text-sm font-mono">1.</span>
+        </button>
+        <button
+          onClick={() => onFormat('formatBlock', 'blockquote')}
+          className="p-2 hover:bg-gray-600/50 rounded transition-colors"
+          title="Quote"
+        >
+          <Quote className="w-4 h-4 text-gray-300" />
+        </button>
+        <button
+          onClick={() => onFormat('formatBlock', 'pre')}
+          className="p-2 hover:bg-gray-600/50 rounded transition-colors"
+          title="Code Block"
+        >
+          <Code className="w-4 h-4 text-gray-300" />
+        </button>
+      </div>
+    </div>
+  )
+}
+
 export function LearningPage() {
   const { user, signOut } = useAuth()
   const navigate = useNavigate()
@@ -338,7 +525,6 @@ export function LearningPage() {
   const [modules, setModules] = useState<Module[]>(modulesData)
   const [activeTab, setActiveTab] = useState('main')
   const [notes, setNotes] = useState('')
-  const [savedNotes, setSavedNotes] = useState<{[key: string]: string}>({})
   const [lastUpdated] = useState('June 16, 2025 12:34')
 
   // Navigate to landing page when user signs out
@@ -348,6 +534,19 @@ export function LearningPage() {
       navigate('/', { replace: true })
     }
   }, [user, navigate])
+
+  // Auto-save notes functionality
+  React.useEffect(() => {
+    const autoSaveTimer = setTimeout(() => {
+      if (notes.trim()) {
+        // Auto-save notes to localStorage or backend
+        localStorage.setItem(`notes-${activeTab}`, notes)
+        console.log('Notes auto-saved for', activeTab)
+      }
+    }, 2000) // Auto-save after 2 seconds of inactivity
+
+    return () => clearTimeout(autoSaveTimer)
+  }, [notes, activeTab])
 
   const handleSignOut = async () => {
     try {
@@ -378,12 +577,18 @@ export function LearningPage() {
     // Here you would navigate to the specific lesson content
   }
 
-  const saveNotes = () => {
-    setSavedNotes(prev => ({
-      ...prev,
-      [activeTab]: notes
-    }))
-    console.log('Notes saved for', activeTab)
+  const handleRichTextFormat = (format: string, value?: string) => {
+    const notesEditor = document.getElementById('notes-editor') as HTMLDivElement
+    if (notesEditor) {
+      notesEditor.focus()
+      if (value) {
+        document.execCommand(format, false, value)
+      } else {
+        document.execCommand(format, false)
+      }
+      // Update notes state with the formatted content
+      setNotes(notesEditor.innerHTML)
+    }
   }
 
   const getTypeIcon = (type: string) => {
@@ -766,18 +971,10 @@ export function LearningPage() {
 
         {/* Center Panel - Main Content */}
         <div className="flex-1 flex flex-col">
-          {/* Top Header */}
+          {/* Top Header - Removed Search Bar */}
           <div className="p-6 border-b border-white/10 flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              {/* Search Bar */}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <input
-                  type="text"
-                  placeholder="Search anything"
-                  className="bg-gray-800/50 border border-gray-600/50 rounded-xl pl-10 pr-4 py-2.5 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 w-80"
-                />
-              </div>
+              {/* Empty space where search bar was */}
             </div>
             
             <div className="flex items-center space-x-4">
@@ -872,7 +1069,7 @@ export function LearningPage() {
           </div>
         </div>
 
-        {/* Right Panel - Notes */}
+        {/* Right Panel - Notes with Rich Text Editor */}
         <div className="w-80 bg-gray-800/30 backdrop-blur-sm border-l border-white/10 flex flex-col">
           {/* Notes Header with Last Updated, Export, and Star */}
           <div className="p-6 border-b border-white/10">
@@ -893,24 +1090,27 @@ export function LearningPage() {
             <h3 className="text-lg font-semibold text-white">Notes</h3>
           </div>
           
+          {/* Rich Text Toolbar */}
+          <RichTextToolbar onFormat={handleRichTextFormat} />
+          
+          {/* Notes Editor */}
           <div className="flex-1 p-4">
-            <textarea
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="Start typing notes here"
-              className="w-full h-full bg-gray-700/30 border border-gray-600/50 rounded-lg p-4 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 resize-none"
+            <div
+              id="notes-editor"
+              contentEditable
+              suppressContentEditableWarning
+              onInput={(e) => setNotes(e.currentTarget.innerHTML)}
+              className="w-full h-full bg-gray-700/30 border border-gray-600/50 rounded-lg p-4 text-white focus:outline-none focus:border-blue-500 resize-none overflow-y-auto"
+              style={{ minHeight: '300px' }}
+              data-placeholder="Start typing notes here..."
             />
           </div>
           
+          {/* Auto-save indicator */}
           <div className="p-4 border-t border-white/10">
-            <Button 
-              onClick={saveNotes}
-              icon={Save}
-              className="w-full"
-              size="sm"
-            >
-              Save Notes
-            </Button>
+            <div className="flex items-center justify-center text-xs text-gray-400">
+              <span>Notes auto-saved</span>
+            </div>
           </div>
         </div>
       </div>
