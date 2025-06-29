@@ -60,7 +60,32 @@ Quick diagnosis:
     }
     
     console.log('🔍 Upsert validation utilities loaded! Type "upsertValidator.help()" for available commands.')
-    console.log('🔍 Auto-running immediate diagnostics...')
+  })
+
+  // Load Supabase connection test utilities
+  import('./utils/supabaseConnectionTest').then((module) => {
+    const SupabaseConnectionTest = module.default
+    
+    console.log('🔧 Supabase Connection Test utilities loaded!')
+    console.log('Available commands:')
+    console.log('• await supabaseTest.runAllTests() - Full comprehensive test')
+    console.log('• await supabaseTest.quickConnectionTest() - Quick 3s test')
+    console.log('• supabaseTest.checkEnvironmentVariables() - Check env vars')
+    
+    // Auto-run quick tests
+    setTimeout(async () => {
+      console.log('\n🚀 Auto-running Supabase connection diagnostics...')
+      
+      // Check environment first
+      const envOk = SupabaseConnectionTest.checkEnvironmentVariables()
+      
+      if (envOk) {
+        // Run quick connection test
+        await SupabaseConnectionTest.quickConnectionTest()
+      } else {
+        console.log('❌ Environment variables not properly configured!')
+      }
+    }, 1000)
   })
 }
 
