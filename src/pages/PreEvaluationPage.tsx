@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Search, Bell, ChevronRight } from 'lucide-react'
+import { ArrowLeft, ChevronRight } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { Button } from '../components/ui/Button'
 
@@ -328,7 +328,6 @@ const questions: Question[] = [
 export function PreEvaluationPage() {
   const { user, updateProfile } = useAuth()
   const navigate = useNavigate()
-  const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'
   
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [answers, setAnswers] = useState<Record<number, string>>({})
@@ -337,7 +336,6 @@ export function PreEvaluationPage() {
 
   const question = questions[currentQuestion]
   const isLastQuestion = currentQuestion === questions.length - 1
-  const hasAnsweredCurrentQuestion = answers[question.id] !== undefined
 
   const handleOptionSelect = (optionId: string) => {
     // Save the answer
@@ -459,7 +457,7 @@ export function PreEvaluationPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#1a1d3a] via-[#2d3561] to-[#1a1d3a] text-white">
-      {/* Header */}
+      {/* Header with only Back button */}
       <header className="flex items-center justify-between p-6">
         <button 
           onClick={handleBack}
@@ -470,22 +468,8 @@ export function PreEvaluationPage() {
           <span>Back</span>
         </button>
         
-        <div className="flex items-center space-x-4">
-          {/* Search Bar */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <input
-              type="text"
-              placeholder="Search.."
-              className="bg-gray-800/50 border border-gray-600/50 rounded-xl pl-10 pr-4 py-2.5 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 w-80"
-            />
-          </div>
-          
-          {/* Notification Bell */}
-          <button className="relative p-3 bg-gray-800/50 border border-gray-600/50 rounded-xl hover:bg-gray-700/50 transition-colors">
-            <Bell className="w-5 h-5 text-gray-300" />
-          </button>
-        </div>
+        {/* Empty div for spacing */}
+        <div></div>
       </header>
 
       {/* Progress Indicator */}
