@@ -19,7 +19,8 @@ import {
   Bot,
   ArrowLeft,
   Star,
-  Award
+  Award,
+  List
 } from 'lucide-react'
 import { Card } from '../components/ui/Card'
 import { Button } from '../components/ui/Button'
@@ -146,7 +147,8 @@ const modulesData: Module[] = [
 
 // Content tabs
 const contentTabs = [
-  { id: 'mindmap', label: 'Mindmap (Recommended)', active: true },
+  { id: 'main', label: 'Main Content', active: true },
+  { id: 'mindmap', label: 'Mindmap (Recommended)', active: false },
   { id: 'infographic', label: 'Infographic', active: false },
   { id: 'visualized', label: 'Visualized Framework', active: false },
   { id: 'animated', label: 'Animated Diagram', active: false },
@@ -331,9 +333,10 @@ export function LearningPage() {
   const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'
   
   const [modules, setModules] = useState<Module[]>(modulesData)
-  const [activeTab, setActiveTab] = useState('mindmap')
+  const [activeTab, setActiveTab] = useState('main')
   const [notes, setNotes] = useState('')
   const [savedNotes, setSavedNotes] = useState<{[key: string]: string}>({})
+  const [lastUpdated] = useState('June 16, 2025 12:34')
 
   // Navigate to landing page when user signs out
   React.useEffect(() => {
@@ -392,6 +395,105 @@ export function LearningPage() {
 
   const renderContent = () => {
     switch (activeTab) {
+      case 'main':
+        return (
+          <div className="w-full h-full bg-gray-800 rounded-lg p-6 overflow-y-auto">
+            <div className="max-w-3xl mx-auto">
+              <h2 className="text-2xl font-bold text-white mb-6">Business Analytics Fundamentals</h2>
+              
+              <div className="space-y-6">
+                <div className="bg-gray-700/50 rounded-lg p-4">
+                  <h3 className="text-lg font-semibold text-white mb-3">Overview</h3>
+                  <p className="text-gray-300 mb-4">
+                    Business Analytics is the practice of iterative, methodical exploration of an organization's data, 
+                    with an emphasis on statistical analysis. It is used by companies committed to data-driven 
+                    decision-making to gain insights that inform business decisions and can be used to automate 
+                    and optimize business processes.
+                  </p>
+                  
+                  <h4 className="text-md font-medium text-white mb-2">Key Learning Points:</h4>
+                  <ul className="list-disc pl-5 space-y-2 text-gray-300">
+                    <li>Understanding the fundamental concepts and terminology of business analytics</li>
+                    <li>Learning how to collect, process, and analyze business data effectively</li>
+                    <li>Developing skills to interpret analytical results and derive actionable insights</li>
+                    <li>Applying business analytics techniques to real-world business problems</li>
+                    <li>Understanding the ethical implications and limitations of data-driven decision making</li>
+                  </ul>
+                </div>
+                
+                <div className="bg-gray-700/50 rounded-lg p-4">
+                  <h3 className="text-lg font-semibold text-white mb-3">Business Analytics Process</h3>
+                  <ol className="list-decimal pl-5 space-y-3 text-gray-300">
+                    <li>
+                      <strong className="text-white">Problem Definition</strong>
+                      <p>Clearly articulate the business problem or opportunity that needs to be addressed</p>
+                    </li>
+                    <li>
+                      <strong className="text-white">Data Collection</strong>
+                      <p>Gather relevant data from various sources (internal databases, external APIs, surveys, etc.)</p>
+                    </li>
+                    <li>
+                      <strong className="text-white">Data Cleaning & Preparation</strong>
+                      <p>Process the raw data to handle missing values, outliers, and ensure consistency</p>
+                    </li>
+                    <li>
+                      <strong className="text-white">Exploratory Analysis</strong>
+                      <p>Perform initial data exploration to understand patterns, relationships, and potential insights</p>
+                    </li>
+                    <li>
+                      <strong className="text-white">Advanced Analysis</strong>
+                      <p>Apply statistical methods, predictive modeling, or other analytical techniques</p>
+                    </li>
+                    <li>
+                      <strong className="text-white">Results Interpretation</strong>
+                      <p>Translate analytical findings into business insights</p>
+                    </li>
+                    <li>
+                      <strong className="text-white">Communication & Action</strong>
+                      <p>Present insights to stakeholders and implement data-driven decisions</p>
+                    </li>
+                  </ol>
+                </div>
+                
+                <div className="bg-gray-700/50 rounded-lg p-4">
+                  <h3 className="text-lg font-semibold text-white mb-3">Types of Business Analytics</h3>
+                  <div className="space-y-3">
+                    <div>
+                      <h4 className="text-md font-medium text-white">1. Descriptive Analytics</h4>
+                      <p className="text-gray-300">Focuses on understanding what happened in the past through data summarization and visualization</p>
+                    </div>
+                    <div>
+                      <h4 className="text-md font-medium text-white">2. Diagnostic Analytics</h4>
+                      <p className="text-gray-300">Examines why something happened by identifying patterns and relationships in data</p>
+                    </div>
+                    <div>
+                      <h4 className="text-md font-medium text-white">3. Predictive Analytics</h4>
+                      <p className="text-gray-300">Uses statistical models and forecasting techniques to understand what could happen in the future</p>
+                    </div>
+                    <div>
+                      <h4 className="text-md font-medium text-white">4. Prescriptive Analytics</h4>
+                      <p className="text-gray-300">Suggests actions to take based on predictions and the likely outcome of each decision option</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="bg-blue-900/30 border border-blue-500/30 rounded-lg p-4">
+                  <h3 className="text-lg font-semibold text-white mb-2 flex items-center">
+                    <Star className="w-5 h-5 text-yellow-400 mr-2" />
+                    Key Takeaways
+                  </h3>
+                  <ul className="list-disc pl-5 space-y-2 text-gray-300">
+                    <li>Business analytics transforms raw data into actionable business insights</li>
+                    <li>The process is iterative and requires both technical and business domain knowledge</li>
+                    <li>Different types of analytics serve different business purposes and timeframes</li>
+                    <li>Effective communication of insights is as important as the analysis itself</li>
+                    <li>Ethical considerations should guide all analytics activities</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        )
       case 'mindmap':
         return (
           <div className="w-full h-full bg-white rounded-lg p-4 flex items-center justify-center">
@@ -667,17 +769,18 @@ export function LearningPage() {
 
           {/* Content Tabs */}
           <div className="p-6 border-b border-white/10">
-            <div className="flex space-x-1">
+            <div className="flex space-x-1 overflow-x-auto pb-2">
               {contentTabs.map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
                     activeTab === tab.id
                       ? 'bg-blue-500 text-white'
                       : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
                   }`}
                 >
+                  {tab.id === 'main' && <List className="w-4 h-4 inline-block mr-1" />}
                   {tab.label}
                 </button>
               ))}
@@ -696,7 +799,7 @@ export function LearningPage() {
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2">
                 <Clock className="w-4 h-4" />
-                <span>Last updated June 16, 2025 12:34</span>
+                <span>Last updated {lastUpdated}</span>
               </div>
             </div>
             <div className="flex items-center space-x-4">
@@ -710,14 +813,14 @@ export function LearningPage() {
         <div className="w-80 bg-gray-800/30 backdrop-blur-sm border-l border-white/10 flex flex-col">
           <div className="p-6 border-b border-white/10">
             <h3 className="text-lg font-semibold text-white mb-2">Notes</h3>
-            <p className="text-sm text-gray-400">Take notes for this lesson</p>
+            <p className="text-sm text-gray-400">Last updated {lastUpdated}</p>
           </div>
           
           <div className="flex-1 p-4">
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Start typing notes here..."
+              placeholder="Start typing notes here"
               className="w-full h-full bg-gray-700/30 border border-gray-600/50 rounded-lg p-4 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 resize-none"
             />
           </div>
