@@ -1,18 +1,18 @@
-<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Background circle with gradient -->
-  <circle cx="24" cy="24" r="24" fill="url(#gradient3)"/>
-  
-  <!-- Trophy/Goals icon -->
-  <path d="M24 12L26.5 19H34L28.5 23.5L31 30.5L24 26L17 30.5L19.5 23.5L14 19H21.5L24 12Z" fill="white"/>
-  
-  <!-- Base/stand -->
-  <rect x="20" y="32" width="8" height="3" rx="1" fill="white"/>
-  <rect x="18" y="35" width="12" height="2" rx="1" fill="white"/>
-  
-  <defs>
-    <linearGradient id="gradient3" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#6244FF;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#FFAE2D;stop-opacity:1" />
-    </linearGradient>
-  </defs>
+<svg width="98" height="98" viewBox="0 0 98 98" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g filter="url(#filter0_d_436_10459)">
+<rect x="25" y="21" width="48" height="48" rx="24" fill="#5765F2" shape-rendering="crispEdges"/>
+<path d="M54.7901 34.5117C54.4542 34.8079 54.0905 35.0749 53.702 35.3084L52.8754 35.803C52.3073 36.143 52.3073 36.9644 52.8754 37.3044L53.702 37.8005C54.9771 38.584 56.0053 39.7119 56.623 41.0791C56.6873 41.225 56.7472 41.3665 56.8626 41.4803V55.2458C56.8626 56.645 55.3027 57.4782 54.1372 56.7034L48.551 52.9827C47.571 52.329 46.2916 52.329 45.3116 52.9827L39.7253 56.7034C38.5598 57.4782 37 56.645 37 55.2458V36.2628C37 35.2955 37.7843 34.5119 38.7526 34.5119L54.7901 34.5117ZM41.5433 40.2357C41.314 40.475 41.3432 40.8295 41.5608 41.0615L44.6264 43.9958L41.5608 46.9301C41.3286 47.1533 41.3198 47.5225 41.5433 47.7559C41.7667 47.9879 42.1362 47.9967 42.3699 47.7735L45.6546 44.6276C46.0066 44.2701 46.0066 43.7215 45.6546 43.364L42.3699 40.2182C42.1304 40.011 41.7725 39.9979 41.5433 40.2357ZM47.5154 46.768C47.1926 46.768 46.9312 47.0292 46.9312 47.3517C46.9312 47.6741 47.1926 47.9353 47.5154 47.9353H52.189C52.5118 47.9353 52.7732 47.6741 52.7732 47.3517C52.7732 47.0292 52.5118 46.768 52.189 46.768H47.5154ZM57.4466 33C58.2674 34.5452 59.5191 35.6672 61 36.5544C59.5191 37.4415 58.2674 38.5636 57.4466 40.1088C56.6258 38.5636 55.3756 37.4415 53.8932 36.5544C55.3741 35.6672 56.6258 34.5452 57.4466 33Z" fill="white"/>
+</g>
+<defs>
+<filter id="filter0_d_436_10459" x="0" y="0" width="98" height="98" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dy="4"/>
+<feGaussianBlur stdDeviation="12.5"/>
+<feComposite in2="hardAlpha" operator="out"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0.526604 0 0 0 0 0.483567 0 0 0 0 1 0 0 0 0.22 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_436_10459"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_436_10459" result="shape"/>
+</filter>
+</defs>
 </svg>
