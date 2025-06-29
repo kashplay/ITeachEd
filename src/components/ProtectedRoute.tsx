@@ -7,7 +7,7 @@ interface ProtectedRouteProps {
 }
 
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
-  const { user, loading } = useAuth()
+  const { user, profile, loading } = useAuth()
   const [timeoutReached, setTimeoutReached] = useState(false)
 
   useEffect(() => {
@@ -55,6 +55,18 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
     )
   }
 
-  console.log('✅ ProtectedRoute: User authenticated, rendering protected content')
+  // Check if user needs to complete pre-evaluation
+  if (user && (!profile || !profile.evaluation_completed)) {
+    // If we're already on pre-evaluation page, don't redirect
+    if (window.location.pathname === '/pre-evaluation') {
+      console.log('✅ ProtectedRoute: User on pre-evaluation page, rendering content')
+      return <>{children}</>
+    }
+    
+    console.log('🔄 ProtectedRoute: User needs pre-evaluation, redirecting')
+    return <Navigate to="/pre-evaluation" replace />
+  }
+
+  console.log('✅ ProtectedRoute: User authenticated and evaluated, rendering protected content')
   return <>{children}</>
 }

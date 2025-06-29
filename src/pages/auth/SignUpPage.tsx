@@ -30,11 +30,11 @@ export function SignUpPage() {
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
 
-  // Redirect to onboarding if user is authenticated
+  // Redirect to pre-evaluation if user is authenticated
   useEffect(() => {
     if (user) {
       setLoading(false) // Reset loading state
-      navigate('/onboarding', { replace: true })
+      navigate('/pre-evaluation', { replace: true })
     }
   }, [user, navigate])
 

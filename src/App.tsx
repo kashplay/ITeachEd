@@ -9,6 +9,7 @@ import { LandingPage } from './pages/LandingPage'
 import { SignUpPage } from './pages/auth/SignUpPage'
 import { LoginPage } from './pages/auth/LoginPage'
 import { ForgotPasswordPage } from './pages/auth/ForgotPasswordPage'
+import { PreEvaluationPage } from './pages/PreEvaluationPage'
 import { OnboardingPage } from './pages/OnboardingPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { LearningPage } from './pages/LearningPage'
@@ -29,6 +30,11 @@ function App() {
             <Route path="/auth/forgot-password" element={<ForgotPasswordPage />} />
             
             {/* Protected Routes */}
+            <Route path="/pre-evaluation" element={
+              <ProtectedRoute>
+                <PreEvaluationPage />
+              </ProtectedRoute>
+            } />
             <Route path="/onboarding" element={
               <ProtectedRoute>
                 <OnboardingPage />

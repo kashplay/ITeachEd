@@ -19,6 +19,9 @@ export interface UserProfile {
   total_hours: number;
   projects_completed: number;
   guild_rank: number;
+  evaluation_completed?: boolean;
+  evaluation_results?: any;
+  evaluation_answers?: Record<number, string>;
   created_at: string;
   updated_at: string;
 }
