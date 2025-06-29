@@ -20,7 +20,10 @@ import {
   ArrowLeft,
   Star,
   Award,
-  List
+  List,
+  Download,
+  RotateCcw,
+  Undo2
 } from 'lucide-react'
 import { Card } from '../components/ui/Card'
 import { Button } from '../components/ui/Button'
@@ -155,7 +158,7 @@ const contentTabs = [
   { id: 'interactive', label: 'Drag and Drop: KPI Matching', active: false }
 ]
 
-// AI Tutor Component
+// AI Tutor Component - Matching the main overview page design
 interface Message {
   id: string
   text: string
@@ -176,7 +179,7 @@ const AITutor: React.FC<AITutorProps> = ({ className = "" }) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: "Hi! I'm your AI tutor for Business Analytics. I can help explain concepts, answer questions, and guide you through the course material. What would you like to know?",
+      text: "Hi! I'm your AI tutor. I'm here to help you with your learning journey. What would you like to know?",
       sender: 'ai',
       timestamp: new Date()
     }
@@ -199,7 +202,7 @@ const AITutor: React.FC<AITutorProps> = ({ className = "" }) => {
     setTimeout(() => {
       const aiResponse: Message = {
         id: (Date.now() + 1).toString(),
-        text: "Great question! In Business Analytics, this concept is fundamental to understanding how data drives decision-making. Let me break it down for you with a practical example...",
+        text: "That's a great question! I'm here to help you learn more effectively. Based on your current progress, I'd recommend focusing on your active learning paths. Would you like me to suggest some specific next steps?",
         sender: 'ai',
         timestamp: new Date()
       }
@@ -227,7 +230,7 @@ const AITutor: React.FC<AITutorProps> = ({ className = "" }) => {
               </div>
               <div>
                 <h3 className="text-white font-medium text-sm">AI Tutor</h3>
-                <p className="text-gray-400 text-xs">Business Analytics Expert</p>
+                <p className="text-gray-400 text-xs">Always here to help</p>
               </div>
             </div>
             <button
@@ -279,7 +282,7 @@ const AITutor: React.FC<AITutorProps> = ({ className = "" }) => {
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder="Ask about Business Analytics..."
+                placeholder="Ask me anything..."
                 className="flex-1 bg-gray-700/50 border border-gray-600/50 rounded-xl px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 text-sm"
               />
               <button
@@ -787,7 +790,7 @@ export function LearningPage() {
             </div>
           </div>
 
-          {/* Main Content Area */}
+          {/* Main Content Area with Scrolling */}
           <div className="flex-1 p-6">
             <div className="h-full bg-gray-800/30 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden">
               {renderContent()}
@@ -802,18 +805,28 @@ export function LearningPage() {
                 <span>Last updated {lastUpdated}</span>
               </div>
             </div>
-            <div className="flex items-center space-x-4">
-              <button className="hover:text-white transition-colors">Export</button>
-              <button className="hover:text-white transition-colors">⭐</button>
-            </div>
           </div>
         </div>
 
         {/* Right Panel - Notes */}
         <div className="w-80 bg-gray-800/30 backdrop-blur-sm border-l border-white/10 flex flex-col">
+          {/* Notes Header with Last Updated, Export, and Star */}
           <div className="p-6 border-b border-white/10">
-            <h3 className="text-lg font-semibold text-white mb-2">Notes</h3>
-            <p className="text-sm text-gray-400">Last updated {lastUpdated}</p>
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center space-x-2">
+                <Undo2 className="w-4 h-4 text-gray-400" />
+                <span className="text-sm text-gray-400">Last updated {lastUpdated}</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <button className="text-gray-400 hover:text-white transition-colors">
+                  <Download className="w-4 h-4" />
+                </button>
+                <button className="text-gray-400 hover:text-yellow-400 transition-colors">
+                  <Star className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+            <h3 className="text-lg font-semibold text-white">Notes</h3>
           </div>
           
           <div className="flex-1 p-4">
@@ -838,7 +851,7 @@ export function LearningPage() {
         </div>
       </div>
 
-      {/* AI Tutor */}
+      {/* AI Tutor - Matching the main overview page design */}
       <AITutor />
     </div>
   )
