@@ -74,7 +74,7 @@ export function AITutor({ className = "" }: AITutorProps) {
             </div>
             <button
               onClick={() => setIsOpen(false)}
-              className="text-gray-400 hover:text-white transition-colors p-1"
+              className="text-gray-400 hover:text-white transition-colors p-1 rounded-full hover:bg-gray-700/50"
             >
               <X className="w-4 h-4" />
             </button>
@@ -134,35 +134,35 @@ export function AITutor({ className = "" }: AITutorProps) {
         </div>
       )}
 
-      {/* Floating Button */}
+      {/* Floating Button - Reduced size */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-14 h-14 bg-gradient-to-r from-[#6244FF] to-[#FFAE2D] rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group ${
+        className={`w-12 h-12 bg-gradient-to-r from-[#6244FF] to-[#FFAE2D] rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group relative ${
           isOpen ? 'scale-95' : 'hover:scale-110'
         }`}
       >
-        {isOpen ? (
-          <X className="w-6 h-6 text-white" />
-        ) : (
-          <>
-            <MessageCircle className="w-6 h-6 text-white" />
-            {/* Notification dot */}
-            <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
-              <span className="text-white text-xs font-bold">1</span>
-            </div>
-            {/* Pulse animation */}
-            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-[#6244FF] to-[#FFAE2D] animate-ping opacity-20"></div>
-          </>
+        <MessageCircle className="w-5 h-5 text-white" />
+        
+        {/* Notification dot - only show when closed */}
+        {!isOpen && (
+          <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full flex items-center justify-center">
+            <span className="text-white text-xs font-bold">1</span>
+          </div>
+        )}
+        
+        {/* Pulse animation - only when closed */}
+        {!isOpen && (
+          <div className="absolute inset-0 rounded-full bg-gradient-to-r from-[#6244FF] to-[#FFAE2D] animate-ping opacity-20"></div>
+        )}
+
+        {/* Tooltip when closed */}
+        {!isOpen && (
+          <div className="absolute bottom-full right-0 mb-2 px-3 py-2 bg-gray-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap shadow-lg">
+            Ask your AI Tutor
+            <div className="absolute top-full right-4 w-2 h-2 bg-gray-800 rotate-45 transform -translate-y-1"></div>
+          </div>
         )}
       </button>
-
-      {/* Tooltip when closed */}
-      {!isOpen && (
-        <div className="absolute bottom-full right-0 mb-2 px-3 py-2 bg-gray-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap shadow-lg">
-          Ask your AI Tutor
-          <div className="absolute top-full right-4 w-2 h-2 bg-gray-800 rotate-45 transform -translate-y-1"></div>
-        </div>
-      )}
     </div>
   )
 }
