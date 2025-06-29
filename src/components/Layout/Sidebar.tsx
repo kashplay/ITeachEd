@@ -7,8 +7,9 @@ import { useAuth } from '../../contexts/AuthContext'
 import eLogoLight from '../../assets/images/e-logo-full-light.svg'
 
 // Import both selected and unselected SVG icons
-import selectedHomePage from '../../assets/images/selected-home-page.svg'
-import unselectedHomePage from '../../assets/images/unselected-home-page.svg'
+// Using the correct dashboard SVG files
+import selectedHomePage from '../../assets/images/selected-home-dashboard.svg'
+import unselectedHomePage from '../../assets/images/unselected-home-dashboard.svg'
 import selectedCoursePage from '../../assets/images/selected-course-page.svg'
 import unselectedCoursePage from '../../assets/images/unselected-course-page.svg'
 import selectedMyGoals from '../../assets/images/selected-my-goals.svg'
@@ -24,9 +25,14 @@ interface CustomIconProps {
   unselectedSrc: string
   isActive: boolean
   alt: string
+  isDashboard?: boolean
 }
 
-const CustomIcon: React.FC<CustomIconProps> = ({ selectedSrc, unselectedSrc, isActive, alt }) => {
+const CustomIcon: React.FC<CustomIconProps> = ({ selectedSrc, unselectedSrc, isActive, alt, isDashboard = false }) => {
+  // Special sizing for dashboard icon to prevent shrinking
+  const selectedSize = isDashboard ? '56px' : '48px'
+  const unselectedSize = isDashboard ? '32px' : '24px'
+  
   return (
     <div className="relative w-12 h-12 flex items-center justify-center">
       {/* Unselected icon */}
@@ -38,7 +44,11 @@ const CustomIcon: React.FC<CustomIconProps> = ({ selectedSrc, unselectedSrc, isA
             ? 'opacity-0 scale-95' 
             : 'opacity-100 scale-100'
         }`}
-        style={{ width: '24px', height: '24px' }}
+        style={{ 
+          width: unselectedSize, 
+          height: unselectedSize,
+          objectFit: 'contain'
+        }}
       />
       {/* Selected icon */}
       <img 
@@ -49,7 +59,11 @@ const CustomIcon: React.FC<CustomIconProps> = ({ selectedSrc, unselectedSrc, isA
             ? 'opacity-100 scale-100' 
             : 'opacity-0 scale-95'
         }`}
-        style={{ width: '48px', height: '48px' }}
+        style={{ 
+          width: selectedSize, 
+          height: selectedSize,
+          objectFit: 'contain'
+        }}
       />
     </div>
   )
@@ -61,7 +75,8 @@ const navigation = [
     name: 'Dashboard', 
     href: '/dashboard', 
     selectedIcon: selectedHomePage,
-    unselectedIcon: unselectedHomePage
+    unselectedIcon: unselectedHomePage,
+    isDashboard: true
   },
   { 
     name: 'Learning Paths', 
@@ -145,6 +160,7 @@ export function Sidebar({ collapsed: _collapsed, onToggle: _onToggle }: SidebarP
                 unselectedSrc={item.unselectedIcon}
                 isActive={isActive}
                 alt={item.name}
+                isDashboard={item.isDashboard}
               />
               
               {/* Tooltip */}
