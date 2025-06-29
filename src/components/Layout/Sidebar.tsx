@@ -1,21 +1,22 @@
 import React from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { 
-  LogOut,
-  Settings
+  LogOut
 } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
 import eLogoLight from '../../assets/images/e-logo-full-light.svg'
 
-// Import custom SVG icons
-import selectedHomeDashboard from '../../assets/images/selected-home-dashboard.svg'
-import unselectedHomeDashboard from '../../assets/images/unselected-home-dashboard.svg'
+// Import all custom SVG icons from assets
+import selectedHomePage from '../../assets/images/selected-home-page.svg'
+import unselectedHomePage from '../../assets/images/unselected-home-page.svg'
 import selectedCoursePage from '../../assets/images/selected-course-page.svg'
 import unselectedCoursePage from '../../assets/images/unselected-course-page.svg'
 import selectedMyGoals from '../../assets/images/selected-my-goals.svg'
 import unselectedMyGoals from '../../assets/images/unselected-my-goals.svg'
 import selectedMyNotes from '../../assets/images/selected-my-notes.svg'
 import unselectedMyNotes from '../../assets/images/unselected-my-notes.svg'
+import selectedSetting from '../../assets/images/selected-setting.svg'
+import unselectedSetting from '../../assets/images/unselected-setting.svg'
 
 // Custom icon component for smooth transitions
 interface CustomIconProps {
@@ -54,52 +55,14 @@ const CustomIcon: React.FC<CustomIconProps> = ({ selectedSrc, unselectedSrc, isA
   )
 }
 
-// Lucide icon component with active state styling
-interface LucideIconProps {
-  icon: React.ComponentType<{ className?: string }>
-  isActive: boolean
-  alt: string
-}
-
-const LucideIcon: React.FC<LucideIconProps> = ({ icon: IconComponent, isActive, alt }) => {
-  return (
-    <div className="relative w-8 h-8 flex items-center justify-center">
-      <IconComponent 
-        className={`w-6 h-6 transition-all duration-300 ease-out ${
-          isActive 
-            ? 'text-white scale-110' 
-            : 'text-gray-400'
-        }`}
-      />
-    </div>
-  )
-}
-
-// Navigation item types
-interface NavigationItemWithCustomIcon {
-  name: string
-  href: string
-  customIcon: {
-    selected: string
-    unselected: string
-  }
-}
-
-interface NavigationItemWithLucideIcon {
-  name: string
-  href: string
-  icon: React.ComponentType<{ className?: string }>
-}
-
-type NavigationItem = NavigationItemWithCustomIcon | NavigationItemWithLucideIcon
-
-const navigation: NavigationItem[] = [
+// Navigation items - all using custom icons now
+const navigation = [
   { 
     name: 'Dashboard', 
     href: '/dashboard', 
     customIcon: {
-      selected: selectedHomeDashboard,
-      unselected: unselectedHomeDashboard
+      selected: selectedHomePage,
+      unselected: unselectedHomePage
     }
   },
   { 
@@ -129,7 +92,10 @@ const navigation: NavigationItem[] = [
   { 
     name: 'Settings', 
     href: '/settings', 
-    icon: Settings
+    customIcon: {
+      selected: selectedSetting,
+      unselected: unselectedSetting
+    }
   },
 ]
 
@@ -170,7 +136,6 @@ export function Sidebar({ collapsed: _collapsed, onToggle: _onToggle }: SidebarP
       <nav className="flex-1 flex flex-col items-center space-y-6">
         {navigation.map((item) => {
           const isActive = location.pathname === item.href
-          const hasCustomIcon = 'customIcon' in item
           
           return (
             <Link
@@ -179,30 +144,18 @@ export function Sidebar({ collapsed: _collapsed, onToggle: _onToggle }: SidebarP
               className={`
                 w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 group relative
                 ${isActive 
-                  ? hasCustomIcon 
-                    ? 'bg-transparent scale-105 shadow-lg shadow-blue-500/25' 
-                    : 'bg-[#6366f1] shadow-lg shadow-blue-500/25 scale-105'
-                  : hasCustomIcon
-                    ? 'hover:scale-110 hover:shadow-md hover:shadow-blue-500/10'
-                    : 'hover:bg-gray-700/50 hover:scale-110'
+                  ? 'bg-transparent scale-105 shadow-lg shadow-blue-500/25' 
+                  : 'hover:scale-110 hover:shadow-md hover:shadow-blue-500/10'
                 }
               `}
               title={item.name}
             >
-              {hasCustomIcon ? (
-                <CustomIcon
-                  selectedSrc={(item as NavigationItemWithCustomIcon).customIcon.selected}
-                  unselectedSrc={(item as NavigationItemWithCustomIcon).customIcon.unselected}
-                  isActive={isActive}
-                  alt={item.name}
-                />
-              ) : (
-                <LucideIcon
-                  icon={(item as NavigationItemWithLucideIcon).icon}
-                  isActive={isActive}
-                  alt={item.name}
-                />
-              )}
+              <CustomIcon
+                selectedSrc={item.customIcon.selected}
+                unselectedSrc={item.customIcon.unselected}
+                isActive={isActive}
+                alt={item.name}
+              />
               
               {/* Tooltip */}
               <div className="absolute left-full ml-3 px-3 py-2 bg-gray-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-lg">
