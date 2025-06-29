@@ -384,15 +384,15 @@ export function PreEvaluationPage() {
         evaluation_answers: answers
       }
       
-      // Update profile without timeout
+      // Update profile
       await updateProfile(profileUpdate)
       
       // Navigate to dashboard
       navigate('/dashboard', { replace: true })
       
     } catch (error) {
-      // For now, let's just proceed to dashboard even if profile update fails
-      // This ensures users don't get stuck on the loading screen
+      console.error('Error saving evaluation:', error)
+      // Navigate to dashboard even if there's an error to prevent getting stuck
       navigate('/dashboard', { replace: true })
     }
   }

@@ -46,10 +46,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         
         if (session?.user) {
           fetchProfile(session.user.id).catch(console.error)
+        } else {
+          setLoading(false)
         }
       } catch (error) {
         console.error('Exception getting session:', error)
-      } finally {
         setLoading(false)
       }
     }
@@ -66,19 +67,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           await fetchProfile(session.user.id)
         } else {
           setProfile(null)
+          setLoading(false)
         }
-        
-        setLoading(false)
       }
     )
 
-    // Reduced timeout for faster initial load
-    const timeoutId = setTimeout(() => {
-      setLoading(false)
-    }, 3000)
-
     return () => {
-      clearTimeout(timeoutId)
       subscription.unsubscribe()
     }
   }, [])
@@ -100,9 +94,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } else {
         setProfile(null)
       }
+      
+      setLoading(false)
     } catch (error) {
       console.error('Exception fetching profile:', error)
       setProfile(null)
+      setLoading(false)
     }
   }
 
@@ -211,26 +208,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Prepare the profile data with all required fields
       const profileData = {
         user_id: user.id,
-        full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
-        ...updates,
-        updated_at: new Date().toISOString()
+        ...updates
       }
       
       // Use upsert to handle both insert and update cases
       const { error } = await supabase
         .from('user_profiles')
-        .upsert(profileData, {
-          onConflict: 'user_id'
-        })
+        .upsert(profileData)
       
       if (error) {
+        console.error('Profile update error:', error)
         throw error
       }
       
-      // Fetch the updated profile
-      await fetchProfile(user.id)
+      // Update local profile state with the updates
+      setProfile(prev => prev ? { ...prev, ...updates } : null)
       
     } catch (error) {
+      console.error('Profile update exception:', error)
       throw error
     }
   }
