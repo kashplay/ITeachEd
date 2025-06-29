@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { ArrowLeft, ChevronDown, Bold, Italic, Underline, Strikethrough, AlignLeft, AlignCenter, AlignRight, AlignJustify, List, Quote, Code, Type, Palette, RotateCcw, Star, MessageCircle, X, Send, Bot, Search, Bell } from 'lucide-react'
+import { ArrowLeft, ChevronDown, ChevronRight, Bold, Italic, Underline, Strikethrough, AlignLeft, AlignCenter, AlignRight, AlignJustify, List, Quote, Code, Type, Palette, RotateCcw, Star, MessageCircle, X, Send, Bot, Search, Bell, Play, Clock, CheckCircle } from 'lucide-react'
 import { Card } from '../components/ui/Card'
 import { Button } from '../components/ui/Button'
 import { useAuth } from '../contexts/AuthContext'
@@ -329,42 +329,109 @@ function RichTextToolbar({ onFormat }: RichTextToolbarProps) {
   )
 }
 
-// Module data
-const modules = [
+// Lesson interface
+interface Lesson {
+  id: number
+  title: string
+  duration: string
+  type: 'video' | 'reading' | 'quiz' | 'assignment'
+  completed: boolean
+}
+
+// Module interface with lessons
+interface Module {
+  id: number
+  title: string
+  lessons: Lesson[]
+  completed: boolean
+  progress: number
+}
+
+// Module data with lessons
+const modules: Module[] = [
   {
     id: 1,
     title: 'Introduction',
-    lessons: 8,
     completed: true,
-    progress: 100
+    progress: 100,
+    lessons: [
+      { id: 1, title: 'Welcome to Business Analytics', duration: '5 min', type: 'video', completed: true },
+      { id: 2, title: 'Course Overview', duration: '3 min', type: 'reading', completed: true },
+      { id: 3, title: 'What is Business Analytics?', duration: '8 min', type: 'video', completed: true },
+      { id: 4, title: 'Key Concepts', duration: '6 min', type: 'reading', completed: true },
+      { id: 5, title: 'Industry Applications', duration: '10 min', type: 'video', completed: true },
+      { id: 6, title: 'Tools Overview', duration: '7 min', type: 'reading', completed: true },
+      { id: 7, title: 'Getting Started', duration: '4 min', type: 'video', completed: true },
+      { id: 8, title: 'Module 1 Quiz', duration: '10 min', type: 'quiz', completed: true }
+    ]
   },
   {
     id: 2,
     title: 'In Depth Analytics',
-    lessons: 12,
     completed: false,
-    progress: 75
+    progress: 75,
+    lessons: [
+      { id: 9, title: 'Data Collection Methods', duration: '12 min', type: 'video', completed: true },
+      { id: 10, title: 'Data Sources', duration: '8 min', type: 'reading', completed: true },
+      { id: 11, title: 'Data Quality Assessment', duration: '15 min', type: 'video', completed: true },
+      { id: 12, title: 'Data Cleaning Techniques', duration: '20 min', type: 'video', completed: true },
+      { id: 13, title: 'Exploratory Data Analysis', duration: '18 min', type: 'video', completed: true },
+      { id: 14, title: 'Statistical Analysis', duration: '25 min', type: 'video', completed: true },
+      { id: 15, title: 'Data Visualization', duration: '16 min', type: 'video', completed: true },
+      { id: 16, title: 'Interpretation Techniques', duration: '14 min', type: 'reading', completed: true },
+      { id: 17, title: 'Case Study Analysis', duration: '30 min', type: 'assignment', completed: true },
+      { id: 18, title: 'Advanced Techniques', duration: '22 min', type: 'video', completed: false },
+      { id: 19, title: 'Predictive Modeling', duration: '28 min', type: 'video', completed: false },
+      { id: 20, title: 'Module 2 Quiz', duration: '15 min', type: 'quiz', completed: false }
+    ]
   },
   {
     id: 3,
     title: 'Advanced Maths',
-    lessons: 10,
     completed: false,
-    progress: 0
+    progress: 0,
+    lessons: [
+      { id: 21, title: 'Statistical Foundations', duration: '20 min', type: 'video', completed: false },
+      { id: 22, title: 'Probability Theory', duration: '18 min', type: 'reading', completed: false },
+      { id: 23, title: 'Hypothesis Testing', duration: '25 min', type: 'video', completed: false },
+      { id: 24, title: 'Regression Analysis', duration: '30 min', type: 'video', completed: false },
+      { id: 25, title: 'Correlation Analysis', duration: '22 min', type: 'video', completed: false },
+      { id: 26, title: 'Time Series Analysis', duration: '35 min', type: 'video', completed: false },
+      { id: 27, title: 'Forecasting Methods', duration: '28 min', type: 'video', completed: false },
+      { id: 28, title: 'Mathematical Modeling', duration: '40 min', type: 'assignment', completed: false },
+      { id: 29, title: 'Optimization Techniques', duration: '32 min', type: 'video', completed: false },
+      { id: 30, title: 'Module 3 Quiz', duration: '20 min', type: 'quiz', completed: false }
+    ]
   },
   {
     id: 4,
     title: 'Deep Tech in BA',
-    lessons: 8,
     completed: false,
-    progress: 0
+    progress: 0,
+    lessons: [
+      { id: 31, title: 'Machine Learning Basics', duration: '25 min', type: 'video', completed: false },
+      { id: 32, title: 'AI in Business Analytics', duration: '20 min', type: 'reading', completed: false },
+      { id: 33, title: 'Big Data Technologies', duration: '30 min', type: 'video', completed: false },
+      { id: 34, title: 'Cloud Analytics Platforms', duration: '22 min', type: 'video', completed: false },
+      { id: 35, title: 'Real-time Analytics', duration: '28 min', type: 'video', completed: false },
+      { id: 36, title: 'Advanced Visualization', duration: '24 min', type: 'video', completed: false },
+      { id: 37, title: 'Automation in Analytics', duration: '26 min', type: 'video', completed: false },
+      { id: 38, title: 'Module 4 Quiz', duration: '15 min', type: 'quiz', completed: false }
+    ]
   },
   {
     id: 5,
     title: 'Summary & Conclusion',
-    lessons: 6,
     completed: false,
-    progress: 0
+    progress: 0,
+    lessons: [
+      { id: 39, title: 'Course Recap', duration: '15 min', type: 'video', completed: false },
+      { id: 40, title: 'Key Takeaways', duration: '10 min', type: 'reading', completed: false },
+      { id: 41, title: 'Industry Best Practices', duration: '20 min', type: 'video', completed: false },
+      { id: 42, title: 'Career Opportunities', duration: '12 min', type: 'reading', completed: false },
+      { id: 43, title: 'Final Project', duration: '60 min', type: 'assignment', completed: false },
+      { id: 44, title: 'Final Assessment', duration: '30 min', type: 'quiz', completed: false }
+    ]
   }
 ]
 
@@ -551,6 +618,7 @@ export function LearningPage() {
   const [activeTab, setActiveTab] = useState('Main Content')
   const [notes, setNotes] = useState('')
   const [lastUpdated, setLastUpdated] = useState(new Date())
+  const [expandedModules, setExpandedModules] = useState<number[]>([])
 
   // Auto-save notes functionality
   useEffect(() => {
@@ -612,6 +680,34 @@ export function LearningPage() {
       minute: '2-digit'
     }
     return date.toLocaleDateString('en-US', options)
+  }
+
+  const toggleModule = (moduleId: number) => {
+    setExpandedModules(prev => 
+      prev.includes(moduleId) 
+        ? prev.filter(id => id !== moduleId)
+        : [...prev, moduleId]
+    )
+  }
+
+  const getLessonIcon = (type: string) => {
+    switch (type) {
+      case 'video': return <Play className="w-4 h-4" />
+      case 'reading': return <div className="w-4 h-4 flex items-center justify-center text-xs font-bold">A</div>
+      case 'quiz': return <div className="w-4 h-4 flex items-center justify-center text-xs font-bold">?</div>
+      case 'assignment': return <div className="w-4 h-4 flex items-center justify-center text-xs font-bold">📝</div>
+      default: return <Play className="w-4 h-4" />
+    }
+  }
+
+  const getLessonTypeColor = (type: string) => {
+    switch (type) {
+      case 'video': return 'text-blue-400'
+      case 'reading': return 'text-green-400'
+      case 'quiz': return 'text-yellow-400'
+      case 'assignment': return 'text-purple-400'
+      default: return 'text-gray-400'
+    }
   }
 
   return (
@@ -704,7 +800,7 @@ export function LearningPage() {
             <div className="mt-3">
               <div className="flex items-center space-x-2 text-sm">
                 <div className="px-2 py-1 bg-orange-500 text-white rounded text-xs font-medium">
-                  0% Completed
+                  35% Completed
                 </div>
               </div>
             </div>
@@ -713,26 +809,85 @@ export function LearningPage() {
           {/* Modules List */}
           <div className="flex-1 overflow-y-auto p-4 space-y-3">
             {modules.map((module) => (
-              <div key={module.id} className="bg-gray-700/30 rounded-xl p-4 hover:bg-gray-600/30 transition-colors cursor-pointer">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-white font-medium">{module.id}. {module.title}</h3>
-                  <ChevronDown className="w-4 h-4 text-gray-400" />
+              <div key={module.id} className="bg-gray-700/30 rounded-xl overflow-hidden">
+                <div 
+                  className="p-4 hover:bg-gray-600/30 transition-colors cursor-pointer"
+                  onClick={() => toggleModule(module.id)}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-white font-medium">{module.id}. {module.title}</h3>
+                    <div className="flex items-center space-x-2">
+                      {module.completed && (
+                        <CheckCircle className="w-4 h-4 text-green-500" />
+                      )}
+                      {expandedModules.includes(module.id) ? (
+                        <ChevronDown className="w-4 h-4 text-gray-400" />
+                      ) : (
+                        <ChevronRight className="w-4 h-4 text-gray-400" />
+                      )}
+                    </div>
+                  </div>
+                  
+                  {module.progress > 0 && (
+                    <div className="mb-2">
+                      <div className="w-full bg-gray-600 rounded-full h-2">
+                        <div 
+                          className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                          style={{ width: `${module.progress}%` }}
+                        />
+                      </div>
+                    </div>
+                  )}
+                  
+                  <div className="text-sm text-gray-400">
+                    {module.lessons.length} lessons
+                  </div>
                 </div>
-                
-                {module.progress > 0 && (
-                  <div className="mb-2">
-                    <div className="w-full bg-gray-600 rounded-full h-2">
-                      <div 
-                        className="bg-blue-500 h-2 rounded-full transition-all duration-300"
-                        style={{ width: `${module.progress}%` }}
-                      />
+
+                {/* Expanded Lessons */}
+                {expandedModules.includes(module.id) && (
+                  <div className="border-t border-gray-600/30 bg-gray-800/20">
+                    <div className="p-2 space-y-1">
+                      {module.lessons.map((lesson) => (
+                        <div 
+                          key={lesson.id}
+                          className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-600/30 transition-colors cursor-pointer group"
+                        >
+                          <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                            lesson.completed 
+                              ? 'bg-green-500 text-white' 
+                              : 'bg-gray-600 text-gray-300'
+                          } ${getLessonTypeColor(lesson.type)}`}>
+                            {lesson.completed ? (
+                              <CheckCircle className="w-4 h-4" />
+                            ) : (
+                              getLessonIcon(lesson.type)
+                            )}
+                          </div>
+                          
+                          <div className="flex-1 min-w-0">
+                            <h4 className={`text-sm font-medium truncate ${
+                              lesson.completed ? 'text-gray-300' : 'text-white'
+                            }`}>
+                              {lesson.title}
+                            </h4>
+                            <div className="flex items-center space-x-2 text-xs text-gray-400">
+                              <Clock className="w-3 h-3" />
+                              <span>{lesson.duration}</span>
+                              <span className="capitalize">{lesson.type}</span>
+                            </div>
+                          </div>
+
+                          {!lesson.completed && (
+                            <button className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-blue-500/20 rounded">
+                              <Play className="w-3 h-3 text-blue-400" />
+                            </button>
+                          )}
+                        </div>
+                      ))}
                     </div>
                   </div>
                 )}
-                
-                <div className="text-sm text-gray-400">
-                  {module.lessons} lessons
-                </div>
               </div>
             ))}
           </div>
