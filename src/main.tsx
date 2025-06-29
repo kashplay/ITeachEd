@@ -32,22 +32,27 @@ Test credentials:
   })
 
   // Load upsert validation utilities
-  import('./utils/validateUpsert').then(({ validateUpsertOperation, UpsertValidator }) => {
+  import('./utils/validateUpsert').then(({ validateUpsertOperation, UpsertValidator, quickTests }) => {
     (window as any).upsertValidator = {
       validateUpsertOperation,
       UpsertValidator,
+      quickTests,
       help: () => {
         console.log(`
 🔍 Upsert Validation Utilities:
 
 Available commands:
-• upsertValidator.validateUpsertOperation() - Run full validation
-• upsertValidator.UpsertValidator.runFullValidation() - Detailed validation
+• await upsertValidator.validateUpsertOperation() - Run full validation
+• await upsertValidator.quickTests.testConnection() - Quick connection test
+• await upsertValidator.quickTests.testUpsert() - Quick upsert test
+• await upsertValidator.quickTests.checkCurrentUser() - Check current user
 • upsertValidator.help() - Show this help message
 
+⚠️  IMPORTANT: Remember to use 'await' with these functions!
+
 Usage:
-1. Sign in with a test user first: devHelpers.signInWithTestUser()
-2. Run validation: upsertValidator.validateUpsertOperation()
+1. Sign in: await devHelpers.signInWithTestUser()
+2. Test: await upsertValidator.validateUpsertOperation()
         `)
       }
     }

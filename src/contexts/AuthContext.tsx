@@ -309,8 +309,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       console.log('🔄 updateProfile: Prepared profile data:', profileData)
       
+      // Create a timeout promise to prevent hanging
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error('Profile update timed out after 8 seconds')), 8000)
+      })
+      
       // Use upsert to handle both insert and update cases
-      const { data, error } = await supabase
+      const upsertPromise = supabase
         .from('user_profiles')
         .upsert(profileData, {
           onConflict: 'user_id',
@@ -318,6 +323,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         })
         .select()
         .single()
+      
+      // Race the upsert against the timeout
+      const { data, error } = await Promise.race([upsertPromise, timeoutPromise])
       
       if (error) {
         console.error('❌ updateProfile: Upsert error:', error)
@@ -337,7 +345,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       // Provide more specific error messages
       if (error instanceof Error) {
-        if (error.message.includes('duplicate key')) {
+        if (error.message.includes('timed out')) {
+          throw new Error('Profile update is taking too long. Please try again.')
+        } else if (error.message.includes('duplicate key')) {
           throw new Error('Profile already exists. Please try refreshing the page.')
         } else if (error.message.includes('foreign key')) {
           throw new Error('User authentication issue. Please sign out and sign back in.')
