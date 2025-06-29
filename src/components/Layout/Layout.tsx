@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { Header } from './Header'
 import { Sidebar } from './Sidebar'
-import { AuthDebug } from '../AuthDebug'
 import { useAuth } from '../../contexts/AuthContext'
 
 interface LayoutProps {
@@ -38,8 +37,6 @@ export function Layout({ children }: LayoutProps) {
           {children}
         </main>
       </div>
-      
-      <AuthDebug />
     </div>
   )
 }
