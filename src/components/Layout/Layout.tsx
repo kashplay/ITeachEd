@@ -15,9 +15,12 @@ export function Layout({ children }: LayoutProps) {
   
   const isAuthPage = location.pathname.startsWith('/auth')
   const isLandingPage = location.pathname === '/'
-  const isProtectedPage = !isAuthPage && !isLandingPage
+  const isPreEvaluationPage = location.pathname === '/pre-evaluation'
+  const isOnboardingPage = location.pathname === '/onboarding'
+  const isProtectedPage = !isAuthPage && !isLandingPage && !isPreEvaluationPage && !isOnboardingPage
 
   // Show sidebar only on protected pages (dashboard, learning, achievements, etc.)
+  // Exclude pre-evaluation and onboarding pages
   const showSidebar = isProtectedPage
 
   return (
