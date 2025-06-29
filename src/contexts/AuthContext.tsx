@@ -291,50 +291,81 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.log('🔄 updateProfile: Starting profile update for user:', user.id)
       console.log('🔄 updateProfile: Update data:', updates)
       
-      // Prepare the data for upsert (always include defaults for new profiles)
-      const profileData = {
-        user_id: user.id,
-        full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
-        guild_level: 'ROOKIE',
-        xp: 0,
-        pathways_completed: 0,
-        guild_rank: 999999,
-        total_hours: 0,
-        projects_completed: 0,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        ...updates // Apply the updates on top of defaults
-      }
-      
-      console.log('🔄 updateProfile: Profile data prepared for upsert')
-      
-      // Use direct upsert without fetching existing profile first
-      console.log('🔄 updateProfile: Attempting direct upsert...')
-      const { data, error } = await supabase
+      // First, try to get existing profile
+      console.log('🔄 updateProfile: Checking for existing profile...')
+      const { data: existingProfile, error: fetchError } = await supabase
         .from('user_profiles')
-        .upsert(profileData, {
-          onConflict: 'user_id'
-        })
-        .select()
+        .select('*')
+        .eq('user_id', user.id)
         .single()
-
-      if (error) {
-        console.error('❌ updateProfile: Database error:', error)
-        console.error('❌ updateProfile: Error details:', {
-          message: error.message,
-          details: error.details,
-          hint: error.hint,
-          code: error.code
-        })
-        throw error
+      
+      if (fetchError && fetchError.code !== 'PGRST116') {
+        console.error('❌ updateProfile: Error fetching existing profile:', fetchError)
+        throw fetchError
       }
-
-      console.log('✅ updateProfile: Profile updated successfully:', data)
       
-      // Update local state
-      setProfile(data)
+      let profileData
+      let operation
       
-      console.log('✅ updateProfile: Profile update complete')
+      if (existingProfile) {
+        // Update existing profile
+        console.log('🔄 updateProfile: Updating existing profile...')
+        operation = 'update'
+        profileData = {
+          ...updates,
+          updated_at: new Date().toISOString()
+        }
+        
+        const { data, error } = await supabase
+          .from('user_profiles')
+          .update(profileData)
+          .eq('user_id', user.id)
+          .select()
+          .single()
+        
+        if (error) {
+          console.error('❌ updateProfile: Update error:', error)
+          throw error
+        }
+        
+        console.log('✅ updateProfile: Profile updated successfully:', data)
+        setProfile(data)
+        
+      } else {
+        // Create new profile
+        console.log('🔄 updateProfile: Creating new profile...')
+        operation = 'insert'
+        profileData = {
+          user_id: user.id,
+          full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
+          guild_level: 'ROOKIE',
+          xp: 0,
+          pathways_completed: 0,
+          guild_rank: 999999,
+          total_hours: 0,
+          projects_completed: 0,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          ...updates
+        }
+        
+        const { data, error } = await supabase
+          .from('user_profiles')
+          .insert(profileData)
+          .select()
+          .single()
+        
+        if (error) {
+          console.error('❌ updateProfile: Insert error:', error)
+          throw error
+        }
+        
+        console.log('✅ updateProfile: Profile created successfully:', data)
+        setProfile(data)
+      }
+      
+      console.log(`✅ updateProfile: Profile ${operation} complete`)
+      
     } catch (error) {
       console.error('❌ updateProfile: Exception during profile update:', error)
       console.error('❌ updateProfile: User context:', {
@@ -342,6 +373,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         userEmail: user?.email,
         hasProfile: !!profile
       })
+      
+      // Provide more specific error messages
+      if (error instanceof Error) {
+        if (error.message.includes('duplicate key')) {
+          throw new Error('Profile already exists. Please try refreshing the page.')
+        } else if (error.message.includes('foreign key')) {
+          throw new Error('User authentication issue. Please sign out and sign back in.')
+        } else if (error.message.includes('permission')) {
+          throw new Error('Permission denied. Please check your account settings.')
+        }
+      }
+      
       throw error
     }
   }
