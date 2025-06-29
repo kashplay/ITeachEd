@@ -291,80 +291,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.log('🔄 updateProfile: Starting profile update for user:', user.id)
       console.log('🔄 updateProfile: Update data:', updates)
       
-      // First, try to get existing profile
-      console.log('🔄 updateProfile: Checking for existing profile...')
-      const { data: existingProfile, error: fetchError } = await supabase
+      // Prepare the profile data with all required fields
+      const profileData = {
+        user_id: user.id,
+        full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
+        guild_level: 'ROOKIE',
+        xp: 0,
+        pathways_completed: 0,
+        guild_rank: 999999,
+        total_hours: 0,
+        projects_completed: 0,
+        evaluation_completed: false,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        ...updates // Override with any provided updates
+      }
+      
+      console.log('🔄 updateProfile: Prepared profile data:', profileData)
+      
+      // Use upsert to handle both insert and update cases
+      const { data, error } = await supabase
         .from('user_profiles')
-        .select('*')
-        .eq('user_id', user.id)
+        .upsert(profileData, {
+          onConflict: 'user_id',
+          ignoreDuplicates: false
+        })
+        .select()
         .single()
       
-      if (fetchError && fetchError.code !== 'PGRST116') {
-        console.error('❌ updateProfile: Error fetching existing profile:', fetchError)
-        throw fetchError
+      if (error) {
+        console.error('❌ updateProfile: Upsert error:', error)
+        throw error
       }
       
-      let profileData
-      let operation
-      
-      if (existingProfile) {
-        // Update existing profile
-        console.log('🔄 updateProfile: Updating existing profile...')
-        operation = 'update'
-        profileData = {
-          ...updates,
-          updated_at: new Date().toISOString()
-        }
-        
-        const { data, error } = await supabase
-          .from('user_profiles')
-          .update(profileData)
-          .eq('user_id', user.id)
-          .select()
-          .single()
-        
-        if (error) {
-          console.error('❌ updateProfile: Update error:', error)
-          throw error
-        }
-        
-        console.log('✅ updateProfile: Profile updated successfully:', data)
-        setProfile(data)
-        
-      } else {
-        // Create new profile
-        console.log('🔄 updateProfile: Creating new profile...')
-        operation = 'insert'
-        profileData = {
-          user_id: user.id,
-          full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
-          guild_level: 'ROOKIE',
-          xp: 0,
-          pathways_completed: 0,
-          guild_rank: 999999,
-          total_hours: 0,
-          projects_completed: 0,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          ...updates
-        }
-        
-        const { data, error } = await supabase
-          .from('user_profiles')
-          .insert(profileData)
-          .select()
-          .single()
-        
-        if (error) {
-          console.error('❌ updateProfile: Insert error:', error)
-          throw error
-        }
-        
-        console.log('✅ updateProfile: Profile created successfully:', data)
-        setProfile(data)
-      }
-      
-      console.log(`✅ updateProfile: Profile ${operation} complete`)
+      console.log('✅ updateProfile: Profile upserted successfully:', data)
+      setProfile(data)
       
     } catch (error) {
       console.error('❌ updateProfile: Exception during profile update:', error)
@@ -382,6 +343,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           throw new Error('User authentication issue. Please sign out and sign back in.')
         } else if (error.message.includes('permission')) {
           throw new Error('Permission denied. Please check your account settings.')
+        } else if (error.message.includes('404')) {
+          throw new Error('Database table not found. Please contact support.')
         }
       }
       
