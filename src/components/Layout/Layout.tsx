@@ -16,20 +16,14 @@ export function Layout({ children }: LayoutProps) {
   
   const isAuthPage = location.pathname.startsWith('/auth')
   const isLandingPage = location.pathname === '/'
-  const isDashboardPage = location.pathname === '/dashboard'
-  const isLearningPage = location.pathname === '/learning'
-  const isAchievementsPage = location.pathname === '/achievements'
-  const isGuildsPage = location.pathname === '/guilds'
-  const isJobsPage = location.pathname === '/jobs'
-  const isSettingsPage = location.pathname === '/settings'
-  
-  const hasCustomHeader = isDashboardPage || isLearningPage || isAchievementsPage || isGuildsPage || isJobsPage || isSettingsPage
-  const showSidebar = !isAuthPage && !isLandingPage && !hasCustomHeader
+  const isProtectedPage = !isAuthPage && !isLandingPage
 
-  // Header component now handles its own rendering logic
-  // We always render it, but it decides internally whether to show or not
+  // Show sidebar only on protected pages (dashboard, learning, achievements, etc.)
+  const showSidebar = isProtectedPage
+
   return (
     <div className="min-h-screen bg-gray-950">
+      {/* Header component now handles its own rendering logic */}
       <Header />
       
       <div className="flex">
