@@ -85,7 +85,7 @@ const navigation = [
     unselectedIcon: unselectedCoursePage
   },
   { 
-    name: 'Achievements', 
+    name: 'My Goals', 
     href: '/achievements', 
     selectedIcon: selectedMyGoals,
     unselectedIcon: unselectedMyGoals

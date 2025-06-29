@@ -1,153 +1,238 @@
-import React from 'react'
-import { Trophy, Award, Star, Target, Users, Clock, Book, Briefcase, Search, Bell } from 'lucide-react'
+import React, { useState } from 'react'
+import { Trophy, Award, Star, Target, Users, Clock, Book, Briefcase, Search, Bell, ChevronLeft, ChevronRight, Calendar } from 'lucide-react'
 import { Card } from '../components/ui/Card'
 import { useAuth } from '../contexts/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import { Sidebar } from '../components/Layout/Sidebar'
 
-const achievements = [
+// Goal data structure
+interface Goal {
+  id: string
+  title: string
+  description: string
+  category: string
+  status: 'not-started' | 'in-progress' | 'completed'
+  progress: number
+  xp: number
+  weeklyXP: number
+  icon: string
+  color: string
+}
+
+// Sample goals data
+const goals: Goal[] = [
   {
-    id: 1,
-    title: 'First Steps',
-    description: 'Complete your first learning module',
-    icon: Star,
-    category: 'Getting Started',
-    earned: true,
-    earnedDate: '2024-01-15',
-    points: 50,
-    rarity: 'common'
+    id: '1',
+    title: 'Business Analytics',
+    description: 'Master business analytics fundamentals',
+    category: 'Analytics',
+    status: 'in-progress',
+    progress: 72,
+    xp: 350,
+    weeklyXP: 145,
+    icon: '📊',
+    color: 'from-blue-500 to-blue-600'
   },
   {
-    id: 2,
-    title: 'Week Warrior',
-    description: 'Learn for 7 consecutive days',
-    icon: Target,
-    category: 'Consistency',
-    earned: true,
-    earnedDate: '2024-01-22',
-    points: 100,
-    rarity: 'uncommon'
+    id: '2',
+    title: 'Strategic design',
+    description: 'Learn strategic design principles',
+    category: 'Design',
+    status: 'in-progress',
+    progress: 72,
+    xp: 260,
+    weeklyXP: 120,
+    icon: '🎨',
+    color: 'from-purple-500 to-purple-600'
   },
   {
-    id: 3,
-    title: 'Skill Master',
-    description: 'Complete an entire learning path',
-    icon: Trophy,
-    category: 'Achievement',
-    earned: true,
-    earnedDate: '2024-02-10',
-    points: 500,
-    rarity: 'rare'
+    id: '3',
+    title: 'Video editing',
+    description: 'Master video editing techniques',
+    category: 'Media',
+    status: 'in-progress',
+    progress: 72,
+    xp: 170,
+    weeklyXP: 60,
+    icon: '🎬',
+    color: 'from-green-500 to-green-600'
   },
   {
-    id: 4,
-    title: 'Community Builder',
-    description: 'Help 10 guild members with questions',
-    icon: Users,
-    category: 'Social',
-    earned: false,
-    progress: 7,
-    total: 10,
-    points: 200,
-    rarity: 'uncommon'
+    id: '4',
+    title: 'Color Grading',
+    description: 'Video editing pathway',
+    category: 'Media',
+    status: 'not-started',
+    progress: 0,
+    xp: 0,
+    weeklyXP: 0,
+    icon: '🎨',
+    color: 'from-orange-500 to-orange-600'
   },
   {
-    id: 5,
-    title: 'Speed Learner',
-    description: 'Complete 5 modules in one day',
-    icon: Clock,
-    category: 'Speed',
-    earned: false,
-    progress: 3,
-    total: 5,
-    points: 150,
-    rarity: 'uncommon'
+    id: '5',
+    title: 'Graphic design',
+    description: 'Cal arts certification',
+    category: 'Design',
+    status: 'completed',
+    progress: 100,
+    xp: 500,
+    weeklyXP: 0,
+    icon: '🎨',
+    color: 'from-green-500 to-green-600'
   },
   {
-    id: 6,
-    title: 'Knowledge Seeker',
-    description: 'Complete 100 learning modules',
-    icon: Book,
-    category: 'Progress',
-    earned: false,
-    progress: 67,
-    total: 100,
-    points: 1000,
-    rarity: 'epic'
-  },
-  {
-    id: 7,
-    title: 'Career Changer',
-    description: 'Land a job through platform connections',
-    icon: Briefcase,
-    category: 'Career',
-    earned: false,
-    points: 2000,
-    rarity: 'legendary'
-  },
-  {
-    id: 8,
-    title: 'Guild Leader',
-    description: 'Reach top 10 in guild rankings',
-    icon: Award,
-    category: 'Competition',
-    earned: false,
-    progress: 15,
-    total: 10,
-    points: 800,
-    rarity: 'epic'
+    id: '6',
+    title: 'Data Visualization',
+    description: 'UoW Austin certification',
+    category: 'Data',
+    status: 'completed',
+    progress: 100,
+    xp: 450,
+    weeklyXP: 0,
+    icon: '📈',
+    color: 'from-blue-500 to-blue-600'
   }
 ]
 
-const categories = ['All', 'Getting Started', 'Consistency', 'Achievement', 'Social', 'Speed', 'Progress', 'Career', 'Competition']
+// Sample saved goals
+const savedGoals = [
+  { id: '1', title: 'Graphic design', description: 'Graphic design', icon: '🎨' },
+  { id: '2', title: 'Graphic design', description: 'Graphic design', icon: '🎨' },
+  { id: '3', title: 'Graphic design', description: 'Graphic design', icon: '🎨' }
+]
 
-const getRarityColor = (rarity: string) => {
-  switch (rarity) {
-    case 'common': return 'from-gray-500 to-gray-600'
-    case 'uncommon': return 'from-green-500 to-green-600'
-    case 'rare': return 'from-blue-500 to-blue-600'
-    case 'epic': return 'from-purple-500 to-purple-600'
-    case 'legendary': return 'from-yellow-500 to-orange-500'
-    default: return 'from-gray-500 to-gray-600'
+// Achievement stickers
+const stickers = [
+  { id: '1', title: 'The amateur solver', icon: '🏆', color: 'from-yellow-400 to-yellow-500' },
+  { id: '2', title: 'Daily dasher', icon: '⚡', color: 'from-blue-400 to-blue-500' },
+  { id: '3', title: 'No mistake maker', icon: '✨', color: 'from-purple-400 to-purple-500' },
+  { id: '4', title: '5 days in a row', icon: '🔥', color: 'from-red-400 to-red-500' }
+]
+
+// Calendar data for streak tracking
+const generateCalendarData = () => {
+  const today = new Date()
+  const currentMonth = today.getMonth()
+  const currentYear = today.getFullYear()
+  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate()
+  const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay()
+  
+  const days = []
+  
+  // Add empty cells for days before the first day of the month
+  for (let i = 0; i < firstDayOfMonth; i++) {
+    days.push({ day: null, status: 'empty' })
   }
+  
+  // Add days of the month with random activity status
+  for (let day = 1; day <= daysInMonth; day++) {
+    const isToday = day === today.getDate()
+    const isPast = day < today.getDate()
+    
+    let status = 'inactive'
+    if (isPast) {
+      // Random activity for past days
+      const rand = Math.random()
+      if (rand > 0.7) status = 'high'
+      else if (rand > 0.4) status = 'medium'
+      else if (rand > 0.2) status = 'low'
+    } else if (isToday) {
+      status = 'today'
+    }
+    
+    days.push({ day, status })
+  }
+  
+  return days
 }
 
 export function AchievementsPage() {
   const { user, signOut } = useAuth()
   const navigate = useNavigate()
   const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'
-  const [selectedCategory, setSelectedCategory] = React.useState('All')
+  const [activeTab, setActiveTab] = useState('goals')
+  const [currentMonth, setCurrentMonth] = useState(new Date())
+  
+  const calendarDays = generateCalendarData()
+  const monthNames = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
+  const dayNames = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
 
   // Navigate to landing page when user signs out
   React.useEffect(() => {
     if (!user) {
-      console.log('🔄 Achievements: User is null, navigating to landing page')
+      console.log('🔄 Goals: User is null, navigating to landing page')
       navigate('/', { replace: true })
     }
   }, [user, navigate])
 
   const handleSignOut = async () => {
     try {
-      console.log('🔓 Achievements: Sign out button clicked')
+      console.log('🔓 Goals: Sign out button clicked')
       const { error } = await signOut()
       if (error) {
-        console.error('❌ Achievements: Sign out failed:', error)
+        console.error('❌ Goals: Sign out failed:', error)
         navigate('/', { replace: true })
       } else {
-        console.log('✅ Achievements: Sign out successful, waiting for navigation...')
+        console.log('✅ Goals: Sign out successful, waiting for navigation...')
       }
     } catch (error) {
-      console.error('❌ Achievements: Sign out exception:', error)
+      console.error('❌ Goals: Sign out exception:', error)
       navigate('/', { replace: true })
     }
   }
 
-  const filteredAchievements = achievements.filter(achievement => 
-    selectedCategory === 'All' || achievement.category === selectedCategory
-  )
+  const getGoalsByStatus = (status: string) => {
+    return goals.filter(goal => goal.status === status)
+  }
 
-  const earnedCount = achievements.filter(a => a.earned).length
-  const totalPoints = achievements.filter(a => a.earned).reduce((sum, a) => sum + a.points, 0)
+  const getActivityColor = (status: string) => {
+    switch (status) {
+      case 'high': return 'bg-yellow-400'
+      case 'medium': return 'bg-yellow-500'
+      case 'low': return 'bg-yellow-600'
+      case 'today': return 'bg-white'
+      case 'inactive': return 'bg-gray-600'
+      default: return 'bg-transparent'
+    }
+  }
+
+  const renderGoalCard = (goal: Goal, isLarge = false) => (
+    <div key={goal.id} className={`bg-gray-800/30 backdrop-blur-sm border border-white/10 rounded-2xl p-4 hover:bg-gray-700/30 transition-colors cursor-pointer ${isLarge ? 'bg-gradient-to-br from-blue-600/20 to-purple-600/20 border-blue-500/30' : ''}`}>
+      <div className="flex items-center space-x-3 mb-3">
+        <div className={`w-10 h-10 rounded-lg bg-gradient-to-r ${goal.color} flex items-center justify-center`}>
+          <span className="text-white text-lg">{goal.icon}</span>
+        </div>
+        <div className="flex-1">
+          <h3 className="text-white font-medium">{goal.title}</h3>
+          <p className="text-gray-400 text-sm">{goal.description}</p>
+        </div>
+        {goal.status === 'completed' && (
+          <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
+            <span className="text-white text-sm">✓</span>
+          </div>
+        )}
+      </div>
+      
+      {goal.status === 'in-progress' && (
+        <div className="space-y-2">
+          <div className="flex justify-between text-sm">
+            <span className="text-gray-400">{goal.progress}%</span>
+            <span className="text-white">{goal.xp} XP</span>
+          </div>
+          <div className="w-full bg-gray-700 rounded-full h-2">
+            <div 
+              className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${goal.progress}%` }}
+            />
+          </div>
+          <div className="text-right text-xs text-gray-400">
+            {goal.weeklyXP} XP this week
+          </div>
+        </div>
+      )}
+    </div>
+  )
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#1a1d3a] via-[#2d3561] to-[#1a1d3a] text-white">
@@ -232,130 +317,217 @@ export function AchievementsPage() {
         <div className="px-6 space-y-6">
           {/* Header */}
           <div>
-            <h1 className="text-2xl font-bold text-white mb-2">Achievements</h1>
-            <p className="text-gray-400">Track your learning milestones and unlock rewards</p>
+            <h1 className="text-2xl font-bold text-white mb-2">My goals</h1>
           </div>
 
-          {/* Stats */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-            <Card className="p-6 text-center">
-              <Trophy className="w-8 h-8 text-yellow-500 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-white">{earnedCount}</div>
-              <div className="text-sm text-gray-400">Achievements Earned</div>
-            </Card>
-
-            <Card className="p-6 text-center">
-              <Star className="w-8 h-8 text-blue-500 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-white">{totalPoints}</div>
-              <div className="text-sm text-gray-400">Total Points</div>
-            </Card>
-
-            <Card className="p-6 text-center">
-              <Target className="w-8 h-8 text-green-500 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-white">{Math.round((earnedCount / achievements.length) * 100)}%</div>
-              <div className="text-sm text-gray-400">Completion Rate</div>
-            </Card>
-
-            <Card className="p-6 text-center">
-              <Award className="w-8 h-8 text-purple-500 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-white">Gold</div>
-              <div className="text-sm text-gray-400">Current Tier</div>
-            </Card>
+          {/* Tab Navigation */}
+          <div className="flex space-x-1 bg-gray-800/30 rounded-xl p-1 w-fit">
+            {[
+              { id: 'goals', label: 'Goals' },
+              { id: 'all-saved', label: 'All Saved Goals' },
+              { id: 'not-started', label: 'Not Started' },
+              { id: 'in-progress', label: 'In Progress' },
+              { id: 'complete', label: 'Complete' }
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  activeTab === tab.id
+                    ? 'bg-blue-500 text-white'
+                    : 'text-gray-400 hover:text-white'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
           </div>
 
-          {/* Category Filter */}
-          <div>
-            <label className="block text-sm font-medium text-gray-400 mb-2">Category</label>
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="bg-gray-800 border border-gray-700 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
-            >
-              {categories.map(category => (
-                <option key={category} value={category}>{category}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* Achievements Grid */}
-          <div className="grid lg:grid-cols-2 xl:grid-cols-3 gap-6 pb-8">
-            {filteredAchievements.map((achievement) => {
-              const IconComponent = achievement.icon
-              
-              return (
-                <Card 
-                  key={achievement.id} 
-                  className={`p-6 relative overflow-hidden ${achievement.earned ? 'border-yellow-500/50' : ''}`}
-                  hover={!achievement.earned}
-                >
-                  <div className="flex items-start space-x-4">
-                    <div className={`
-                      w-12 h-12 rounded-lg flex items-center justify-center bg-gradient-to-r ${getRarityColor(achievement.rarity)}
-                      ${achievement.earned ? '' : 'opacity-50 grayscale'}
-                    `}>
-                      <IconComponent className="w-6 h-6 text-white" />
-                    </div>
-
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between mb-2">
-                        <h3 className={`font-semibold ${achievement.earned ? 'text-white' : 'text-gray-400'}`}>
-                          {achievement.title}
-                        </h3>
-                        {achievement.earned && (
-                          <Trophy className="w-5 h-5 text-yellow-500" />
-                        )}
-                      </div>
-
-                      <p className={`text-sm mb-3 ${achievement.earned ? 'text-gray-300' : 'text-gray-500'}`}>
-                        {achievement.description}
-                      </p>
-
-                      <div className="flex items-center justify-between text-sm mb-3">
-                        <span className={`px-2 py-1 rounded-full text-xs ${
-                          achievement.earned ? 'bg-green-900/50 text-green-300' : 'bg-gray-700/50 text-gray-400'
-                        }`}>
-                          {achievement.category}
-                        </span>
-                        <span className={`font-medium ${achievement.earned ? 'text-yellow-400' : 'text-gray-500'}`}>
-                          {achievement.points} XP
-                        </span>
-                      </div>
-
-                      {achievement.earned ? (
-                        <div className="text-xs text-gray-400">
-                          Earned on {new Date(achievement.earnedDate!).toLocaleDateString()}
-                        </div>
-                      ) : achievement.progress && achievement.total ? (
-                        <div>
-                          <div className="flex justify-between text-xs mb-1">
-                            <span className="text-gray-400">Progress</span>
-                            <span className="text-gray-300">{achievement.progress}/{achievement.total}</span>
-                          </div>
-                          <div className="w-full bg-gray-700 rounded-full h-2">
-                            <div 
-                              className="bg-blue-500 h-2 rounded-full transition-all duration-300"
-                              style={{ width: `${(achievement.progress / achievement.total) * 100}%` }}
-                            />
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="text-xs text-gray-500">
-                          Not started
-                        </div>
-                      )}
+          {/* Main Content Grid */}
+          <div className="grid grid-cols-12 gap-6">
+            {/* Left Content - 8 columns */}
+            <div className="col-span-8 space-y-6">
+              {activeTab === 'goals' && (
+                <>
+                  {/* Lessons in Progress */}
+                  <div>
+                    <h2 className="text-xl font-semibold text-white mb-4">Lessons in progress</h2>
+                    <div className="space-y-4">
+                      {getGoalsByStatus('in-progress').map((goal) => renderGoalCard(goal, true))}
                     </div>
                   </div>
 
-                  {achievement.earned && (
-                    <div className="absolute top-2 right-2">
-                      <div className="w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center">
-                        <span className="text-black text-xs">✓</span>
-                      </div>
+                  {/* My Saved Goals */}
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <h2 className="text-xl font-semibold text-white">My saved goals</h2>
+                      <button className="text-blue-400 hover:text-blue-300 text-sm">View more</button>
                     </div>
-                  )}
-                </Card>
-              )
-            })}
+                    <div className="grid grid-cols-3 gap-4">
+                      {savedGoals.map((goal) => (
+                        <div key={goal.id} className="bg-gray-800/30 backdrop-blur-sm border border-white/10 rounded-2xl p-4 hover:bg-gray-700/30 transition-colors cursor-pointer">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg flex items-center justify-center">
+                              <span className="text-white text-lg">{goal.icon}</span>
+                            </div>
+                            <div>
+                              <h3 className="text-white font-medium">{goal.title}</h3>
+                              <p className="text-gray-400 text-sm">{goal.description}</p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Goals Completed */}
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <h2 className="text-xl font-semibold text-white">Goals completed</h2>
+                      <button className="text-blue-400 hover:text-blue-300 text-sm">View more</button>
+                    </div>
+                    <div className="grid grid-cols-3 gap-4">
+                      {getGoalsByStatus('completed').map((goal) => renderGoalCard(goal))}
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {activeTab === 'all-saved' && (
+                <div className="space-y-6">
+                  <h2 className="text-xl font-semibold text-white">All Saved Goals</h2>
+                  <div className="grid grid-cols-3 gap-4">
+                    {savedGoals.map((goal) => renderGoalCard(goal))}
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'not-started' && (
+                <div className="space-y-6">
+                  <h2 className="text-xl font-semibold text-white">Goals not started</h2>
+                  <div className="grid grid-cols-3 gap-4">
+                    {getGoalsByStatus('not-started').map((goal) => renderGoalCard(goal))}
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'in-progress' && (
+                <div className="space-y-6">
+                  <h2 className="text-xl font-semibold text-white">Goals in progress</h2>
+                  <div className="grid grid-cols-3 gap-4">
+                    {getGoalsByStatus('in-progress').map((goal) => renderGoalCard(goal))}
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'complete' && (
+                <div className="space-y-6">
+                  <h2 className="text-xl font-semibold text-white">Goals completed</h2>
+                  <div className="grid grid-cols-3 gap-4">
+                    {getGoalsByStatus('completed').map((goal) => renderGoalCard(goal))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Right Sidebar - 4 columns */}
+            <div className="col-span-4 space-y-6">
+              {/* Goal Progress Chart */}
+              <div className="bg-gray-800/30 backdrop-blur-sm border border-white/10 rounded-2xl p-6">
+                <h3 className="text-lg font-semibold text-white mb-4">Goal progress</h3>
+                <div className="relative w-48 h-48 mx-auto">
+                  {/* Radar Chart Placeholder */}
+                  <svg viewBox="0 0 200 200" className="w-full h-full">
+                    {/* Grid lines */}
+                    <polygon points="100,20 170,65 170,135 100,180 30,135 30,65" fill="none" stroke="#374151" strokeWidth="1"/>
+                    <polygon points="100,40 150,75 150,125 100,160 50,125 50,75" fill="none" stroke="#374151" strokeWidth="1"/>
+                    <polygon points="100,60 130,85 130,115 100,140 70,115 70,85" fill="none" stroke="#374151" strokeWidth="1"/>
+                    
+                    {/* Data polygon */}
+                    <polygon points="100,30 160,70 140,130 100,170 40,120 60,80" fill="rgba(59, 130, 246, 0.3)" stroke="#3b82f6" strokeWidth="2"/>
+                    <polygon points="100,40 140,80 120,120 100,150 60,110 80,90" fill="rgba(239, 68, 68, 0.3)" stroke="#ef4444" strokeWidth="2"/>
+                    
+                    {/* Labels */}
+                    <text x="100" y="15" textAnchor="middle" className="fill-gray-400 text-xs">A</text>
+                    <text x="175" y="70" textAnchor="middle" className="fill-gray-400 text-xs">B</text>
+                    <text x="175" y="140" textAnchor="middle" className="fill-gray-400 text-xs">C</text>
+                    <text x="100" y="195" textAnchor="middle" className="fill-gray-400 text-xs">D</text>
+                    <text x="25" y="140" textAnchor="middle" className="fill-gray-400 text-xs">Retention</text>
+                  </svg>
+                </div>
+                <div className="flex justify-center space-x-4 mt-4">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                    <span className="text-gray-400 text-sm">A</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                    <span className="text-gray-400 text-sm">B</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                    <span className="text-gray-400 text-sm">C</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Your Streak Calendar */}
+              <div className="bg-gray-800/30 backdrop-blur-sm border border-white/10 rounded-2xl p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-white">Your Streak!</h3>
+                  <div className="flex items-center space-x-2">
+                    <button className="p-1 hover:bg-gray-700/50 rounded">
+                      <ChevronLeft className="w-4 h-4 text-gray-400" />
+                    </button>
+                    <span className="text-white font-medium">{monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}</span>
+                    <button className="p-1 hover:bg-gray-700/50 rounded">
+                      <ChevronRight className="w-4 h-4 text-gray-400" />
+                    </button>
+                  </div>
+                </div>
+                
+                {/* Calendar Grid */}
+                <div className="space-y-2">
+                  {/* Day headers */}
+                  <div className="grid grid-cols-7 gap-1 mb-2">
+                    {dayNames.map((day) => (
+                      <div key={day} className="text-center text-xs text-gray-400 font-medium">
+                        {day}
+                      </div>
+                    ))}
+                  </div>
+                  
+                  {/* Calendar days */}
+                  <div className="grid grid-cols-7 gap-1">
+                    {calendarDays.map((day, index) => (
+                      <div
+                        key={index}
+                        className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium ${
+                          day.day ? getActivityColor(day.status) : ''
+                        } ${day.status === 'today' ? 'text-black' : 'text-white'}`}
+                      >
+                        {day.day}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Sticker Wall */}
+              <div className="bg-gray-800/30 backdrop-blur-sm border border-white/10 rounded-2xl p-6">
+                <h3 className="text-lg font-semibold text-white mb-4">Sticker wall</h3>
+                <div className="space-y-3">
+                  {stickers.map((sticker) => (
+                    <div key={sticker.id} className="flex items-center space-x-3">
+                      <div className={`w-8 h-8 rounded-lg bg-gradient-to-r ${sticker.color} flex items-center justify-center`}>
+                        <span className="text-white text-lg">{sticker.icon}</span>
+                      </div>
+                      <span className="text-gray-300 text-sm">{sticker.title}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
