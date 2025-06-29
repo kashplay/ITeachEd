@@ -1,10 +1,10 @@
-<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="24" cy="24" r="24" fill="url(#gradient3)"/>
-  <path d="M24 12L27.09 20.26L36 21L30 26.74L31.18 35.52L24 31.77L16.82 35.52L18 26.74L12 21L20.91 20.26L24 12Z" fill="white"/>
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="12" cy="12" r="12" fill="url(#gradient)" />
+  <path d="M12 6L14.09 10.26L19 11L15 14.74L16.18 19.74L12 17.77L7.82 19.74L9 14.74L5 11L9.91 10.26L12 6Z" fill="white" />
   <defs>
-    <linearGradient id="gradient3" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
-      <stop stopColor="#6366F1"/>
-      <stop offset="1" stopColor="#8B5CF6"/>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366F1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8B5CF6;stop-opacity:1" />
     </linearGradient>
   </defs>
 </svg>
