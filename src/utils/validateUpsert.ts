@@ -416,5 +416,125 @@ export const quickTests = {
     })
     
     return { success: true, user: session.user }
+  },
+
+  // NEW: Immediate synchronous tests that don't return promises
+  checkAuthState() {
+    console.log('🔍 Immediate Auth State Check...')
+    
+    // Check if we have access to supabase
+    if (!supabase) {
+      console.log('❌ Supabase client not available')
+      return false
+    }
+    
+    console.log('✅ Supabase client available')
+    
+    // Try to get session synchronously (this might not work but let's try)
+    try {
+      supabase.auth.getSession().then(({ data: { session }, error }) => {
+        if (error) {
+          console.log('❌ Session error:', error.message)
+        } else if (!session?.user) {
+          console.log('❌ No user session found')
+        } else {
+          console.log('✅ User session found:', {
+            id: session.user.id,
+            email: session.user.email
+          })
+        }
+      })
+      return true
+    } catch (error) {
+      console.log('❌ Error checking session:', error)
+      return false
+    }
+  },
+
+  // NEW: Test with immediate timeout
+  async testUpsertWithShortTimeout() {
+    console.log('🔍 Quick Upsert Test with 2s timeout...')
+    
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session?.user) {
+        console.log('❌ No user session')
+        return { success: false, error: 'No session' }
+      }
+
+      const userId = session.user.id
+      console.log('📤 Testing upsert for user:', userId)
+
+      const upsertData = {
+        user_id: userId,
+        full_name: 'Quick Test User',
+        guild_level: 'ROOKIE',
+        xp: 0,
+        learning_style: 'visual',
+        experience_level: 'beginner',
+        evaluation_completed: true,
+        updated_at: new Date().toISOString()
+      }
+
+      // Very short timeout to see if it hangs
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error('TIMEOUT: Upsert took longer than 2 seconds')), 2000)
+      })
+
+      const upsertPromise = supabase
+        .from('user_profiles')
+        .upsert(upsertData, { onConflict: 'user_id' })
+        .select()
+        .single()
+
+      const result = await Promise.race([upsertPromise, timeoutPromise])
+      
+      console.log('✅ Upsert completed quickly:', result)
+      return { success: true, data: result }
+
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+      console.log('❌ Upsert failed or timed out:', errorMessage)
+      
+      if (errorMessage.includes('TIMEOUT')) {
+        console.log('🚨 UPSERT IS HANGING! This is the root cause of the loading issue.')
+      }
+      
+      return { success: false, error: errorMessage }
+    }
   }
+}
+
+// NEW: Auto-run immediate tests when loaded
+if (typeof window !== 'undefined' && import.meta.env.DEV) {
+  console.log('🔧 Auto-running immediate validation tests...')
+  
+  // Run immediate checks
+  quickTests.checkAuthState()
+  
+  // Run async tests after a short delay
+  setTimeout(() => {
+    quickTests.testUpsertWithShortTimeout().then(result => {
+      if (!result.success && result.error?.includes('TIMEOUT')) {
+        console.log(`
+🚨 DIAGNOSIS: UPSERT TIMEOUT DETECTED!
+
+The upsert operation is hanging, which is causing the infinite loading screen.
+
+Possible causes:
+1. Database connection issues
+2. RLS policy problems  
+3. Missing table columns
+4. Network connectivity issues
+5. Supabase service issues
+
+Next steps:
+1. Check Supabase dashboard for errors
+2. Verify database schema matches expectations
+3. Test with a simpler insert operation
+4. Check network tab for hanging requests
+        `)
+      }
+    })
+  }, 1000)
 }

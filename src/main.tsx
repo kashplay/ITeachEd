@@ -45,19 +45,22 @@ Available commands:
 • await upsertValidator.validateUpsertOperation() - Run full validation
 • await upsertValidator.quickTests.testConnection() - Quick connection test
 • await upsertValidator.quickTests.testUpsert() - Quick upsert test
+• await upsertValidator.quickTests.testUpsertWithShortTimeout() - 2s timeout test
 • await upsertValidator.quickTests.checkCurrentUser() - Check current user
+• upsertValidator.quickTests.checkAuthState() - Immediate auth check (no await needed)
 • upsertValidator.help() - Show this help message
 
-⚠️  IMPORTANT: Remember to use 'await' with these functions!
+⚠️  IMPORTANT: Remember to use 'await' with async functions!
 
-Usage:
+Quick diagnosis:
 1. Sign in: await devHelpers.signInWithTestUser()
-2. Test: await upsertValidator.validateUpsertOperation()
+2. Test: await upsertValidator.quickTests.testUpsertWithShortTimeout()
         `)
       }
     }
     
     console.log('🔍 Upsert validation utilities loaded! Type "upsertValidator.help()" for available commands.')
+    console.log('🔍 Auto-running immediate diagnostics...')
   })
 }
 
