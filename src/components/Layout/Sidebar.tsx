@@ -2,13 +2,14 @@ import React from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { 
   LogOut,
-  Home,
   Settings
 } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
 import eLogoLight from '../../assets/images/e-logo-full-light.svg'
 
-// Import custom SVG icons for the ones we don't have Lucide equivalents
+// Import custom SVG icons
+import selectedHomeDashboard from '../../assets/images/selected-home-dashboard.svg'
+import unselectedHomeDashboard from '../../assets/images/unselected-home-dashboard.svg'
 import selectedCoursePage from '../../assets/images/selected-course-page.svg'
 import unselectedCoursePage from '../../assets/images/unselected-course-page.svg'
 import selectedMyGoals from '../../assets/images/selected-my-goals.svg'
@@ -96,7 +97,10 @@ const navigation: NavigationItem[] = [
   { 
     name: 'Dashboard', 
     href: '/dashboard', 
-    icon: Home
+    customIcon: {
+      selected: selectedHomeDashboard,
+      unselected: unselectedHomeDashboard
+    }
   },
   { 
     name: 'Learning Paths', 
