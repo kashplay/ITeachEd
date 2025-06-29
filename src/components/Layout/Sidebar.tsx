@@ -1,24 +1,119 @@
 import React from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { 
-  LayoutDashboard, 
-  BookOpen, 
-  Trophy, 
-  Users, 
-  Briefcase, 
-  Settings,
   LogOut
 } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
 import eLogoLight from '../../assets/images/e-logo-full-light.svg'
 
-const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Learning Paths', href: '/learning', icon: BookOpen },
-  { name: 'Achievements', href: '/achievements', icon: Trophy },
-  { name: 'Guilds', href: '/guilds', icon: Users },
-  { name: 'Job Matching', href: '/jobs', icon: Briefcase },
-  { name: 'Settings', href: '/settings', icon: Settings },
+// Import custom SVG icons
+import selectedHomePage from '../../assets/images/selected-home-page.svg'
+import unselectedHomePage from '../../assets/images/unselected-home-page.svg'
+import selectedCoursePage from '../../assets/images/selected-course-page.svg'
+import unselectedCoursePage from '../../assets/images/unselected-course-page.svg'
+import selectedMyGoals from '../../assets/images/selected-my-goals.svg'
+import unselectedMyGoals from '../../assets/images/unselected-my-goals.svg'
+import selectedMyNotes from '../../assets/images/selected-my-notes.svg'
+import unselectedMyNotes from '../../assets/images/unselected-my-notes.svg'
+import selectedSetting from '../../assets/images/selected-setting.svg'
+import unselectedSetting from '../../assets/images/unselected-setting.svg'
+
+// Custom icon component for smooth transitions
+interface CustomIconProps {
+  selectedSrc: string
+  unselectedSrc: string
+  isActive: boolean
+  alt: string
+}
+
+const CustomIcon: React.FC<CustomIconProps> = ({ selectedSrc, unselectedSrc, isActive, alt }) => {
+  return (
+    <div className="relative w-8 h-8 flex items-center justify-center">
+      {/* Unselected icon */}
+      <img 
+        src={unselectedSrc} 
+        alt={alt}
+        className={`absolute transition-all duration-300 ease-out ${
+          isActive 
+            ? 'opacity-0 scale-95' 
+            : 'opacity-100 scale-100'
+        }`}
+        style={{ width: '24px', height: '24px' }}
+      />
+      {/* Selected icon */}
+      <img 
+        src={selectedSrc} 
+        alt={alt}
+        className={`absolute transition-all duration-300 ease-out ${
+          isActive 
+            ? 'opacity-100 scale-100' 
+            : 'opacity-0 scale-95'
+        }`}
+        style={{ width: '48px', height: '48px' }}
+      />
+    </div>
+  )
+}
+
+// Navigation item types
+interface NavigationItemWithCustomIcon {
+  name: string
+  href: string
+  customIcon: {
+    selected: string
+    unselected: string
+  }
+}
+
+interface NavigationItemWithLucideIcon {
+  name: string
+  href: string
+  icon: React.ComponentType<{ className?: string }>
+}
+
+type NavigationItem = NavigationItemWithCustomIcon | NavigationItemWithLucideIcon
+
+const navigation: NavigationItem[] = [
+  { 
+    name: 'Dashboard', 
+    href: '/dashboard', 
+    customIcon: {
+      selected: selectedHomePage,
+      unselected: unselectedHomePage
+    }
+  },
+  { 
+    name: 'Learning Paths', 
+    href: '/learning', 
+    customIcon: {
+      selected: selectedCoursePage,
+      unselected: unselectedCoursePage
+    }
+  },
+  { 
+    name: 'Achievements', 
+    href: '/achievements', 
+    customIcon: {
+      selected: selectedMyGoals,
+      unselected: unselectedMyGoals
+    }
+  },
+  { 
+    name: 'My Notes', 
+    href: '/notes', 
+    customIcon: {
+      selected: selectedMyNotes,
+      unselected: unselectedMyNotes
+    }
+  },
+  { 
+    name: 'Settings', 
+    href: '/settings', 
+    customIcon: {
+      selected: selectedSetting,
+      unselected: unselectedSetting
+    }
+  },
 ]
 
 interface SidebarProps {
@@ -58,20 +153,38 @@ export function Sidebar({ collapsed: _collapsed, onToggle: _onToggle }: SidebarP
       <nav className="flex-1 flex flex-col items-center space-y-6">
         {navigation.map((item) => {
           const isActive = location.pathname === item.href
+          const hasCustomIcon = 'customIcon' in item
+          
           return (
             <Link
               key={item.name}
               to={item.href}
               className={`
-                w-12 h-12 rounded-full flex items-center justify-center transition-all duration-200 group relative
+                w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 group relative
                 ${isActive 
-                  ? 'bg-[#6366f1] shadow-lg shadow-blue-500/25 text-white' 
-                  : 'text-gray-400 hover:bg-gray-700/50 hover:text-white hover:scale-110'
+                  ? hasCustomIcon 
+                    ? 'bg-transparent scale-105 shadow-lg shadow-blue-500/25' 
+                    : 'bg-[#6366f1] shadow-lg shadow-blue-500/25 text-white scale-105'
+                  : hasCustomIcon
+                    ? 'text-gray-400 hover:scale-110 hover:shadow-md hover:shadow-blue-500/10'
+                    : 'text-gray-400 hover:bg-gray-700/50 hover:text-white hover:scale-110'
                 }
               `}
               title={item.name}
             >
-              <item.icon className="w-6 h-6" />
+              {hasCustomIcon ? (
+                <CustomIcon
+                  selectedSrc={(item as NavigationItemWithCustomIcon).customIcon.selected}
+                  unselectedSrc={(item as NavigationItemWithCustomIcon).customIcon.unselected}
+                  isActive={isActive}
+                  alt={item.name}
+                />
+              ) : (
+                (() => {
+                  const IconComponent = (item as NavigationItemWithLucideIcon).icon;
+                  return <IconComponent className="w-6 h-6" />;
+                })()
+              )}
               
               {/* Tooltip */}
               <div className="absolute left-full ml-3 px-3 py-2 bg-gray-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-lg">

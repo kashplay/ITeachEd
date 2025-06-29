@@ -13,9 +13,8 @@ import { OnboardingPage } from './pages/OnboardingPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { LearningPage } from './pages/LearningPage'
 import { AchievementsPage } from './pages/AchievementsPage'
-import { GuildsPage } from './pages/GuildsPage'
-import { JobsPage } from './pages/JobsPage'
 import { SettingsPage } from './pages/SettingsPage'
+import NotesPage from './pages/NotesPage'
 
 function App() {
   return (
@@ -50,14 +49,9 @@ function App() {
                 <AchievementsPage />
               </ProtectedRoute>
             } />
-            <Route path="/guilds" element={
+            <Route path="/notes" element={
               <ProtectedRoute>
-                <GuildsPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/jobs" element={
-              <ProtectedRoute>
-                <JobsPage />
+                <NotesPage />
               </ProtectedRoute>
             } />
             <Route path="/settings" element={
