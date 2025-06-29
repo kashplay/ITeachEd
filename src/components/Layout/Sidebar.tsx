@@ -6,30 +6,48 @@ import {
 import { useAuth } from '../../contexts/AuthContext'
 import eLogoLight from '../../assets/images/e-logo-full-light.svg'
 
-// Import only the selected SVG icons
+// Import both selected and unselected SVG icons
 import selectedHomePage from '../../assets/images/selected-home-page.svg'
+import unselectedHomePage from '../../assets/images/unselected-home-page.svg'
 import selectedCoursePage from '../../assets/images/selected-course-page.svg'
+import unselectedCoursePage from '../../assets/images/unselected-course-page.svg'
 import selectedMyGoals from '../../assets/images/selected-my-goals.svg'
+import unselectedMyGoals from '../../assets/images/unselected-my-goals.svg'
 import selectedMyNotes from '../../assets/images/selected-my-notes.svg'
+import unselectedMyNotes from '../../assets/images/unselected-my-notes.svg'
 import selectedSetting from '../../assets/images/selected-setting.svg'
+import unselectedSetting from '../../assets/images/unselected-setting.svg'
 
-// Custom icon component that uses only selected SVGs with CSS effects for inactive state
+// Custom icon component for smooth transitions between selected/unselected states
 interface CustomIconProps {
   selectedSrc: string
+  unselectedSrc: string
   isActive: boolean
   alt: string
 }
 
-const CustomIcon: React.FC<CustomIconProps> = ({ selectedSrc, isActive, alt }) => {
+const CustomIcon: React.FC<CustomIconProps> = ({ selectedSrc, unselectedSrc, isActive, alt }) => {
   return (
-    <div className="relative w-8 h-8 flex items-center justify-center">
+    <div className="relative w-12 h-12 flex items-center justify-center">
+      {/* Unselected icon */}
+      <img 
+        src={unselectedSrc} 
+        alt={alt}
+        className={`absolute transition-all duration-300 ease-out ${
+          isActive 
+            ? 'opacity-0 scale-95' 
+            : 'opacity-100 scale-100'
+        }`}
+        style={{ width: '24px', height: '24px' }}
+      />
+      {/* Selected icon */}
       <img 
         src={selectedSrc} 
         alt={alt}
-        className={`transition-all duration-300 ease-out ${
+        className={`absolute transition-all duration-300 ease-out ${
           isActive 
-            ? 'opacity-100 scale-100 filter-none' 
-            : 'opacity-40 scale-90 grayscale hover:opacity-60 hover:scale-95 hover:grayscale-0'
+            ? 'opacity-100 scale-100' 
+            : 'opacity-0 scale-95'
         }`}
         style={{ width: '48px', height: '48px' }}
       />
@@ -37,32 +55,37 @@ const CustomIcon: React.FC<CustomIconProps> = ({ selectedSrc, isActive, alt }) =
   )
 }
 
-// Navigation items - all using selected icons with CSS effects for inactive state
+// Navigation items with both selected and unselected icons
 const navigation = [
   { 
     name: 'Dashboard', 
     href: '/dashboard', 
-    selectedIcon: selectedHomePage
+    selectedIcon: selectedHomePage,
+    unselectedIcon: unselectedHomePage
   },
   { 
     name: 'Learning Paths', 
     href: '/learning', 
-    selectedIcon: selectedCoursePage
+    selectedIcon: selectedCoursePage,
+    unselectedIcon: unselectedCoursePage
   },
   { 
     name: 'Achievements', 
     href: '/achievements', 
-    selectedIcon: selectedMyGoals
+    selectedIcon: selectedMyGoals,
+    unselectedIcon: unselectedMyGoals
   },
   { 
     name: 'My Notes', 
     href: '/notes', 
-    selectedIcon: selectedMyNotes
+    selectedIcon: selectedMyNotes,
+    unselectedIcon: unselectedMyNotes
   },
   { 
     name: 'Settings', 
     href: '/settings', 
-    selectedIcon: selectedSetting
+    selectedIcon: selectedSetting,
+    unselectedIcon: unselectedSetting
   },
 ]
 
@@ -112,13 +135,14 @@ export function Sidebar({ collapsed: _collapsed, onToggle: _onToggle }: SidebarP
                 w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 group relative
                 ${isActive 
                   ? 'bg-transparent scale-105 shadow-lg shadow-blue-500/25' 
-                  : 'hover:scale-110 hover:shadow-md hover:shadow-blue-500/10'
+                  : 'text-gray-400 hover:scale-110 hover:shadow-md hover:shadow-blue-500/10'
                 }
               `}
               title={item.name}
             >
               <CustomIcon
                 selectedSrc={item.selectedIcon}
+                unselectedSrc={item.unselectedIcon}
                 isActive={isActive}
                 alt={item.name}
               />
