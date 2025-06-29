@@ -372,11 +372,8 @@ export function PreEvaluationPage() {
     setLoading(true)
     
     try {
-      console.log('🚀 Starting learning journey...')
-      
       // Analyze answers to determine learning profile
       const learningProfile = analyzeLearningProfile(answers)
-      console.log('📊 Learning profile analyzed:', learningProfile)
       
       // Create a simplified profile update with timeout
       const profileUpdate = {
@@ -387,8 +384,6 @@ export function PreEvaluationPage() {
         evaluation_answers: answers
       }
       
-      console.log('💾 Updating profile with:', profileUpdate)
-      
       // Set a timeout to prevent infinite loading
       const updatePromise = updateProfile(profileUpdate)
       const timeoutPromise = new Promise((_, reject) => 
@@ -398,17 +393,12 @@ export function PreEvaluationPage() {
       // Race between update and timeout
       await Promise.race([updatePromise, timeoutPromise])
       
-      console.log('✅ Profile updated successfully, navigating to dashboard...')
-      
       // Navigate to dashboard
       navigate('/dashboard', { replace: true })
       
     } catch (error) {
-      console.error('❌ Error in learning journey process:', error)
-      
       // For now, let's just proceed to dashboard even if profile update fails
       // This ensures users don't get stuck on the loading screen
-      console.log('⚠️ Proceeding to dashboard despite error to prevent infinite loading')
       navigate('/dashboard', { replace: true })
     }
   }

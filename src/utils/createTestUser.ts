@@ -40,15 +40,15 @@ export async function createTestUser() {
 
       if (error) {
         if (error.message.includes('already registered')) {
-          console.log(`✅ Test user ${testUser.email} already exists`)
+          console.log(`Test user ${testUser.email} already exists`)
         } else {
-          console.error(`❌ Error creating ${testUser.email}:`, error.message)
+          console.error(`Error creating ${testUser.email}:`, error.message)
         }
       } else {
-        console.log(`✅ Created test user: ${testUser.email}`)
+        console.log(`Created test user: ${testUser.email}`)
       }
     } catch (error) {
-      console.error(`❌ Exception creating ${testUser.email}:`, error)
+      console.error(`Exception creating ${testUser.email}:`, error)
     }
   }
 }
@@ -71,40 +71,14 @@ export async function signInWithTestUser() {
     })
 
     if (error) {
-      console.error('❌ Test user sign in failed:', error.message)
+      console.error('Test user sign in failed:', error.message)
     } else {
-      console.log('✅ Signed in with test user:', testUser.email)
+      console.log('Signed in with test user:', testUser.email)
     }
 
     return { data, error }
   } catch (error) {
-    console.error('❌ Exception during test user sign in:', error)
+    console.error('Exception during test user sign in:', error)
     return { data: null, error }
   }
 }
-
-/**
- * Signs out the current user (for testing)
- */
-export async function testSignOut() {
-  if (!import.meta.env.DEV) {
-    console.warn('testSignOut can only be used in development mode')
-    return { error: new Error('Not in development mode') }
-  }
-
-  try {
-    console.log('🔓 Testing sign out...')
-    const { error } = await supabase.auth.signOut({ scope: 'local' })
-    
-    if (error) {
-      console.error('❌ Sign out failed:', error.message)
-    } else {
-      console.log('✅ Sign out successful')
-    }
-
-    return { error }
-  } catch (error) {
-    console.error('❌ Exception during sign out:', error)
-    return { error }
-  }
-} 
