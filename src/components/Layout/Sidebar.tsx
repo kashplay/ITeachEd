@@ -6,68 +6,96 @@ import {
 import { useAuth } from '../../contexts/AuthContext'
 import eLogoLight from '../../assets/images/e-logo-full-light.svg'
 
-// Import only unselected SVG icons
+// Import both selected and unselected SVG icons
+import selectedHomePage from '../../assets/images/selected-home-page.svg'
 import unselectedHomePage from '../../assets/images/unselected-home-page.svg'
+import selectedCoursePage from '../../assets/images/selected-course-page.svg'
 import unselectedCoursePage from '../../assets/images/unselected-course-page.svg'
+import selectedMyGoals from '../../assets/images/selected-my-goals.svg'
 import unselectedMyGoals from '../../assets/images/unselected-my-goals.svg'
+import selectedMyNotes from '../../assets/images/selected-my-notes.svg'
 import unselectedMyNotes from '../../assets/images/unselected-my-notes.svg'
+import selectedSetting from '../../assets/images/selected-setting.svg'
 import unselectedSetting from '../../assets/images/unselected-setting.svg'
 
-// Simple icon component that only uses unselected icons
-interface IconProps {
-  src: string
-  alt: string
+// Custom icon component for smooth transitions
+interface CustomIconProps {
+  selectedSrc: string
+  unselectedSrc: string
   isActive: boolean
+  alt: string
 }
 
-const Icon: React.FC<IconProps> = ({ src, alt, isActive }) => {
+const CustomIcon: React.FC<CustomIconProps> = ({ selectedSrc, unselectedSrc, isActive, alt }) => {
   return (
     <div className="relative w-8 h-8 flex items-center justify-center">
+      {/* Unselected icon */}
       <img 
-        src={src} 
+        src={unselectedSrc} 
         alt={alt}
-        className={`transition-all duration-300 ease-out ${
+        className={`absolute transition-all duration-300 ease-out ${
           isActive 
-            ? 'opacity-100 scale-110 brightness-125' 
-            : 'opacity-70 scale-100 hover:opacity-100 hover:scale-105'
+            ? 'opacity-0 scale-95' 
+            : 'opacity-100 scale-100'
         }`}
-        style={{ 
-          width: '24px', 
-          height: '24px',
-          objectFit: 'contain',
-          filter: isActive ? 'brightness(1.3) saturate(1.2)' : 'brightness(0.9)'
-        }}
+        style={{ width: '24px', height: '24px' }}
+      />
+      {/* Selected icon */}
+      <img 
+        src={selectedSrc} 
+        alt={alt}
+        className={`absolute transition-all duration-300 ease-out ${
+          isActive 
+            ? 'opacity-100 scale-100' 
+            : 'opacity-0 scale-95'
+        }`}
+        style={{ width: '48px', height: '48px' }}
       />
     </div>
   )
 }
 
-// Navigation items with only unselected icons
+// Navigation items with both selected and unselected icons
 const navigation = [
   { 
     name: 'Dashboard', 
     href: '/dashboard', 
-    icon: unselectedHomePage
+    customIcon: {
+      selected: selectedHomePage,
+      unselected: unselectedHomePage
+    }
   },
   { 
     name: 'Learning Paths', 
     href: '/learning', 
-    icon: unselectedCoursePage
+    customIcon: {
+      selected: selectedCoursePage,
+      unselected: unselectedCoursePage
+    }
   },
   { 
     name: 'My Goals', 
     href: '/achievements', 
-    icon: unselectedMyGoals
+    customIcon: {
+      selected: selectedMyGoals,
+      unselected: unselectedMyGoals
+    }
   },
   { 
     name: 'My Notes', 
     href: '/notes', 
-    icon: unselectedMyNotes
+    customIcon: {
+      selected: selectedMyNotes,
+      unselected: unselectedMyNotes
+    }
   },
   { 
     name: 'Settings', 
     href: '/settings', 
-    icon: unselectedSetting
+    customIcon: {
+      selected: selectedSetting,
+      unselected: unselectedSetting
+    }
   },
 ]
 
@@ -116,22 +144,18 @@ export function Sidebar({ collapsed: _collapsed, onToggle: _onToggle }: SidebarP
               className={`
                 w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 group relative
                 ${isActive 
-                  ? 'bg-gradient-to-r from-[#6244FF]/20 to-[#FFAE2D]/20 border-2 border-[#6244FF]/40 shadow-lg shadow-[#6244FF]/25 scale-105' 
-                  : 'hover:bg-gray-700/30 hover:scale-110 hover:shadow-md hover:shadow-blue-500/10'
+                  ? 'scale-105 shadow-lg shadow-blue-500/25' 
+                  : 'hover:scale-110 hover:shadow-md hover:shadow-blue-500/10'
                 }
               `}
               title={item.name}
             >
-              <Icon
-                src={item.icon}
+              <CustomIcon
+                selectedSrc={item.customIcon.selected}
+                unselectedSrc={item.customIcon.unselected}
                 isActive={isActive}
                 alt={item.name}
               />
-              
-              {/* Active indicator dot */}
-              {isActive && (
-                <div className="absolute -right-1 top-1/2 transform -translate-y-1/2 w-2 h-2 bg-[#6244FF] rounded-full shadow-lg"></div>
-              )}
               
               {/* Tooltip */}
               <div className="absolute left-full ml-3 px-3 py-2 bg-gray-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-lg">
