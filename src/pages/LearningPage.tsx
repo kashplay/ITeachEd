@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { ArrowLeft, ChevronDown, Bold, Italic, Underline, Strikethrough, AlignLeft, AlignCenter, AlignRight, AlignJustify, List, Quote, Code, Type, Palette, RotateCcw, Star, MessageCircle, X, Send, Bot } from 'lucide-react'
+import { ArrowLeft, ChevronDown, Bold, Italic, Underline, Strikethrough, AlignLeft, AlignCenter, AlignRight, AlignJustify, List, Quote, Code, Type, Palette, RotateCcw, Star, MessageCircle, X, Send, Bot, Search, Bell } from 'lucide-react'
 import { Card } from '../components/ui/Card'
 import { Button } from '../components/ui/Button'
 import { useAuth } from '../contexts/AuthContext'
@@ -621,6 +621,62 @@ export function LearningPage() {
       
       {/* Main Content */}
       <div className="ml-[88px] flex h-screen">
+        {/* Header - Fixed at top with notification and profile icons */}
+        <div className="fixed top-0 right-0 z-40 flex items-center space-x-4 p-6">
+          {/* Notification Bell */}
+          <button className="relative p-3 bg-gray-800/50 border border-gray-600/50 rounded-xl hover:bg-gray-700/50 transition-colors backdrop-blur-sm">
+            <Bell className="w-5 h-5 text-gray-300" />
+            <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
+          </button>
+          
+          {/* Profile Icon */}
+          <div className="relative group">
+            <button className="flex items-center justify-center p-2 bg-gray-800/50 border border-gray-600/50 rounded-xl hover:bg-gray-700/50 transition-colors backdrop-blur-sm">
+              <div className="w-8 h-8 bg-gradient-to-r from-[#6244FF] to-[#FFAE2D] rounded-full flex items-center justify-center">
+                <span className="text-white text-sm font-medium">
+                  {userName?.[0]?.toUpperCase() || 'U'}
+                </span>
+              </div>
+            </button>
+            
+            {/* Profile Dropdown */}
+            <div className="absolute right-0 mt-2 w-64 bg-gray-800/95 backdrop-blur-sm rounded-xl shadow-xl border border-gray-600/50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+              <div className="p-4">
+                <div className="flex items-center space-x-3 pb-4 border-b border-gray-600/50">
+                  <div className="w-10 h-10 bg-gradient-to-r from-[#6244FF] to-[#FFAE2D] rounded-full flex items-center justify-center flex-shrink-0">
+                    <span className="text-white text-sm font-medium">
+                      {userName?.[0]?.toUpperCase() || 'U'}
+                    </span>
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-white text-sm font-medium truncate">{userName}</div>
+                    <div className="text-gray-400 text-xs truncate">{user?.email}</div>
+                  </div>
+                </div>
+                <div className="pt-3 space-y-1">
+                  <button className="w-full text-left px-3 py-2 text-gray-300 hover:bg-gray-700/50 rounded-lg text-sm transition-colors">
+                    Profile Settings
+                  </button>
+                  <button className="w-full text-left px-3 py-2 text-gray-300 hover:bg-gray-700/50 rounded-lg text-sm transition-colors">
+                    Account Settings
+                  </button>
+                  <button className="w-full text-left px-3 py-2 text-gray-300 hover:bg-gray-700/50 rounded-lg text-sm transition-colors">
+                    Help & Support
+                  </button>
+                  <div className="border-t border-gray-600/50 pt-1 mt-2">
+                    <button 
+                      onClick={handleSignOut}
+                      className="w-full text-left px-3 py-2 text-red-400 hover:bg-gray-700/50 rounded-lg text-sm transition-colors"
+                    >
+                      Sign Out
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Left Sidebar - Modules */}
         <div className="w-80 bg-gray-800/30 backdrop-blur-sm border-r border-white/10 flex flex-col">
           {/* Header */}
