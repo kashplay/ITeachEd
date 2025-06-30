@@ -333,6 +333,8 @@ export function PreEvaluationPage() {
   const [answers, setAnswers] = useState<Record<number, string>>({})
   const [loading, setLoading] = useState(false)
   const [showStartButton, setShowStartButton] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [retryCount, setRetryCount] = useState(0)
 
   // HARD CONDITION: If user has already completed evaluation, redirect to dashboard immediately
   useEffect(() => {
@@ -381,34 +383,56 @@ export function PreEvaluationPage() {
     if (!canProceed()) return
 
     setLoading(true)
+    setError(null)
+    
     try {
       // Analyze answers to determine learning profile
       const learningProfile = analyzeLearningProfile(answers)
       
-      // Create a simplified profile update with HARD CONDITION: evaluation_completed = true
+      // Create a minimal profile update with only essential fields
+      // This reduces the chance of timeout or errors
       const profileUpdate = {
         learning_style: learningProfile.primaryStyle,
         experience_level: 'beginner',
         evaluation_completed: true, // HARD CONDITION: Mark as completed
-        evaluation_results: learningProfile,
-        evaluation_answers: answers
+        evaluation_results: learningProfile
       }
       
-      console.log('🔄 PreEvaluation: Marking evaluation as completed and updating profile')
+      console.log('🔄 PreEvaluation: Updating profile with minimal data')
       
-      // Update profile
-      await updateProfile(profileUpdate)
-      
-      console.log('✅ PreEvaluation: Evaluation completed, redirecting to dashboard')
-      
-      // Navigate to dashboard
-      navigate('/dashboard', { replace: true })
-      
+      try {
+        // Update profile with minimal data first
+        await updateProfile(profileUpdate)
+        console.log('✅ PreEvaluation: Profile updated successfully')
+        
+        // Navigate to dashboard
+        navigate('/dashboard', { replace: true })
+      } catch (error) {
+        console.error('❌ PreEvaluation: Error updating profile:', error)
+        
+        // If we've already retried 3 times, just redirect to dashboard anyway
+        if (retryCount >= 2) {
+          console.log('⚠️ PreEvaluation: Max retries reached, redirecting to dashboard anyway')
+          navigate('/dashboard', { replace: true })
+          return
+        }
+        
+        // Increment retry count and show error
+        setRetryCount(prev => prev + 1)
+        setError('There was an issue saving your profile. Please try again.')
+        setLoading(false)
+      }
     } catch (error) {
-      console.error('Error saving evaluation:', error)
-      // Navigate to dashboard even if there's an error to prevent getting stuck
-      navigate('/dashboard', { replace: true })
+      console.error('Error in evaluation process:', error)
+      setError('An unexpected error occurred. Please try again.')
+      setLoading(false)
     }
+  }
+
+  // Fallback function to skip evaluation if there are persistent errors
+  const handleSkipEvaluation = () => {
+    console.log('⚠️ PreEvaluation: User is skipping evaluation due to errors')
+    navigate('/dashboard', { replace: true })
   }
 
   const canProceed = () => {
@@ -442,43 +466,8 @@ export function PreEvaluationPage() {
     return {
       primaryStyle,
       traits: [...new Set(traits)],
-      styles: [...new Set(styles)],
-      recommendations: generateRecommendations(primaryStyle, traits)
+      styles: [...new Set(styles)]
     }
-  }
-
-  const generateRecommendations = (primaryStyle: string, traits: string[]) => {
-    const recommendations = {
-      courses: [] as string[],
-      tutorStyle: '',
-      learningPath: ''
-    }
-
-    // Course recommendations based on learning style
-    if (primaryStyle.includes('visual')) {
-      recommendations.courses.push('Data Visualization', 'UI/UX Design', 'Graphic Design')
-      recommendations.tutorStyle = 'visual_focused'
-    } else if (primaryStyle.includes('analytical')) {
-      recommendations.courses.push('Data Science', 'Business Analytics', 'Programming')
-      recommendations.tutorStyle = 'analytical_focused'
-    } else if (primaryStyle.includes('collaborative')) {
-      recommendations.courses.push('Project Management', 'Leadership', 'Team Building')
-      recommendations.tutorStyle = 'collaborative_focused'
-    } else {
-      recommendations.courses.push('Business Fundamentals', 'Digital Marketing', 'Communication')
-      recommendations.tutorStyle = 'balanced'
-    }
-
-    // Learning path based on traits
-    if (traits.includes('challenge_oriented')) {
-      recommendations.learningPath = 'accelerated'
-    } else if (traits.includes('methodical_learner')) {
-      recommendations.learningPath = 'structured'
-    } else {
-      recommendations.learningPath = 'flexible'
-    }
-
-    return recommendations
   }
 
   // If user has already completed evaluation, show loading while redirecting
@@ -565,6 +554,21 @@ export function PreEvaluationPage() {
             )
           })}
         </div>
+
+        {/* Error Message */}
+        {error && (
+          <div className="mb-6 p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-center">
+            <p className="text-red-300">{error}</p>
+            {retryCount >= 1 && (
+              <button 
+                onClick={handleSkipEvaluation}
+                className="mt-2 text-sm text-white underline hover:text-red-300"
+              >
+                Skip evaluation and continue to dashboard
+              </button>
+            )}
+          </div>
+        )}
 
         {/* Progress Bar */}
         <div className="mb-8">
