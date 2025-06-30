@@ -345,7 +345,7 @@ export function DashboardPage() {
             </div>
           </div>
 
-          {/* Projects Section */}
+          {/* Projects Section - Horizontally Scrollable */}
           <div className="space-y-6 pb-8">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-semibold">Start doing projects</h2>
@@ -355,12 +355,14 @@ export function DashboardPage() {
                 <button 
                   onClick={scrollLeft}
                   className="p-2 bg-gray-800/50 rounded-full hover:bg-gray-700/50 transition-colors"
+                  aria-label="Scroll left"
                 >
                   <ChevronLeft className="w-5 h-5 text-white" />
                 </button>
                 <button 
                   onClick={scrollRight}
                   className="p-2 bg-gray-800/50 rounded-full hover:bg-gray-700/50 transition-colors"
+                  aria-label="Scroll right"
                 >
                   <ChevronRight className="w-5 h-5 text-white" />
                 </button>
@@ -371,12 +373,11 @@ export function DashboardPage() {
             <div 
               ref={scrollContainerRef}
               className="flex space-x-6 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory"
-              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
               {recommendedCourses.map((course) => (
                 <div 
                   key={course.id}
-                  className="min-w-[350px] max-w-[350px] bg-gray-800/30 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden hover:bg-gray-700/30 transition-colors snap-start"
+                  className="min-w-[350px] max-w-[350px] bg-gray-800/30 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden hover:bg-gray-700/30 transition-colors snap-start flex flex-col"
                 >
                   <div className="aspect-video relative">
                     <img 
@@ -403,9 +404,9 @@ export function DashboardPage() {
                     )}
                   </div>
                   
-                  <div className="p-5">
+                  <div className="p-5 flex flex-col flex-grow">
                     <h3 className="text-lg font-semibold text-white mb-2">{course.title}</h3>
-                    <p className="text-gray-400 text-sm mb-4 h-10 line-clamp-2">{course.description}</p>
+                    <p className="text-gray-400 text-sm mb-4 line-clamp-2">{course.description}</p>
                     
                     {/* Progress bar - Only show if in progress */}
                     {course.status === 'in-progress' && (
@@ -417,7 +418,7 @@ export function DashboardPage() {
                       </div>
                     )}
                     
-                    <div className="flex justify-center">
+                    <div className="mt-auto">
                       <Button 
                         icon={Play}
                         onClick={() => handleCourseAction(course.id, course.title)}
