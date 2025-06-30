@@ -93,16 +93,19 @@ export function LandingPage() {
               <div className="hidden md:flex items-center space-x-6">
                 {user && fromPreEvaluation ? (
                   <div className="flex items-center space-x-3">
-                    {/* Profile Icon */}
-                    <div className="flex items-center justify-center">
-                      <div className="w-8 h-8 bg-gradient-to-r from-[#6244FF] to-[#FFAE2D] rounded-full flex items-center justify-center">
-                        <span className="text-white text-sm font-medium">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={handleSignOut}
+                      className="flex items-center space-x-2"
+                    >
+                      <span>Sign Out</span>
+                      {/* Profile Icon */}
+                      <div className="w-6 h-6 bg-gradient-to-r from-[#6244FF] to-[#FFAE2D] rounded-full flex items-center justify-center">
+                        <span className="text-white text-xs font-medium">
                           {userName?.[0]?.toUpperCase() || 'U'}
                         </span>
                       </div>
-                    </div>
-                    <Button variant="outline" size="sm" onClick={handleSignOut}>
-                      Sign Out
                     </Button>
                   </div>
                 ) : (
@@ -129,16 +132,21 @@ export function LandingPage() {
                 {user && fromPreEvaluation ? (
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
-                      {/* Profile Icon for Mobile */}
-                      <div className="w-8 h-8 bg-gradient-to-r from-[#6244FF] to-[#FFAE2D] rounded-full flex items-center justify-center">
-                        <span className="text-white text-sm font-medium">
+                      <span className="text-white text-sm">{userName}</span>
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={handleSignOut}
+                      className="flex items-center space-x-2"
+                    >
+                      <span>Sign Out</span>
+                      {/* Profile Icon */}
+                      <div className="w-6 h-6 bg-gradient-to-r from-[#6244FF] to-[#FFAE2D] rounded-full flex items-center justify-center">
+                        <span className="text-white text-xs font-medium">
                           {userName?.[0]?.toUpperCase() || 'U'}
                         </span>
                       </div>
-                      <span className="text-white text-sm">{userName}</span>
-                    </div>
-                    <Button variant="outline" size="sm" onClick={handleSignOut}>
-                      Sign Out
                     </Button>
                   </div>
                 ) : (
