@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { ArrowRight, Play, Users, BookOpen, Trophy, Briefcase } from 'lucide-react'
 import { Button } from '../components/ui/Button'
 import { useAuth } from '../contexts/AuthContext'
@@ -8,11 +8,20 @@ import iteachedLogo from '../assets/images/iteached-logo.svg'
 export function LandingPage() {
   const { user, profile, loading } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
 
   // HARD CONDITION: Redirect authenticated users based on evaluation status
   useEffect(() => {
     if (!loading && user) {
       console.log('🔄 LandingPage: User is authenticated, checking evaluation status')
+      
+      // Check if user came from pre-evaluation (back button)
+      const cameFromPreEvaluation = location.state?.fromPreEvaluation
+      
+      if (cameFromPreEvaluation) {
+        console.log('🔄 LandingPage: User came from pre-evaluation via back button, staying on landing page')
+        return // Don't redirect, let user stay on landing page
+      }
       
       // HARD CONDITION: If user has completed evaluation, always go to dashboard
       if (profile && profile.evaluation_completed) {
@@ -23,7 +32,7 @@ export function LandingPage() {
         navigate('/pre-evaluation', { replace: true })
       }
     }
-  }, [user, profile, loading, navigate])
+  }, [user, profile, loading, navigate, location.state])
 
   // Show loading state only briefly while checking authentication
   if (loading) {
@@ -37,8 +46,8 @@ export function LandingPage() {
     )
   }
 
-  // Don't render landing page content if user is authenticated (prevents flash)
-  if (user) {
+  // Don't render landing page content if user is authenticated and didn't come from pre-evaluation
+  if (user && !location.state?.fromPreEvaluation) {
     return (
       <div className="min-h-screen bg-gray-950 flex items-center justify-center">
         <div className="text-center">
