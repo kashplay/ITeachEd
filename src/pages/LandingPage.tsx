@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
-import { ArrowRight, Play, Users, BookOpen, Trophy, Briefcase, Menu, X, User, Zap } from 'lucide-react'
+import { ArrowRight, Play, Users, BookOpen, Trophy, Briefcase, Menu, X, User } from 'lucide-react'
 import { Button } from '../components/ui/Button'
 import { useAuth } from '../contexts/AuthContext'
 import iteachedLogo from '../assets/images/iteached-logo.svg'
@@ -321,16 +321,19 @@ export function LandingPage() {
         </div>
       </footer>
 
-      {/* Powered by Bolt Icon */}
+      {/* Black Circle Icon */}
       <div className="fixed bottom-4 right-4 z-10">
         <a 
           href="https://bolt.new" 
           target="_blank" 
           rel="noopener noreferrer"
-          className="flex items-center space-x-2 bg-gray-800/80 hover:bg-gray-700/80 backdrop-blur-sm text-white text-xs px-3 py-2 rounded-full transition-colors shadow-lg group"
+          className="flex items-center justify-center w-10 h-10 transition-transform hover:scale-110"
         >
-          <Zap className="w-3.5 h-3.5 text-yellow-400 group-hover:text-yellow-300" />
-          <span className="opacity-90 group-hover:opacity-100">Powered by Bolt</span>
+          <img 
+            src="/src/assets/images/black_circle_360x360.svg" 
+            alt="Black Circle" 
+            className="w-10 h-10"
+          />
         </a>
       </div>
     </div>
