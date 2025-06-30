@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { Link, useNavigate, useLocation } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { ArrowRight, Play, Users, BookOpen, Trophy, Briefcase } from 'lucide-react'
 import { Button } from '../components/ui/Button'
 import { useAuth } from '../contexts/AuthContext'
@@ -8,22 +8,11 @@ import iteachedLogo from '../assets/images/iteached-logo.svg'
 export function LandingPage() {
   const { user, profile, loading } = useAuth()
   const navigate = useNavigate()
-  const location = useLocation()
 
   // HARD CONDITION: Redirect authenticated users based on evaluation status
   useEffect(() => {
     if (!loading && user) {
       console.log('🔄 LandingPage: User is authenticated, checking evaluation status')
-      
-      // Check if user came from pre-evaluation (back button)
-      const cameFromPreEvaluation = location.state?.fromPreEvaluation
-      
-      if (cameFromPreEvaluation) {
-        console.log('🔄 LandingPage: User came from pre-evaluation via back button, staying on landing page')
-        // Clear the state to prevent issues on future navigations
-        window.history.replaceState({}, document.title)
-        return // Don't redirect, let user stay on landing page
-      }
       
       // HARD CONDITION: If user has completed evaluation, always go to dashboard
       if (profile && profile.evaluation_completed) {
@@ -34,7 +23,7 @@ export function LandingPage() {
         navigate('/pre-evaluation', { replace: true })
       }
     }
-  }, [user, profile, loading, navigate, location.state])
+  }, [user, profile, loading, navigate])
 
   // Show loading state only briefly while checking authentication
   if (loading) {
@@ -48,8 +37,8 @@ export function LandingPage() {
     )
   }
 
-  // Don't render landing page content if user is authenticated and didn't come from pre-evaluation
-  if (user && !location.state?.fromPreEvaluation) {
+  // Don't render landing page content if user is authenticated (prevents flash)
+  if (user) {
     return (
       <div className="min-h-screen bg-gray-950 flex items-center justify-center">
         <div className="text-center">
@@ -60,49 +49,9 @@ export function LandingPage() {
     )
   }
 
-  const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'
-
   return (
     <div className="min-h-screen bg-gray-950">
-      {/* Custom header - only render this one, not relying on Layout component */}
-      <header className="bg-gray-900/80 backdrop-blur-md border-b border-gray-800 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <Link to="/" className="flex items-center">
-              <img 
-                src={iteachedLogo} 
-                alt="ITeachEd" 
-                className="h-8"
-              />
-            </Link>
-
-            <div className="flex items-center space-x-4">
-              {user ? (
-                <>
-                  <Link to="/dashboard">
-                    <Button variant="primary" size="sm">
-                      Dashboard
-                    </Button>
-                  </Link>
-                  <Link to="/settings" className="flex items-center justify-center p-2 bg-gray-800/50 border border-gray-600/50 rounded-xl hover:bg-gray-700/50 transition-colors">
-                    <div className="w-8 h-8 bg-gradient-to-r from-[#6244FF] to-[#FFAE2D] rounded-full flex items-center justify-center">
-                      <span className="text-white text-sm font-medium">
-                        {userName?.[0]?.toUpperCase() || 'U'}
-                      </span>
-                    </div>
-                  </Link>
-                </>
-              ) : (
-                <Link to="/auth/login">
-                  <Button variant="outline" size="sm">
-                    Login
-                  </Button>
-                </Link>
-              )}
-            </div>
-          </div>
-        </div>
-      </header>
+      {/* Header is now handled by Layout component - no duplicate header here */}
       
       {/* Hero Section */}
       <section className="relative overflow-hidden py-20 lg:py-32">
@@ -123,19 +72,11 @@ export function LandingPage() {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            {user ? (
-              <Link to="/dashboard">
-                <Button size="lg" icon={ArrowRight} iconPosition="right" className="group">
-                  Go to Dashboard
-                </Button>
-              </Link>
-            ) : (
-              <Link to="/auth/signup">
-                <Button size="lg" icon={ArrowRight} iconPosition="right" className="group">
-                  Start Learning Today
-                </Button>
-              </Link>
-            )}
+            <Link to="/auth/signup">
+              <Button size="lg" icon={ArrowRight} iconPosition="right" className="group">
+                Start Learning Today
+              </Button>
+            </Link>
             <Button variant="outline" size="lg" icon={Play}>
               Watch Demo
             </Button>
@@ -224,19 +165,11 @@ export function LandingPage() {
           <p className="text-xl text-white/90 mb-8">
             Join thousands of learners who have accelerated their careers with ITeachEd
           </p>
-          {user ? (
-            <Link to="/dashboard">
-              <Button variant="secondary" size="lg" icon={ArrowRight} iconPosition="right">
-                Go to Dashboard
-              </Button>
-            </Link>
-          ) : (
-            <Link to="/auth/signup">
-              <Button variant="secondary" size="lg" icon={ArrowRight} iconPosition="right">
-                Get Started Free
-              </Button>
-            </Link>
-          )}
+          <Link to="/auth/signup">
+            <Button variant="secondary" size="lg" icon={ArrowRight} iconPosition="right">
+              Get Started Free
+            </Button>
+          </Link>
         </div>
       </section>
 

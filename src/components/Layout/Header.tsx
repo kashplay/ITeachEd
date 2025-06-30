@@ -1,8 +1,6 @@
 import React, { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { 
-  LogOut
-} from 'lucide-react'
+import { Menu, X } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
 import { Button } from '../ui/Button'
 import iteachedLogo from '../../assets/images/iteached-logo.svg'
