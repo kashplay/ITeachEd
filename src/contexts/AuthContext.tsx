@@ -37,26 +37,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const initializeAuth = async () => {
       try {
-        const { data: { session }, error } = await supabase.auth.getSession()
+        console.log('🔄 AuthContext: Initializing auth...')
+        
+        // Set a maximum timeout for the entire initialization
+        const timeoutPromise = new Promise<never>((_, reject) => {
+          setTimeout(() => reject(new Error('Auth initialization timeout')), 10000)
+        })
+
+        const authPromise = supabase.auth.getSession()
+
+        const { data: { session }, error } = await Promise.race([
+          authPromise,
+          timeoutPromise
+        ])
         
         if (!mounted) return
         
         if (error) {
-          console.error('Error getting session:', error)
+          console.error('❌ AuthContext: Error getting session:', error)
           setLoading(false)
           return
         }
         
+        console.log('✅ AuthContext: Session retrieved:', session ? 'Found' : 'None')
         setSession(session)
         setUser(session?.user ?? null)
         
         if (session?.user) {
+          console.log('🔄 AuthContext: Fetching profile for user:', session.user.id)
           await fetchProfile(session.user.id)
         } else {
+          console.log('ℹ️ AuthContext: No user session, skipping profile fetch')
           setLoading(false)
         }
       } catch (error) {
-        console.error('Exception getting session:', error)
+        console.error('❌ AuthContext: Exception during initialization:', error)
         if (mounted) {
           setLoading(false)
         }
@@ -70,6 +85,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       async (event, session) => {
         if (!mounted) return
         
+        console.log('🔄 AuthContext: Auth state changed:', event)
         setSession(session)
         setUser(session?.user ?? null)
         
@@ -90,21 +106,40 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const fetchProfile = async (userId: string) => {
     try {
-      const { data, error } = await supabase
+      console.log('🔄 AuthContext: Fetching profile for user:', userId)
+      
+      // Add timeout to profile fetch to prevent hanging
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error('Profile fetch timeout')), 5000)
+      })
+
+      const profilePromise = supabase
         .from('user_profiles')
         .select('*')
         .eq('user_id', userId)
         .single()
 
-      if (error && error.code !== 'PGRST116') {
-        console.error('Error fetching profile:', error)
-      }
+      const { data, error } = await Promise.race([
+        profilePromise,
+        timeoutPromise
+      ])
 
-      setProfile(data || null)
+      if (error && error.code !== 'PGRST116') {
+        console.error('❌ AuthContext: Error fetching profile:', error)
+        // Don't throw error, just set profile to null and continue
+        setProfile(null)
+      } else if (data) {
+        console.log('✅ AuthContext: Profile fetched successfully')
+        setProfile(data)
+      } else {
+        console.log('ℹ️ AuthContext: No profile found for user')
+        setProfile(null)
+      }
     } catch (error) {
-      console.error('Exception fetching profile:', error)
+      console.error('❌ AuthContext: Exception fetching profile:', error)
       setProfile(null)
     } finally {
+      console.log('✅ AuthContext: Setting loading to false')
       setLoading(false)
     }
   }
@@ -198,24 +233,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
+      console.log('🔄 AuthContext: Updating profile with:', updates)
+      
       const profileData = {
         user_id: user.id,
         ...updates
       }
       
-      const { error } = await supabase
+      // Add timeout to prevent hanging
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error('Profile update timeout')), 10000)
+      })
+
+      const updatePromise = supabase
         .from('user_profiles')
         .upsert(profileData)
+
+      const { error } = await Promise.race([
+        updatePromise,
+        timeoutPromise
+      ])
       
       if (error) {
-        console.error('Profile update error:', error)
+        console.error('❌ AuthContext: Profile update error:', error)
         throw error
       }
       
+      console.log('✅ AuthContext: Profile updated successfully')
       setProfile(prev => prev ? { ...prev, ...updates } : null)
       
     } catch (error) {
-      console.error('Profile update exception:', error)
+      console.error('❌ AuthContext: Profile update exception:', error)
       throw error
     }
   }
