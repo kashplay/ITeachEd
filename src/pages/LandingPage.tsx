@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
-import { ArrowRight, Play, Users, BookOpen, Trophy, Briefcase } from 'lucide-react'
+import { ArrowRight, Play, Users, BookOpen, Trophy, Briefcase, Menu, X } from 'lucide-react'
 import { Button } from '../components/ui/Button'
 import { useAuth } from '../contexts/AuthContext'
 import iteachedLogo from '../assets/images/iteached-logo.svg'
@@ -9,6 +9,7 @@ export function LandingPage() {
   const { user, profile, loading, signOut } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   // Check if user came from pre-evaluation via back button
   const fromPreEvaluation = location.state?.fromPreEvaluation
