@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { ArrowRight, Search, Bell, Monitor, Target, Hexagon, Film, User, Play } from 'lucide-react'
+import React, { useState, useRef } from 'react'
+import { ArrowRight, Search, Bell, Monitor, Target, Hexagon, Film, User, Play, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import { Sidebar } from '../components/Layout/Sidebar'
@@ -22,6 +22,7 @@ export function DashboardPage() {
   const navigate = useNavigate()
   const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Mark Johnson'
   const [searchQuery, setSearchQuery] = useState('')
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
 
   // Recommended courses data
   const recommendedCourses: RecommendedCourse[] = [
@@ -51,6 +52,33 @@ export function DashboardPage() {
       progress: 0,
       status: 'not-started',
       category: 'Development'
+    },
+    {
+      id: 'course-4',
+      title: 'Data Science Essentials',
+      description: 'Learn the fundamentals of data analysis and visualization',
+      image: 'https://images.pexels.com/photos/577585/pexels-photo-577585.jpeg?auto=compress&cs=tinysrgb&w=800',
+      progress: 65,
+      status: 'in-progress',
+      category: 'Data'
+    },
+    {
+      id: 'course-5',
+      title: 'Mobile App Development',
+      description: 'Build cross-platform mobile applications with React Native',
+      image: 'https://images.pexels.com/photos/1092644/pexels-photo-1092644.jpeg?auto=compress&cs=tinysrgb&w=800',
+      progress: 0,
+      status: 'not-started',
+      category: 'Development'
+    },
+    {
+      id: 'course-6',
+      title: 'Digital Marketing Fundamentals',
+      description: 'Master the essentials of online marketing and growth',
+      image: 'https://images.pexels.com/photos/905163/pexels-photo-905163.jpeg?auto=compress&cs=tinysrgb&w=800',
+      progress: 20,
+      status: 'in-progress',
+      category: 'Marketing'
     }
   ]
 
@@ -89,6 +117,18 @@ export function DashboardPage() {
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value)
+  }
+
+  const scrollLeft = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: -300, behavior: 'smooth' })
+    }
+  }
+
+  const scrollRight = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: 300, behavior: 'smooth' })
+    }
   }
 
   return (
@@ -307,13 +347,36 @@ export function DashboardPage() {
 
           {/* Projects Section */}
           <div className="space-y-6 pb-8">
-            <h2 className="text-2xl font-semibold">Start doing projects</h2>
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-semibold">Start doing projects</h2>
+              
+              {/* Scroll Controls */}
+              <div className="flex space-x-2">
+                <button 
+                  onClick={scrollLeft}
+                  className="p-2 bg-gray-800/50 rounded-full hover:bg-gray-700/50 transition-colors"
+                >
+                  <ChevronLeft className="w-5 h-5 text-white" />
+                </button>
+                <button 
+                  onClick={scrollRight}
+                  className="p-2 bg-gray-800/50 rounded-full hover:bg-gray-700/50 transition-colors"
+                >
+                  <ChevronRight className="w-5 h-5 text-white" />
+                </button>
+              </div>
+            </div>
             
-            <div className="grid grid-cols-3 gap-6">
+            {/* Horizontal Scrollable Container */}
+            <div 
+              ref={scrollContainerRef}
+              className="flex space-x-6 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            >
               {recommendedCourses.map((course) => (
                 <div 
                   key={course.id}
-                  className="bg-gray-800/30 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden hover:bg-gray-700/30 transition-colors"
+                  className="min-w-[350px] max-w-[350px] bg-gray-800/30 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden hover:bg-gray-700/30 transition-colors snap-start"
                 >
                   <div className="aspect-video relative">
                     <img 
@@ -342,7 +405,7 @@ export function DashboardPage() {
                   
                   <div className="p-5">
                     <h3 className="text-lg font-semibold text-white mb-2">{course.title}</h3>
-                    <p className="text-gray-400 text-sm mb-4">{course.description}</p>
+                    <p className="text-gray-400 text-sm mb-4 h-10 line-clamp-2">{course.description}</p>
                     
                     {/* Progress bar - Only show if in progress */}
                     {course.status === 'in-progress' && (
@@ -354,13 +417,15 @@ export function DashboardPage() {
                       </div>
                     )}
                     
-                    <Button 
-                      icon={Play}
-                      onClick={() => handleCourseAction(course.id, course.title)}
-                      className="w-full"
-                    >
-                      {course.status === 'in-progress' ? 'Continue' : 'Start Course'}
-                    </Button>
+                    <div className="flex justify-center">
+                      <Button 
+                        icon={Play}
+                        onClick={() => handleCourseAction(course.id, course.title)}
+                        className="w-full"
+                      >
+                        {course.status === 'in-progress' ? 'Continue' : 'Start Course'}
+                      </Button>
+                    </div>
                   </div>
                 </div>
               ))}
