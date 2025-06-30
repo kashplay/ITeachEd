@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import iteachedLogo from '../../assets/images/iteached-logo.svg'
-import { Mail, Lock, User, Eye, EyeOff } from 'lucide-react'
+import { Mail, Lock, Eye, EyeOff, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
 import { Button } from '../../components/ui/Button'
 import { Input } from '../../components/ui/Input'
+import iteachedLogo from '../../assets/images/iteached-logo.svg'
+// Import feature images for reliable Netlify deployment
+import dashboardPreview from '../../assets/images/features/dashboard-preview.png'
 
 // Google Icon Component
 const GoogleIcon = () => (
@@ -22,6 +24,7 @@ export function SignUpPage() {
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [currentSlide, setCurrentSlide] = useState(0)
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -29,6 +32,15 @@ export function SignUpPage() {
     confirmPassword: ''
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
+
+  // Slides for the right side carousel
+  const slides = [
+    {
+      image: dashboardPreview,
+      title: 'Your Goals.\nYour Roadmap.',
+      description: 'AI builds a step-by-step learning plan tailored to your skills, interests, and career goals'
+    }
+  ]
 
   // Redirect to pre-evaluation if user is authenticated
   useEffect(() => {
@@ -88,16 +100,9 @@ export function SignUpPage() {
   return (
     <div className="min-h-screen bg-gray-950 flex">
       {/* Left Side - Form */}
-      <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8">
+      <div className="w-full lg:w-3/5 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12">
         <div className="max-w-md w-full space-y-8">
           <div className="text-center">
-            <div className="flex items-center justify-center mb-6">
-              <img 
-                src={iteachedLogo} 
-                alt="ITeachEd" 
-                className="h-10"
-              />
-            </div>
             <h2 className="text-3xl font-bold text-white">Get Started Now</h2>
             <p className="mt-2 text-gray-400">Enter your credentials to access your account</p>
           </div>
@@ -111,14 +116,14 @@ export function SignUpPage() {
 
             <Button
               variant="outline"
-              className="w-full mb-6"
+              className="w-full"
               icon={GoogleIcon}
               onClick={handleGoogleSignUp}
             >
               Sign up with Google
             </Button>
 
-            <div className="relative mb-6">
+            <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-gray-700" />
               </div>
@@ -128,74 +133,97 @@ export function SignUpPage() {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
-              <Input
-                label="Email"
-                type="email"
-                value={formData.email}
-                onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                error={errors.email}
-                placeholder="johndoe@email.com"
-              />
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
+                <input
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                  placeholder="johndoe@email.com"
+                  className="w-full bg-gray-800 text-white rounded-xl border border-gray-600 focus:border-[#6244FF] focus:ring-1 focus:ring-[#6244FF] px-4 py-3 transition-colors"
+                />
+                {errors.email && (
+                  <p className="mt-1 text-sm text-red-400">{errors.email}</p>
+                )}
+              </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <Input
-                  label="First Name"
-                  type="text"
-                  value={formData.fullName.split(' ')[0] || ''}
-                  onChange={(e) => {
-                    const lastName = formData.fullName.split(' ').slice(1).join(' ')
-                    setFormData(prev => ({ ...prev, fullName: `${e.target.value} ${lastName}`.trim() }))
-                  }}
-                  error={errors.fullName}
-                  placeholder="John"
-                />
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">First Name</label>
+                  <input
+                    type="text"
+                    value={formData.fullName.split(' ')[0] || ''}
+                    onChange={(e) => {
+                      const lastName = formData.fullName.split(' ').slice(1).join(' ')
+                      setFormData(prev => ({ ...prev, fullName: `${e.target.value} ${lastName}`.trim() }))
+                    }}
+                    placeholder="John"
+                    className="w-full bg-gray-800 text-white rounded-xl border border-gray-600 focus:border-[#6244FF] focus:ring-1 focus:ring-[#6244FF] px-4 py-3 transition-colors"
+                  />
+                  {errors.fullName && (
+                    <p className="mt-1 text-sm text-red-400">{errors.fullName}</p>
+                  )}
+                </div>
                 
-                <Input
-                  label="Last Name"
-                  type="text"
-                  value={formData.fullName.split(' ').slice(1).join(' ') || ''}
-                  onChange={(e) => {
-                    const firstName = formData.fullName.split(' ')[0] || ''
-                    setFormData(prev => ({ ...prev, fullName: `${firstName} ${e.target.value}`.trim() }))
-                  }}
-                  placeholder="Doe"
-                />
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Last Name</label>
+                  <input
+                    type="text"
+                    value={formData.fullName.split(' ').slice(1).join(' ') || ''}
+                    onChange={(e) => {
+                      const firstName = formData.fullName.split(' ')[0] || ''
+                      setFormData(prev => ({ ...prev, fullName: `${firstName} ${e.target.value}`.trim() }))
+                    }}
+                    placeholder="Doe"
+                    className="w-full bg-gray-800 text-white rounded-xl border border-gray-600 focus:border-[#6244FF] focus:ring-1 focus:ring-[#6244FF] px-4 py-3 transition-colors"
+                  />
+                </div>
               </div>
 
-              <div className="relative">
-                <Input
-                  label="Password"
-                  type={showPassword ? 'text' : 'password'}
-                  value={formData.password}
-                  onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
-                  error={errors.password}
-                  placeholder="••••••"
-                />
-                <button
-                  type="button"
-                  className="absolute right-3 top-9 text-gray-400 hover:text-gray-300"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Password</label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    value={formData.password}
+                    onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
+                    placeholder="••••••"
+                    className="w-full bg-gray-800 text-white rounded-xl border border-gray-600 focus:border-[#6244FF] focus:ring-1 focus:ring-[#6244FF] px-4 py-3 pr-12 transition-colors"
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  </button>
+                </div>
+                {errors.password && (
+                  <p className="mt-1 text-sm text-red-400">{errors.password}</p>
+                )}
               </div>
 
-              <div className="relative">
-                <Input
-                  label="Re-enter your password"
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  value={formData.confirmPassword}
-                  onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                  error={errors.confirmPassword}
-                  placeholder="••••••"
-                />
-                <button
-                  type="button"
-                  className="absolute right-3 top-9 text-gray-400 hover:text-gray-300"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                >
-                  {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Re-enter your password</label>
+                <div className="relative">
+                  <input
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    value={formData.confirmPassword}
+                    onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                    placeholder="••••••"
+                    className="w-full bg-gray-800 text-white rounded-xl border border-gray-600 focus:border-[#6244FF] focus:ring-1 focus:ring-[#6244FF] px-4 py-3 pr-12 transition-colors"
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  >
+                    {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  </button>
+                </div>
+                {errors.confirmPassword && (
+                  <p className="mt-1 text-sm text-red-400">{errors.confirmPassword}</p>
+                )}
               </div>
 
               <Button
@@ -226,11 +254,45 @@ export function SignUpPage() {
 
       {/* Right Side - Dashboard Preview */}
       <div className="hidden lg:flex flex-1 relative overflow-hidden">
-        <img 
-          src="/dashboard-preview.png" 
-          alt="Dashboard Preview - Your Goals, Your Roadmap" 
-          className="w-full h-full object-cover"
-        />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#1a1d3a] via-[#2d3561] to-[#1a1d3a]"></div>
+        
+        <div className="relative w-full h-full flex items-center justify-center p-12">
+          <div className="max-w-2xl w-full">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4 whitespace-pre-line">
+                {slides[currentSlide].title}
+              </h2>
+              <p className="text-xl text-gray-300 max-w-lg mx-auto">
+                {slides[currentSlide].description}
+              </p>
+            </div>
+            
+            <div className="relative rounded-xl overflow-hidden shadow-2xl border border-gray-700/50">
+              <img 
+                src={slides[currentSlide].image} 
+                alt="Dashboard Preview" 
+                className="w-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+            </div>
+            
+            <div className="mt-8 flex justify-center">
+              <div className="flex space-x-2 bg-gray-800/50 backdrop-blur-sm rounded-full px-4 py-2">
+                {slides.map((_, index) => (
+                  <button
+                    key={index}
+                    className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                      index === currentSlide 
+                        ? 'bg-[#6244FF] scale-125' 
+                        : 'bg-gray-600 hover:bg-gray-500'
+                    }`}
+                    onClick={() => setCurrentSlide(index)}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )
