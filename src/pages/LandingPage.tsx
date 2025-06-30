@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
-import { ArrowRight, Play, Users, BookOpen, Trophy, Briefcase, Menu, X, User } from 'lucide-react'
+import { ArrowRight, Play, Users, BookOpen, Trophy, Briefcase, Menu, X, User, Zap } from 'lucide-react'
 import { Button } from '../components/ui/Button'
 import { useAuth } from '../contexts/AuthContext'
 import iteachedLogo from '../assets/images/iteached-logo.svg'
@@ -76,7 +76,7 @@ export function LandingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-950">
+    <div className="min-h-screen bg-gray-950 relative">
       {/* Header - Only show if user is not authenticated or came from pre-evaluation */}
       {(!user || fromPreEvaluation) && (
         <header className="bg-gray-900/80 backdrop-blur-md border-b border-gray-800 sticky top-0 z-50">
@@ -320,6 +320,19 @@ export function LandingPage() {
           </div>
         </div>
       </footer>
+
+      {/* Powered by Bolt Icon */}
+      <div className="fixed bottom-4 right-4 z-10">
+        <a 
+          href="https://bolt.new" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="flex items-center space-x-2 bg-gray-800/80 hover:bg-gray-700/80 backdrop-blur-sm text-white text-xs px-3 py-2 rounded-full transition-colors shadow-lg group"
+        >
+          <Zap className="w-3.5 h-3.5 text-yellow-400 group-hover:text-yellow-300" />
+          <span className="opacity-90 group-hover:opacity-100">Powered by Bolt</span>
+        </a>
+      </div>
     </div>
   )
 }
