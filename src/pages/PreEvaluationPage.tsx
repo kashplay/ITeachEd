@@ -372,13 +372,18 @@ export function PreEvaluationPage() {
   }
 
   const handleBack = () => {
-    // ALWAYS redirect to landing page when back button is clicked
-    // Pass state to indicate user came from pre-evaluation via back button
-    console.log('🔄 PreEvaluation: Back button clicked, redirecting to landing page')
-    navigate('/', { 
-      replace: true, 
-      state: { fromPreEvaluation: true } 
-    })
+    if (currentQuestion > 0) {
+      // If not on the first question, go to the previous question
+      setCurrentQuestion(prev => prev - 1)
+      setShowStartButton(false) // Reset start button state if going back
+    } else {
+      // If on first question, go back to landing page
+      console.log('🔄 PreEvaluation: Back button clicked on first question, redirecting to landing page')
+      navigate('/', { 
+        replace: true, 
+        state: { fromPreEvaluation: true } 
+      })
+    }
   }
 
   const handleStartLearning = async () => {

@@ -99,7 +99,7 @@ export function OnboardingPage() {
               variant="outline"
               onClick={handleBack}
             >
-              Back to Home
+              Back
             </Button>
 
             <Button
