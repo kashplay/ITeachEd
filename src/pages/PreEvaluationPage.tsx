@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Sparkles } from 'lucide-react'
+import { ChevronRight, ChevronLeft, Sparkles } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { Button } from '../components/ui/Button'
+import { OnboardingData } from '../types'
+import iteachedLogo from '../assets/images/iteached-logo.svg'
 
 // Question data structure
 interface Question {
@@ -370,13 +372,9 @@ export function PreEvaluationPage() {
   }
 
   const handleBack = () => {
-    if (currentQuestion > 0) {
-      setCurrentQuestion(prev => prev - 1)
-      setShowStartButton(false) // Reset start button state if going back
-    } else {
-      // If on first question, go back to landing page
-      navigate('/')
-    }
+    // ALWAYS redirect to landing page when back button is clicked
+    console.log('🔄 PreEvaluation: Back button clicked, redirecting to landing page')
+    navigate('/', { replace: true })
   }
 
   const handleStartLearning = async () => {
@@ -490,8 +488,8 @@ export function PreEvaluationPage() {
           onClick={handleBack}
           className="flex items-center space-x-2 text-[#FFAE2D] hover:text-[#FFD700] transition-colors duration-200 group"
         >
-          <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform duration-200" />
-          <span className="font-medium">Back</span>
+          <ChevronLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform duration-200" />
+          <span className="font-medium">Back to Home</span>
         </button>
         
         {/* Empty div for spacing */}
