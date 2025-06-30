@@ -33,25 +33,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    let mounted = true
+
     const initializeAuth = async () => {
       try {
         const { data: { session }, error } = await supabase.auth.getSession()
         
+        if (!mounted) return
+        
         if (error) {
           console.error('Error getting session:', error)
+          setLoading(false)
+          return
         }
         
         setSession(session)
         setUser(session?.user ?? null)
         
         if (session?.user) {
-          fetchProfile(session.user.id).catch(console.error)
+          await fetchProfile(session.user.id)
         } else {
           setLoading(false)
         }
       } catch (error) {
         console.error('Exception getting session:', error)
-        setLoading(false)
+        if (mounted) {
+          setLoading(false)
+        }
       }
     }
 
@@ -60,6 +68,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        if (!mounted) return
+        
         setSession(session)
         setUser(session?.user ?? null)
         
@@ -73,6 +83,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     )
 
     return () => {
+      mounted = false
       subscription.unsubscribe()
     }
   }, [])
@@ -89,16 +100,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.error('Error fetching profile:', error)
       }
 
-      if (data) {
-        setProfile(data)
-      } else {
-        setProfile(null)
-      }
-      
-      setLoading(false)
+      setProfile(data || null)
     } catch (error) {
       console.error('Exception fetching profile:', error)
       setProfile(null)
+    } finally {
       setLoading(false)
     }
   }
@@ -154,30 +160,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     try {
-      // Clear local state immediately
       setUser(null)
       setSession(null)
       setProfile(null)
       setLoading(false)
       
-      // Clear any Supabase data from localStorage manually as a failsafe
-      try {
-        const keysToRemove = Object.keys(localStorage).filter(key => key.includes('supabase'))
-        keysToRemove.forEach(key => {
-          localStorage.removeItem(key)
-        })
-      } catch (localStorageError) {
-        console.error('Could not clear localStorage:', localStorageError)
-      }
-      
-      // Now try to sign out from Supabase
       const { error } = await supabase.auth.signOut({ scope: 'local' })
       
       return { error: error || null }
     } catch (exception) {
       console.error('Sign out exception:', exception)
       
-      // Even if there's an error, clear local state
       setUser(null)
       setSession(null)
       setProfile(null)
@@ -205,13 +198,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      // Prepare the profile data with all required fields
       const profileData = {
         user_id: user.id,
         ...updates
       }
       
-      // Use upsert to handle both insert and update cases
       const { error } = await supabase
         .from('user_profiles')
         .upsert(profileData)
@@ -221,7 +212,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         throw error
       }
       
-      // Update local profile state with the updates
       setProfile(prev => prev ? { ...prev, ...updates } : null)
       
     } catch (error) {

@@ -17,7 +17,7 @@ export function LandingPage() {
     }
   }, [user, loading, navigate])
 
-  // Show minimal loading state while checking authentication
+  // Show loading state only briefly while checking authentication
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-950 flex items-center justify-center">
