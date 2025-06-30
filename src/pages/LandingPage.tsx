@@ -200,7 +200,7 @@ export function LandingPage() {
             </p>
           </div>
         </div>
-      </div>
+      </footer>
     </div>
   )
 }
