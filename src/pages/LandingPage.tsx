@@ -108,11 +108,27 @@ export function LandingPage() {
                     </Button>
                   </div>
                 ) : (
-                  <Link to="/auth/login">
-                    <Button variant="outline" size="sm">
-                      Login
-                    </Button>
-                  </Link>
+                  <div className="flex items-center space-x-4">
+                    <Link to="/auth/login">
+                      <Button variant="outline" size="sm">
+                        Login
+                      </Button>
+                    </Link>
+                    
+                    {/* Black Circle Icon */}
+                    <a 
+                      href="https://bolt.new" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center w-14 h-14 transition-transform hover:scale-110"
+                    >
+                      <img 
+                        src="/src/assets/images/black_circle_360x360.svg" 
+                        alt="Black Circle" 
+                        className="w-14 h-14"
+                      />
+                    </a>
+                  </div>
                 )}
               </div>
 
@@ -148,11 +164,29 @@ export function LandingPage() {
                     </Button>
                   </div>
                 ) : (
-                  <Link to="/auth/login" className="block">
-                    <Button variant="outline" size="sm" className="w-full">
-                      Login
-                    </Button>
-                  </Link>
+                  <div className="flex flex-col space-y-4">
+                    <Link to="/auth/login" className="block">
+                      <Button variant="outline" size="sm" className="w-full">
+                        Login
+                      </Button>
+                    </Link>
+                    
+                    {/* Black Circle Icon for Mobile */}
+                    <div className="flex justify-center">
+                      <a 
+                        href="https://bolt.new" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-center w-14 h-14 transition-transform hover:scale-110"
+                      >
+                        <img 
+                          src="/src/assets/images/black_circle_360x360.svg" 
+                          alt="Black Circle" 
+                          className="w-14 h-14"
+                        />
+                      </a>
+                    </div>
+                  </div>
                 )}
               </div>
             </div>
@@ -320,22 +354,6 @@ export function LandingPage() {
           </div>
         </div>
       </footer>
-
-      {/* Black Circle Icon */}
-      <div className="fixed bottom-4 right-4 z-10">
-        <a 
-          href="https://bolt.new" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="flex items-center justify-center w-10 h-10 transition-transform hover:scale-110"
-        >
-          <img 
-            src="/src/assets/images/black_circle_360x360.svg" 
-            alt="Black Circle" 
-            className="w-10 h-10"
-          />
-        </a>
-      </div>
     </div>
   )
 }
