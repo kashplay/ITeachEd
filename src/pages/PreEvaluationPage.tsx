@@ -373,8 +373,12 @@ export function PreEvaluationPage() {
 
   const handleBack = () => {
     // ALWAYS redirect to landing page when back button is clicked
+    // Pass state to indicate user came from pre-evaluation via back button
     console.log('🔄 PreEvaluation: Back button clicked, redirecting to landing page')
-    navigate('/', { replace: true })
+    navigate('/', { 
+      replace: true, 
+      state: { fromPreEvaluation: true } 
+    })
   }
 
   const handleStartLearning = async () => {

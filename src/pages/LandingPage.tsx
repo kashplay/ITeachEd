@@ -1,18 +1,28 @@
 import React, { useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { ArrowRight, Play, Users, BookOpen, Trophy, Briefcase } from 'lucide-react'
 import { Button } from '../components/ui/Button'
 import { useAuth } from '../contexts/AuthContext'
 import iteachedLogo from '../assets/images/iteached-logo.svg'
 
 export function LandingPage() {
-  const { user, profile, loading } = useAuth()
+  const { user, profile, loading, signOut } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+
+  // Check if user came from pre-evaluation via back button
+  const fromPreEvaluation = location.state?.fromPreEvaluation
 
   // HARD CONDITION: Redirect authenticated users based on evaluation status
   useEffect(() => {
     if (!loading && user) {
       console.log('🔄 LandingPage: User is authenticated, checking evaluation status')
+      
+      // If user came from pre-evaluation via back button, don't redirect them back
+      if (fromPreEvaluation) {
+        console.log('🔄 LandingPage: User came from pre-evaluation via back button, staying on landing page')
+        return
+      }
       
       // HARD CONDITION: If user has completed evaluation, always go to dashboard
       if (profile && profile.evaluation_completed) {
@@ -23,7 +33,21 @@ export function LandingPage() {
         navigate('/pre-evaluation', { replace: true })
       }
     }
-  }, [user, profile, loading, navigate])
+  }, [user, profile, loading, navigate, fromPreEvaluation])
+
+  const handleSignOut = async () => {
+    try {
+      console.log('🔓 LandingPage: Sign out button clicked')
+      const { error } = await signOut()
+      if (error) {
+        console.error('❌ LandingPage: Sign out failed:', error)
+      } else {
+        console.log('✅ LandingPage: Sign out successful')
+      }
+    } catch (error) {
+      console.error('❌ LandingPage: Sign out exception:', error)
+    }
+  }
 
   // Show loading state only briefly while checking authentication
   if (loading) {
@@ -37,8 +61,8 @@ export function LandingPage() {
     )
   }
 
-  // Don't render landing page content if user is authenticated (prevents flash)
-  if (user) {
+  // Don't render landing page content if user is authenticated and not from pre-evaluation (prevents flash)
+  if (user && !fromPreEvaluation) {
     return (
       <div className="min-h-screen bg-gray-950 flex items-center justify-center">
         <div className="text-center">
@@ -51,7 +75,61 @@ export function LandingPage() {
 
   return (
     <div className="min-h-screen bg-gray-950">
-      {/* Header is now handled by Layout component - no duplicate header here */}
+      {/* Header - Only show if user is not authenticated or came from pre-evaluation */}
+      {(!user || fromPreEvaluation) && (
+        <header className="bg-gray-900/80 backdrop-blur-md border-b border-gray-800 sticky top-0 z-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center h-16">
+              <Link to="/" className="flex items-center">
+                <img 
+                  src={iteachedLogo} 
+                  alt="ITeachEd" 
+                  className="h-8"
+                />
+              </Link>
+
+              <div className="hidden md:flex items-center space-x-6">
+                {user && fromPreEvaluation ? (
+                  <Button variant="outline" size="sm" onClick={handleSignOut}>
+                    Sign Out
+                  </Button>
+                ) : (
+                  <Link to="/auth/login">
+                    <Button variant="outline" size="sm">
+                      Login
+                    </Button>
+                  </Link>
+                )}
+              </div>
+
+              <button
+                className="md:hidden text-gray-300 hover:text-white"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              >
+                {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </button>
+            </div>
+          </div>
+
+          {mobileMenuOpen && (
+            <div className="md:hidden bg-gray-900 border-t border-gray-800">
+              <div className="px-4 py-6 space-y-4">
+                {user && fromPreEvaluation ? (
+                  <Button variant="outline" size="sm" className="w-full" onClick={handleSignOut}>
+                    Sign Out
+                  </Button>
+                ) : (
+                  <Link to="/auth/login" className="block">
+                    <Button variant="outline" size="sm" className="w-full">
+                      Login
+                    </Button>
+                  </Link>
+                )}
+              </div>
+            </div>
+          )}
+        </header>
+      )}
       
       {/* Hero Section */}
       <section className="relative overflow-hidden py-20 lg:py-32">
@@ -72,14 +150,29 @@ export function LandingPage() {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Link to="/auth/signup">
-              <Button size="lg" icon={ArrowRight} iconPosition="right" className="group">
-                Start Learning Today
-              </Button>
-            </Link>
-            <Button variant="outline" size="lg" icon={Play}>
-              Watch Demo
-            </Button>
+            {user && fromPreEvaluation ? (
+              <>
+                <Link to="/pre-evaluation">
+                  <Button size="lg" icon={ArrowRight} iconPosition="right" className="group">
+                    Continue Evaluation
+                  </Button>
+                </Link>
+                <Button variant="outline" size="lg" icon={Play}>
+                  Watch Demo
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link to="/auth/signup">
+                  <Button size="lg" icon={ArrowRight} iconPosition="right" className="group">
+                    Start Learning Today
+                  </Button>
+                </Link>
+                <Button variant="outline" size="lg" icon={Play}>
+                  Watch Demo
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </section>
@@ -165,11 +258,19 @@ export function LandingPage() {
           <p className="text-xl text-white/90 mb-8">
             Join thousands of learners who have accelerated their careers with ITeachEd
           </p>
-          <Link to="/auth/signup">
-            <Button variant="secondary" size="lg" icon={ArrowRight} iconPosition="right">
-              Get Started Free
-            </Button>
-          </Link>
+          {user && fromPreEvaluation ? (
+            <Link to="/pre-evaluation">
+              <Button variant="secondary" size="lg" icon={ArrowRight} iconPosition="right">
+                Continue Evaluation
+              </Button>
+            </Link>
+          ) : (
+            <Link to="/auth/signup">
+              <Button variant="secondary" size="lg" icon={ArrowRight} iconPosition="right">
+                Get Started Free
+              </Button>
+            </Link>
+          )}
         </div>
       </section>
 
