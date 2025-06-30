@@ -489,7 +489,7 @@ export function PreEvaluationPage() {
           className="flex items-center space-x-2 text-[#FFAE2D] hover:text-[#FFD700] transition-colors duration-200 group"
         >
           <ChevronLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform duration-200" />
-          <span className="font-medium">Back to Home</span>
+          <span className="font-medium">Back</span>
         </button>
         
         {/* Empty div for spacing */}
