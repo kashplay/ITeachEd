@@ -386,7 +386,7 @@ export function DashboardPage() {
               {currentCourses.map((course) => (
                 <div 
                   key={course.id}
-                  className="bg-gray-800/30 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden hover:bg-gray-700/30 transition-colors flex flex-col"
+                  className="bg-gray-800/30 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden hover:bg-gray-700/30 transition-colors flex flex-col h-full"
                 >
                   <div className="aspect-video relative">
                     <img 
@@ -417,15 +417,15 @@ export function DashboardPage() {
                     <h3 className="text-lg font-semibold text-white mb-2">{course.title}</h3>
                     <p className="text-gray-400 text-sm mb-4 line-clamp-2">{course.description}</p>
                     
-                    {/* Progress bar - Only show if in progress */}
-                    {course.status === 'in-progress' && (
-                      <div className="w-full bg-gray-700 rounded-full h-2 mb-4">
-                        <div 
-                          className="bg-green-500 h-2 rounded-full transition-all duration-300"
-                          style={{ width: `${course.progress}%` }}
-                        />
-                      </div>
-                    )}
+                    {/* Progress bar - Show for all courses, empty for not-started */}
+                    <div className="w-full bg-gray-700 rounded-full h-2 mb-4">
+                      <div 
+                        className={`h-2 rounded-full transition-all duration-300 ${
+                          course.status === 'in-progress' ? 'bg-green-500' : ''
+                        }`}
+                        style={{ width: `${course.progress}%` }}
+                      />
+                    </div>
                     
                     <div className="mt-auto">
                       <Button 
