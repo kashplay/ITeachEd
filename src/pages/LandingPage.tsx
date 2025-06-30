@@ -100,7 +100,6 @@ export function LandingPage() {
                       className="flex items-center space-x-2"
                     >
                       <span>Sign Out</span>
-                      {/* Profile Icon */}
                       <div className="w-6 h-6 bg-gradient-to-r from-[#6244FF] to-[#FFAE2D] rounded-full flex items-center justify-center">
                         <span className="text-white text-xs font-medium">
                           {userName?.[0]?.toUpperCase() || 'U'}
@@ -141,7 +140,6 @@ export function LandingPage() {
                       className="flex items-center space-x-2"
                     >
                       <span>Sign Out</span>
-                      {/* Profile Icon */}
                       <div className="w-6 h-6 bg-gradient-to-r from-[#6244FF] to-[#FFAE2D] rounded-full flex items-center justify-center">
                         <span className="text-white text-xs font-medium">
                           {userName?.[0]?.toUpperCase() || 'U'}
