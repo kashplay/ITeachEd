@@ -358,7 +358,7 @@ export function DashboardPage() {
           </div>
 
           {/* Projects Section - With Navigation Arrows */}
-          <div className="space-y-6 pb-8">
+          <div className="space-y-4 pb-8">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-semibold">Start doing projects</h2>
               
@@ -381,14 +381,14 @@ export function DashboardPage() {
               </div>
             </div>
             
-            {/* Grid Layout for Courses */}
-            <div className="grid grid-cols-3 gap-6">
+            {/* Grid Layout for Courses - Smaller Size */}
+            <div className="grid grid-cols-3 gap-5">
               {currentCourses.map((course) => (
                 <div 
                   key={course.id}
-                  className="bg-gray-800/30 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden hover:bg-gray-700/30 transition-colors flex flex-col h-full"
+                  className="bg-gray-800/30 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden hover:bg-gray-700/30 transition-colors flex flex-col h-[280px]"
                 >
-                  <div className="aspect-video relative">
+                  <div className="h-32 relative">
                     <img 
                       src={course.image} 
                       alt={course.title}
@@ -397,30 +397,30 @@ export function DashboardPage() {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
                     
                     {/* Category Badge */}
-                    <div className="absolute top-3 left-3">
-                      <span className="px-3 py-1 bg-blue-500/80 text-white text-xs font-medium rounded-full">
+                    <div className="absolute top-2 left-2">
+                      <span className="px-2 py-0.5 bg-blue-500/80 text-white text-xs font-medium rounded-full">
                         {course.category}
                       </span>
                     </div>
                     
                     {/* Progress Badge - Only show if in progress */}
                     {course.status === 'in-progress' && (
-                      <div className="absolute top-3 right-3">
-                        <span className="px-3 py-1 bg-green-500/80 text-white text-xs font-medium rounded-full">
+                      <div className="absolute top-2 right-2">
+                        <span className="px-2 py-0.5 bg-green-500/80 text-white text-xs font-medium rounded-full">
                           {course.progress}% Complete
                         </span>
                       </div>
                     )}
                   </div>
                   
-                  <div className="p-5 flex flex-col flex-grow">
-                    <h3 className="text-lg font-semibold text-white mb-2">{course.title}</h3>
-                    <p className="text-gray-400 text-sm mb-4 line-clamp-2">{course.description}</p>
+                  <div className="p-4 flex flex-col flex-grow">
+                    <h3 className="text-base font-semibold text-white mb-1">{course.title}</h3>
+                    <p className="text-gray-400 text-xs mb-3 line-clamp-2">{course.description}</p>
                     
                     {/* Progress bar - Show for all courses, empty for not-started */}
-                    <div className="w-full bg-gray-700 rounded-full h-2 mb-4">
+                    <div className="w-full bg-gray-700 rounded-full h-1.5 mb-3">
                       <div 
-                        className={`h-2 rounded-full transition-all duration-300 ${
+                        className={`h-1.5 rounded-full transition-all duration-300 ${
                           course.status === 'in-progress' ? 'bg-green-500' : ''
                         }`}
                         style={{ width: `${course.progress}%` }}
@@ -431,7 +431,8 @@ export function DashboardPage() {
                       <Button 
                         icon={Play}
                         onClick={() => handleCourseAction(course.id, course.title)}
-                        className="w-full"
+                        className="w-full text-sm py-1.5"
+                        size="sm"
                       >
                         {course.status === 'in-progress' ? 'Continue' : 'Start Course'}
                       </Button>
@@ -443,7 +444,7 @@ export function DashboardPage() {
             
             {/* Pagination Indicators */}
             {totalPages > 1 && (
-              <div className="flex justify-center space-x-2 mt-4">
+              <div className="flex justify-center space-x-2 mt-2">
                 {Array.from({ length: totalPages }).map((_, index) => (
                   <button
                     key={index}
