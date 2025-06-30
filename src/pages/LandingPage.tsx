@@ -4,6 +4,7 @@ import { ArrowRight, Play, Users, BookOpen, Trophy, Briefcase, Menu, X, User } f
 import { Button } from '../components/ui/Button'
 import { useAuth } from '../contexts/AuthContext'
 import iteachedLogo from '../assets/images/iteached-logo.svg'
+import boltLogo from '../assets/images/black_circle_360x360.svg'
 
 export function LandingPage() {
   const { user, profile, loading, signOut } = useAuth()
@@ -329,7 +330,7 @@ export function LandingPage() {
         className="fixed right-6 top-24 z-50 flex items-center justify-center w-16 h-16 transition-transform hover:scale-110"
       >
         <img 
-          src="/src/assets/images/black_circle_360x360.svg" 
+          src={boltLogo} 
           alt="Black Circle" 
           className="w-16 h-16"
         />
@@ -343,7 +344,7 @@ export function LandingPage() {
         className="md:hidden fixed right-4 bottom-4 z-50 flex items-center justify-center w-14 h-14 transition-transform hover:scale-110"
       >
         <img 
-          src="/src/assets/images/black_circle_360x360.svg" 
+          src={boltLogo}
           alt="Black Circle" 
           className="w-14 h-14"
         />
