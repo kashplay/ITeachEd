@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, Sparkles } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
@@ -326,13 +326,22 @@ const questions: Question[] = [
 ]
 
 export function PreEvaluationPage() {
-  const { user, updateProfile } = useAuth()
+  const { user, profile, updateProfile } = useAuth()
   const navigate = useNavigate()
   
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [answers, setAnswers] = useState<Record<number, string>>({})
   const [loading, setLoading] = useState(false)
   const [showStartButton, setShowStartButton] = useState(false)
+
+  // HARD CONDITION: If user has already completed evaluation, redirect to dashboard immediately
+  useEffect(() => {
+    if (user && profile && profile.evaluation_completed) {
+      console.log('🔄 PreEvaluation: User has already completed evaluation, redirecting to dashboard')
+      navigate('/dashboard', { replace: true })
+      return
+    }
+  }, [user, profile, navigate])
 
   const question = questions[currentQuestion]
   const isLastQuestion = currentQuestion === questions.length - 1
@@ -369,23 +378,28 @@ export function PreEvaluationPage() {
   }
 
   const handleStartLearning = async () => {
+    if (!canProceed()) return
+
     setLoading(true)
-    
     try {
       // Analyze answers to determine learning profile
       const learningProfile = analyzeLearningProfile(answers)
       
-      // Create a simplified profile update
+      // Create a simplified profile update with HARD CONDITION: evaluation_completed = true
       const profileUpdate = {
         learning_style: learningProfile.primaryStyle,
         experience_level: 'beginner',
-        evaluation_completed: true,
+        evaluation_completed: true, // HARD CONDITION: Mark as completed
         evaluation_results: learningProfile,
         evaluation_answers: answers
       }
       
+      console.log('🔄 PreEvaluation: Marking evaluation as completed and updating profile')
+      
       // Update profile
       await updateProfile(profileUpdate)
+      
+      console.log('✅ PreEvaluation: Evaluation completed, redirecting to dashboard')
       
       // Navigate to dashboard
       navigate('/dashboard', { replace: true })
@@ -395,6 +409,10 @@ export function PreEvaluationPage() {
       // Navigate to dashboard even if there's an error to prevent getting stuck
       navigate('/dashboard', { replace: true })
     }
+  }
+
+  const canProceed = () => {
+    return answers[question.id] !== undefined
   }
 
   const analyzeLearningProfile = (userAnswers: Record<number, string>) => {
@@ -461,6 +479,18 @@ export function PreEvaluationPage() {
     }
 
     return recommendations
+  }
+
+  // If user has already completed evaluation, show loading while redirecting
+  if (user && profile && profile.evaluation_completed) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-[#1a1d3a] via-[#2d3561] to-[#1a1d3a] text-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-2 border-[#FFAE2D] border-t-transparent mx-auto mb-4"></div>
+          <p className="text-white">Redirecting to dashboard...</p>
+        </div>
+      </div>
+    )
   }
 
   return (

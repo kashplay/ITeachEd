@@ -25,7 +25,19 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
     )
   }
 
-  // Check if user needs to complete pre-evaluation
+  // HARD CONDITION: If user has completed evaluation, ALWAYS redirect to dashboard
+  // This prevents users from accessing pre-evaluation or onboarding after completion
+  if (user && profile && profile.evaluation_completed) {
+    const currentPath = window.location.pathname
+    
+    // If user is on pre-evaluation or onboarding but has completed evaluation, redirect to dashboard
+    if (currentPath === '/pre-evaluation' || currentPath === '/onboarding') {
+      console.log('🔄 ProtectedRoute: User has completed evaluation, redirecting to dashboard from:', currentPath)
+      return <Navigate to="/dashboard" replace />
+    }
+  }
+
+  // Check if user needs to complete pre-evaluation (only if not already completed)
   if (user && (!profile || !profile.evaluation_completed)) {
     // If we're already on pre-evaluation page, don't redirect
     if (window.location.pathname === '/pre-evaluation') {

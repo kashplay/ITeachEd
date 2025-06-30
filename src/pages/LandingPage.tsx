@@ -6,16 +6,24 @@ import { useAuth } from '../contexts/AuthContext'
 import iteachedLogo from '../assets/images/iteached-logo.svg'
 
 export function LandingPage() {
-  const { user, loading } = useAuth()
+  const { user, profile, loading } = useAuth()
   const navigate = useNavigate()
 
-  // Redirect to dashboard if user is already authenticated
+  // HARD CONDITION: Redirect authenticated users based on evaluation status
   useEffect(() => {
     if (!loading && user) {
-      console.log('🔄 LandingPage: User is authenticated, redirecting to dashboard')
-      navigate('/dashboard', { replace: true })
+      console.log('🔄 LandingPage: User is authenticated, checking evaluation status')
+      
+      // HARD CONDITION: If user has completed evaluation, always go to dashboard
+      if (profile && profile.evaluation_completed) {
+        console.log('🔄 LandingPage: User has completed evaluation, redirecting to dashboard')
+        navigate('/dashboard', { replace: true })
+      } else {
+        console.log('🔄 LandingPage: User has not completed evaluation, redirecting to pre-evaluation')
+        navigate('/pre-evaluation', { replace: true })
+      }
     }
-  }, [user, loading, navigate])
+  }, [user, profile, loading, navigate])
 
   // Show loading state only briefly while checking authentication
   if (loading) {
@@ -35,7 +43,7 @@ export function LandingPage() {
       <div className="min-h-screen bg-gray-950 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-2 border-blue-500 border-t-transparent mx-auto mb-3"></div>
-          <p className="text-gray-400 text-sm">Redirecting to dashboard...</p>
+          <p className="text-gray-400 text-sm">Redirecting...</p>
         </div>
       </div>
     )

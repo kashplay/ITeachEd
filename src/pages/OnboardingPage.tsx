@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ChevronRight, ChevronLeft, Sparkles } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
@@ -62,7 +62,7 @@ const steps = [
 ]
 
 export function OnboardingPage() {
-  const { updateProfile } = useAuth()
+  const { user, profile, updateProfile } = useAuth()
   const navigate = useNavigate()
   const [currentStep, setCurrentStep] = useState(0)
   const [loading, setLoading] = useState(false)
@@ -73,6 +73,15 @@ export function OnboardingPage() {
     experience_level: '',
     interests: []
   })
+
+  // HARD CONDITION: If user has already completed evaluation, redirect to dashboard immediately
+  useEffect(() => {
+    if (user && profile && profile.evaluation_completed) {
+      console.log('🔄 Onboarding: User has already completed evaluation, redirecting to dashboard')
+      navigate('/dashboard', { replace: true })
+      return
+    }
+  }, [user, profile, navigate])
 
   const currentStepData = steps[currentStep]
   const isLastStep = currentStep === steps.length - 1
@@ -138,11 +147,13 @@ export function OnboardingPage() {
 
     setLoading(true)
     try {
+      // HARD CONDITION: Mark evaluation as completed when onboarding is finished
       await updateProfile({
         career_goals: formData.career_goals,
         current_skills: formData.current_skills,
         learning_style: formData.learning_style,
         experience_level: formData.experience_level,
+        evaluation_completed: true, // HARD CONDITION: Mark as completed
         xp: 0,
         guild_level: 'ROOKIE',
         pathways_completed: 0,
@@ -150,6 +161,8 @@ export function OnboardingPage() {
         projects_completed: 0,
         guild_rank: 0
       })
+      
+      console.log('✅ Onboarding: Onboarding completed, redirecting to dashboard')
       navigate('/dashboard')
     } catch (error) {
       console.error('Error saving profile:', error)
@@ -158,13 +171,25 @@ export function OnboardingPage() {
     }
   }
 
+  // If user has already completed evaluation, show loading while redirecting
+  if (user && profile && profile.evaluation_completed) {
+    return (
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-2 border-[#6244FF] border-t-transparent mx-auto mb-4"></div>
+          <p className="text-gray-400">Redirecting to dashboard...</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gray-950 flex items-center justify-center px-4">
       <div className="max-w-2xl w-full">
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-6">
             <img 
-                              src={iteachedLogo} 
+              src={iteachedLogo} 
               alt="ITeachEd AI Career Assessment" 
               className="h-10"
             />
