@@ -360,7 +360,7 @@ export function DashboardPage() {
           {/* Projects Section - With Navigation Arrows */}
           <div className="space-y-4 pb-8">
             <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-semibold">Start doing projects</h2>
+              <h2 className="text-2xl font-semibold">Recommended Projects</h2>
               
               {/* Navigation Arrows */}
               <div className="flex space-x-2">
