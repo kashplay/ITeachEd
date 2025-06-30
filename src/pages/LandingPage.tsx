@@ -20,6 +20,8 @@ export function LandingPage() {
       
       if (cameFromPreEvaluation) {
         console.log('🔄 LandingPage: User came from pre-evaluation via back button, staying on landing page')
+        // Clear the state to prevent issues on future navigations
+        window.history.replaceState({}, document.title)
         return // Don't redirect, let user stay on landing page
       }
       
@@ -198,7 +200,7 @@ export function LandingPage() {
             </p>
           </div>
         </div>
-      </footer>
+      </div>
     </div>
   )
 }
