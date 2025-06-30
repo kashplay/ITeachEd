@@ -60,9 +60,49 @@ export function LandingPage() {
     )
   }
 
+  const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'
+
   return (
     <div className="min-h-screen bg-gray-950">
-      {/* Header is now handled by Layout component - no duplicate header here */}
+      {/* Custom header for logged in users */}
+      <header className="bg-gray-900/80 backdrop-blur-md border-b border-gray-800 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <Link to="/" className="flex items-center">
+              <img 
+                src={iteachedLogo} 
+                alt="ITeachEd" 
+                className="h-8"
+              />
+            </Link>
+
+            <div className="flex items-center space-x-4">
+              {user ? (
+                <>
+                  <Link to="/dashboard">
+                    <Button variant="primary" size="sm">
+                      Dashboard
+                    </Button>
+                  </Link>
+                  <Link to="/settings" className="flex items-center justify-center p-2 bg-gray-800/50 border border-gray-600/50 rounded-xl hover:bg-gray-700/50 transition-colors">
+                    <div className="w-8 h-8 bg-gradient-to-r from-[#6244FF] to-[#FFAE2D] rounded-full flex items-center justify-center">
+                      <span className="text-white text-sm font-medium">
+                        {userName?.[0]?.toUpperCase() || 'U'}
+                      </span>
+                    </div>
+                  </Link>
+                </>
+              ) : (
+                <Link to="/auth/login">
+                  <Button variant="outline" size="sm">
+                    Login
+                  </Button>
+                </Link>
+              )}
+            </div>
+          </div>
+        </div>
+      </header>
       
       {/* Hero Section */}
       <section className="relative overflow-hidden py-20 lg:py-32">
@@ -83,11 +123,19 @@ export function LandingPage() {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Link to="/auth/signup">
-              <Button size="lg" icon={ArrowRight} iconPosition="right" className="group">
-                Start Learning Today
-              </Button>
-            </Link>
+            {user ? (
+              <Link to="/dashboard">
+                <Button size="lg" icon={ArrowRight} iconPosition="right" className="group">
+                  Go to Dashboard
+                </Button>
+              </Link>
+            ) : (
+              <Link to="/auth/signup">
+                <Button size="lg" icon={ArrowRight} iconPosition="right" className="group">
+                  Start Learning Today
+                </Button>
+              </Link>
+            )}
             <Button variant="outline" size="lg" icon={Play}>
               Watch Demo
             </Button>
@@ -176,11 +224,19 @@ export function LandingPage() {
           <p className="text-xl text-white/90 mb-8">
             Join thousands of learners who have accelerated their careers with ITeachEd
           </p>
-          <Link to="/auth/signup">
-            <Button variant="secondary" size="lg" icon={ArrowRight} iconPosition="right">
-              Get Started Free
-            </Button>
-          </Link>
+          {user ? (
+            <Link to="/dashboard">
+              <Button variant="secondary" size="lg" icon={ArrowRight} iconPosition="right">
+                Go to Dashboard
+              </Button>
+            </Link>
+          ) : (
+            <Link to="/auth/signup">
+              <Button variant="secondary" size="lg" icon={ArrowRight} iconPosition="right">
+                Get Started Free
+              </Button>
+            </Link>
+          )}
         </div>
       </section>
 
