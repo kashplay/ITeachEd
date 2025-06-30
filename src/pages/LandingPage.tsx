@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
-import { ArrowRight, Play, Users, BookOpen, Trophy, Briefcase, Menu, X } from 'lucide-react'
+import { ArrowRight, Play, Users, BookOpen, Trophy, Briefcase, Menu, X, User } from 'lucide-react'
 import { Button } from '../components/ui/Button'
 import { useAuth } from '../contexts/AuthContext'
 import iteachedLogo from '../assets/images/iteached-logo.svg'
@@ -10,6 +10,7 @@ export function LandingPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'
 
   // Check if user came from pre-evaluation via back button
   const fromPreEvaluation = location.state?.fromPreEvaluation
@@ -91,9 +92,19 @@ export function LandingPage() {
 
               <div className="hidden md:flex items-center space-x-6">
                 {user && fromPreEvaluation ? (
-                  <Button variant="outline" size="sm" onClick={handleSignOut}>
-                    Sign Out
-                  </Button>
+                  <div className="flex items-center space-x-3">
+                    {/* Profile Icon */}
+                    <div className="flex items-center justify-center">
+                      <div className="w-8 h-8 bg-gradient-to-r from-[#6244FF] to-[#FFAE2D] rounded-full flex items-center justify-center">
+                        <span className="text-white text-sm font-medium">
+                          {userName?.[0]?.toUpperCase() || 'U'}
+                        </span>
+                      </div>
+                    </div>
+                    <Button variant="outline" size="sm" onClick={handleSignOut}>
+                      Sign Out
+                    </Button>
+                  </div>
                 ) : (
                   <Link to="/auth/login">
                     <Button variant="outline" size="sm">
@@ -116,9 +127,20 @@ export function LandingPage() {
             <div className="md:hidden bg-gray-900 border-t border-gray-800">
               <div className="px-4 py-6 space-y-4">
                 {user && fromPreEvaluation ? (
-                  <Button variant="outline" size="sm" className="w-full" onClick={handleSignOut}>
-                    Sign Out
-                  </Button>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      {/* Profile Icon for Mobile */}
+                      <div className="w-8 h-8 bg-gradient-to-r from-[#6244FF] to-[#FFAE2D] rounded-full flex items-center justify-center">
+                        <span className="text-white text-sm font-medium">
+                          {userName?.[0]?.toUpperCase() || 'U'}
+                        </span>
+                      </div>
+                      <span className="text-white text-sm">{userName}</span>
+                    </div>
+                    <Button variant="outline" size="sm" onClick={handleSignOut}>
+                      Sign Out
+                    </Button>
+                  </div>
                 ) : (
                   <Link to="/auth/login" className="block">
                     <Button variant="outline" size="sm" className="w-full">
