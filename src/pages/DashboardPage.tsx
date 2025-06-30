@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState } from 'react'
 import { ArrowRight, Search, Bell, Monitor, Target, Hexagon, Film, User, Play, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { useNavigate } from 'react-router-dom'
@@ -22,7 +22,7 @@ export function DashboardPage() {
   const navigate = useNavigate()
   const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Mark Johnson'
   const [searchQuery, setSearchQuery] = useState('')
-  const scrollContainerRef = useRef<HTMLDivElement>(null)
+  const [currentProjectIndex, setCurrentProjectIndex] = useState(0)
 
   // Recommended courses data
   const recommendedCourses: RecommendedCourse[] = [
@@ -119,17 +119,29 @@ export function DashboardPage() {
     setSearchQuery(e.target.value)
   }
 
-  const scrollLeft = () => {
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({ left: -300, behavior: 'smooth' })
-    }
-  }
+  // Calculate the number of courses to display per page
+  const coursesPerPage = 3;
+  const totalPages = Math.ceil(recommendedCourses.length / coursesPerPage);
 
-  const scrollRight = () => {
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({ left: 300, behavior: 'smooth' })
-    }
-  }
+  // Navigate to previous set of courses
+  const showPreviousCourses = () => {
+    setCurrentProjectIndex(prev => 
+      prev === 0 ? totalPages - 1 : prev - 1
+    );
+  };
+
+  // Navigate to next set of courses
+  const showNextCourses = () => {
+    setCurrentProjectIndex(prev => 
+      prev === totalPages - 1 ? 0 : prev + 1
+    );
+  };
+
+  // Get current courses to display
+  const currentCourses = recommendedCourses.slice(
+    currentProjectIndex * coursesPerPage,
+    (currentProjectIndex + 1) * coursesPerPage
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#1a1d3a] via-[#2d3561] to-[#1a1d3a] text-white">
@@ -345,39 +357,36 @@ export function DashboardPage() {
             </div>
           </div>
 
-          {/* Projects Section - Horizontally Scrollable */}
+          {/* Projects Section - With Navigation Arrows */}
           <div className="space-y-6 pb-8">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-semibold">Start doing projects</h2>
               
-              {/* Scroll Controls */}
+              {/* Navigation Arrows */}
               <div className="flex space-x-2">
                 <button 
-                  onClick={scrollLeft}
+                  onClick={showPreviousCourses}
                   className="p-2 bg-gray-800/50 rounded-full hover:bg-gray-700/50 transition-colors"
-                  aria-label="Scroll left"
+                  aria-label="Previous projects"
                 >
                   <ChevronLeft className="w-5 h-5 text-white" />
                 </button>
                 <button 
-                  onClick={scrollRight}
+                  onClick={showNextCourses}
                   className="p-2 bg-gray-800/50 rounded-full hover:bg-gray-700/50 transition-colors"
-                  aria-label="Scroll right"
+                  aria-label="Next projects"
                 >
                   <ChevronRight className="w-5 h-5 text-white" />
                 </button>
               </div>
             </div>
             
-            {/* Horizontal Scrollable Container */}
-            <div 
-              ref={scrollContainerRef}
-              className="flex space-x-6 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory"
-            >
-              {recommendedCourses.map((course) => (
+            {/* Grid Layout for Courses */}
+            <div className="grid grid-cols-3 gap-6">
+              {currentCourses.map((course) => (
                 <div 
                   key={course.id}
-                  className="min-w-[350px] max-w-[350px] bg-gray-800/30 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden hover:bg-gray-700/30 transition-colors snap-start flex flex-col"
+                  className="bg-gray-800/30 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden hover:bg-gray-700/30 transition-colors flex flex-col"
                 >
                   <div className="aspect-video relative">
                     <img 
@@ -431,6 +440,24 @@ export function DashboardPage() {
                 </div>
               ))}
             </div>
+            
+            {/* Pagination Indicators */}
+            {totalPages > 1 && (
+              <div className="flex justify-center space-x-2 mt-4">
+                {Array.from({ length: totalPages }).map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentProjectIndex(index)}
+                    className={`w-2 h-2 rounded-full transition-all ${
+                      index === currentProjectIndex 
+                        ? 'bg-white scale-125' 
+                        : 'bg-gray-600 hover:bg-gray-500'
+                    }`}
+                    aria-label={`Go to page ${index + 1}`}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
