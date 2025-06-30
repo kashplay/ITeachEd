@@ -235,32 +235,60 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       console.log('🔄 AuthContext: Updating profile with:', updates)
       
-      const profileData = {
-        user_id: user.id,
-        ...updates
+      // First, check if profile exists
+      const { data: existingProfile, error: fetchError } = await supabase
+        .from('user_profiles')
+        .select('id, user_id')
+        .eq('user_id', user.id)
+        .single()
+
+      if (fetchError && fetchError.code !== 'PGRST116') {
+        console.error('❌ AuthContext: Error checking existing profile:', fetchError)
+        throw fetchError
+      }
+
+      let result
+      
+      if (existingProfile) {
+        // Profile exists, use UPDATE
+        console.log('🔄 AuthContext: Profile exists, updating...')
+        result = await supabase
+          .from('user_profiles')
+          .update(updates)
+          .eq('user_id', user.id)
+          .select()
+          .single()
+      } else {
+        // Profile doesn't exist, use INSERT
+        console.log('🔄 AuthContext: Profile doesn\'t exist, creating...')
+        const profileData = {
+          user_id: user.id,
+          full_name: user.user_metadata?.full_name || '',
+          guild_level: 'ROOKIE',
+          xp: 0,
+          pathways_completed: 0,
+          guild_rank: 999999,
+          total_hours: 0,
+          projects_completed: 0,
+          ...updates
+        }
+        
+        result = await supabase
+          .from('user_profiles')
+          .insert(profileData)
+          .select()
+          .single()
       }
       
-      // Add timeout to prevent hanging
-      const timeoutPromise = new Promise<never>((_, reject) => {
-        setTimeout(() => reject(new Error('Profile update timeout')), 10000)
-      })
-
-      const updatePromise = supabase
-        .from('user_profiles')
-        .upsert(profileData)
-
-      const { error } = await Promise.race([
-        updatePromise,
-        timeoutPromise
-      ])
-      
-      if (error) {
-        console.error('❌ AuthContext: Profile update error:', error)
-        throw error
+      if (result.error) {
+        console.error('❌ AuthContext: Profile operation error:', result.error)
+        throw result.error
       }
       
       console.log('✅ AuthContext: Profile updated successfully')
-      setProfile(prev => prev ? { ...prev, ...updates } : null)
+      
+      // Update local profile state
+      setProfile(prev => prev ? { ...prev, ...updates } : result.data)
       
     } catch (error) {
       console.error('❌ AuthContext: Profile update exception:', error)
