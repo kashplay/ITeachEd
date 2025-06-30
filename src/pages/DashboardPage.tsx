@@ -1,14 +1,58 @@
-import React from 'react'
-import { ArrowRight, Search, Bell, Monitor, Target, Hexagon, Film, User } from 'lucide-react'
+import React, { useState } from 'react'
+import { ArrowRight, Search, Bell, Monitor, Target, Hexagon, Film, User, Play } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import { Sidebar } from '../components/Layout/Sidebar'
 import { AITutor } from '../components/ui/AITutor'
+import { Button } from '../components/ui/Button'
+
+// Course interface for recommended courses
+interface RecommendedCourse {
+  id: string
+  title: string
+  description: string
+  image: string
+  progress: number
+  status: 'not-started' | 'in-progress' | 'completed'
+  category: string
+}
 
 export function DashboardPage() {
   const { user, profile, signOut } = useAuth()
   const navigate = useNavigate()
   const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Mark Johnson'
+  const [searchQuery, setSearchQuery] = useState('')
+
+  // Recommended courses data
+  const recommendedCourses: RecommendedCourse[] = [
+    {
+      id: 'course-1',
+      title: 'Modern Web Development',
+      description: 'Learn the latest web development techniques and frameworks',
+      image: 'https://images.pexels.com/photos/3862132/pexels-photo-3862132.jpeg?auto=compress&cs=tinysrgb&w=800',
+      progress: 0,
+      status: 'not-started',
+      category: 'Development'
+    },
+    {
+      id: 'course-2',
+      title: 'UI/UX Design Fundamentals',
+      description: 'Master the principles of user interface and experience design',
+      image: 'https://images.pexels.com/photos/3862365/pexels-photo-3862365.jpeg?auto=compress&cs=tinysrgb&w=800',
+      progress: 35,
+      status: 'in-progress',
+      category: 'Design'
+    },
+    {
+      id: 'course-3',
+      title: 'Game Development Basics',
+      description: 'Create your first interactive games with modern engines',
+      image: 'https://images.pexels.com/photos/3862634/pexels-photo-3862634.jpeg?auto=compress&cs=tinysrgb&w=800',
+      progress: 0,
+      status: 'not-started',
+      category: 'Development'
+    }
+  ]
 
   // Navigate to landing page when user signs out
   React.useEffect(() => {
@@ -37,6 +81,16 @@ export function DashboardPage() {
     }
   }
 
+  const handleCourseAction = (courseId: string, courseTitle: string) => {
+    console.log(`Starting/continuing course: ${courseTitle} (ID: ${courseId})`)
+    // Navigate to the learning portal with the course ID
+    navigate('/learning', { state: { courseId } })
+  }
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value)
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#1a1d3a] via-[#2d3561] to-[#1a1d3a] text-white">
       {/* Sidebar */}
@@ -57,6 +111,8 @@ export function DashboardPage() {
               <input
                 type="text"
                 placeholder="Search.."
+                value={searchQuery}
+                onChange={handleSearch}
                 className="bg-gray-800/50 border border-gray-600/50 rounded-xl pl-10 pr-4 py-2.5 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 w-80"
               />
             </div>
@@ -254,38 +310,60 @@ export function DashboardPage() {
             <h2 className="text-2xl font-semibold">Start doing projects</h2>
             
             <div className="grid grid-cols-3 gap-6">
-              {/* Project 1 */}
-              <div className="bg-gray-800/30 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden hover:bg-gray-700/30 transition-colors cursor-pointer">
-                <div className="aspect-video bg-gradient-to-br from-blue-500 to-purple-600 relative">
-                  <img 
-                    src="https://images.pexels.com/photos/3862132/pexels-photo-3862132.jpeg?auto=compress&cs=tinysrgb&w=800" 
-                    alt="Project 1"
-                    className="w-full h-full object-cover"
-                  />
+              {recommendedCourses.map((course) => (
+                <div 
+                  key={course.id}
+                  className="bg-gray-800/30 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden hover:bg-gray-700/30 transition-colors"
+                >
+                  <div className="aspect-video relative">
+                    <img 
+                      src={course.image} 
+                      alt={course.title}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+                    
+                    {/* Category Badge */}
+                    <div className="absolute top-3 left-3">
+                      <span className="px-3 py-1 bg-blue-500/80 text-white text-xs font-medium rounded-full">
+                        {course.category}
+                      </span>
+                    </div>
+                    
+                    {/* Progress Badge - Only show if in progress */}
+                    {course.status === 'in-progress' && (
+                      <div className="absolute top-3 right-3">
+                        <span className="px-3 py-1 bg-green-500/80 text-white text-xs font-medium rounded-full">
+                          {course.progress}% Complete
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="p-5">
+                    <h3 className="text-lg font-semibold text-white mb-2">{course.title}</h3>
+                    <p className="text-gray-400 text-sm mb-4">{course.description}</p>
+                    
+                    {/* Progress bar - Only show if in progress */}
+                    {course.status === 'in-progress' && (
+                      <div className="w-full bg-gray-700 rounded-full h-2 mb-4">
+                        <div 
+                          className="bg-green-500 h-2 rounded-full transition-all duration-300"
+                          style={{ width: `${course.progress}%` }}
+                        />
+                      </div>
+                    )}
+                    
+                    <Button 
+                      icon={Play}
+                      onClick={() => handleCourseAction(course.id, course.title)}
+                      className="w-full"
+                    >
+                      {course.status === 'in-progress' ? 'Continue' : 'Start Course'}
+                    </Button>
+                  </div>
                 </div>
-              </div>
-
-              {/* Project 2 */}
-              <div className="bg-gray-800/30 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden hover:bg-gray-700/30 transition-colors cursor-pointer">
-                <div className="aspect-video bg-gradient-to-br from-orange-500 to-red-600 relative">
-                  <img 
-                    src="https://images.pexels.com/photos/3862365/pexels-photo-3862365.jpeg?auto=compress&cs=tinysrgb&w=800" 
-                    alt="Project 2"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              </div>
-
-              {/* Project 3 */}
-              <div className="bg-gray-800/30 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden hover:bg-gray-700/30 transition-colors cursor-pointer">
-                <div className="aspect-video bg-gradient-to-br from-purple-500 to-pink-600 relative">
-                  <img 
-                    src="https://images.pexels.com/photos/3862634/pexels-photo-3862634.jpeg?auto=compress&cs=tinysrgb&w=800" 
-                    alt="Project 3"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>
