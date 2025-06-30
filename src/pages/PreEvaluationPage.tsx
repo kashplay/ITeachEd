@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import { ChevronRight, ChevronLeft, Sparkles } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { Button } from '../components/ui/Button'
-import { OnboardingData } from '../types'
 import iteachedLogo from '../assets/images/iteached-logo.svg'
 
 // Question data structure
@@ -337,15 +336,32 @@ export function PreEvaluationPage() {
   const [showStartButton, setShowStartButton] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [retryCount, setRetryCount] = useState(0)
+  const [initialCheckDone, setInitialCheckDone] = useState(false)
 
   // HARD CONDITION: If user has already completed evaluation, redirect to dashboard immediately
   useEffect(() => {
-    if (user && profile && profile.evaluation_completed) {
-      console.log('🔄 PreEvaluation: User has already completed evaluation, redirecting to dashboard')
-      navigate('/dashboard', { replace: true })
-      return
+    const checkProfileStatus = async () => {
+      // Only run this check once
+      if (initialCheckDone) return;
+      
+      try {
+        if (user && profile) {
+          if (profile.evaluation_completed) {
+            console.log('🔄 PreEvaluation: User has already completed evaluation, redirecting to dashboard')
+            navigate('/dashboard', { replace: true })
+          } else {
+            console.log('🔄 PreEvaluation: User has not completed evaluation, staying on pre-evaluation')
+          }
+        }
+      } catch (error) {
+        console.error('Error checking profile status:', error)
+      } finally {
+        setInitialCheckDone(true)
+      }
     }
-  }, [user, profile, navigate])
+    
+    checkProfileStatus();
+  }, [user, profile, navigate, initialCheckDone]);
 
   const question = questions[currentQuestion]
   const isLastQuestion = currentQuestion === questions.length - 1
@@ -478,7 +494,7 @@ export function PreEvaluationPage() {
   }
 
   // If user has already completed evaluation, show loading while redirecting
-  if (user && profile && profile.evaluation_completed) {
+  if (user && profile && profile.evaluation_completed && initialCheckDone) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#1a1d3a] via-[#2d3561] to-[#1a1d3a] text-white flex items-center justify-center">
         <div className="text-center">

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 
@@ -8,13 +8,22 @@ interface ProtectedRouteProps {
 
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { user, profile, loading } = useAuth()
+  const [initialCheckDone, setInitialCheckDone] = useState(false)
+
+  // One-time check for evaluation status
+  useEffect(() => {
+    if (!loading) {
+      setInitialCheckDone(true)
+    }
+  }, [loading]);
 
   // If user is null, redirect immediately (regardless of loading state)
   if (!user) {
     return <Navigate to="/auth/login" replace />
   }
 
-  if (loading) {
+  // Show loading state only during initial check
+  if (loading && !initialCheckDone) {
     return (
       <div className="min-h-screen bg-gray-950 flex items-center justify-center">
         <div className="text-center">
